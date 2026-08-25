@@ -32,19 +32,13 @@ services:
       # Redirect all HTTP to HTTPS.
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
-      # Let's Encrypt wildcard certificate via DNS challenge.
+      # Let's Encrypt certificate via HTTP challenge (no API token needed).
       - --certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:?Set ACME_EMAIL in .env}
       - --certificatesresolvers.letsencrypt.acme.storage=/acme/acme.json
-      - --certificatesresolvers.letsencrypt.acme.dnschallenge=true
-      - --certificatesresolvers.letsencrypt.acme.dnschallenge.provider=${DNS_PROVIDER:-cloudflare}
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
     ports:
       - '80:80'
       - '443:443'
-    environment:
-      # Cloudflare DNS API token for the DNS challenge (if using Cloudflare).
-      # Other providers use different env vars — see https://doc.traefik.io/traefik/https/acme/
-      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN:-}
-      CF_API_EMAIL: ${CF_API_EMAIL:-}
     volumes:
       # Read-only Docker socket: Traefik only needs to discover containers, not control them.
       - /var/run/docker.sock:/var/run/docker.sock:ro
