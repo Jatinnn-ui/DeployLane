@@ -805,3 +805,52 @@
     transform: scale(0.88);
   }
 }
+
+/* Hero sequence: the server animates first in R3F; DOM stages then reveal one at a time.
+   Positioning transforms live on the outer <li>, while tilt/float lives on the inner card,
+   preventing the two animation systems from clobbering each other. */
+@keyframes pipeline-stage-reveal {
+  from {
+    opacity: 0;
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes pipeline-card-float {
+  0%,
+  100% {
+    transform: var(--card-tilt) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: var(--card-tilt) translate3d(0, -3px, 0);
+  }
+}
+
+@keyframes pipeline-connections-reveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.pipeline-stage {
+  opacity: 0;
+  animation: pipeline-stage-reveal 0.5s var(--ease-transform) forwards;
+}
+
+.pipeline-card-float {
+  transform: var(--card-tilt);
+  animation: pipeline-card-float 6s ease-in-out var(--float-delay, 0s) infinite;
+  will-change: transform;
+}
+
+.pipeline-connections {
+  opacity: 0;
+  animation: pipeline-connections-reveal 0.6s ease-out forwards;
+}

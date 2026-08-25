@@ -28,7 +28,7 @@ export interface HeroMaterials {
 
 export function createHeroMaterials(): HeroMaterials {
   const body = new THREE.MeshStandardMaterial({
-    color: '#14181a',
+    color: '#15191a',
     metalness: 0.68,
     roughness: 0.32,
   });
