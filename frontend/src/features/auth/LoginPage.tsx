@@ -5,6 +5,8 @@ import { Navigate, useSearchParams } from 'react-router-dom';
 import { useAuthConfig } from '@/api/platform';
 import { Button } from '@/components/ui/button';
 import { ErrorState, Spinner } from '@/components/ui/feedback';
+import { BrandLogo } from '@/components/BrandLogo';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useAuthStore } from '@/stores/auth-store';
 import { apiClient } from '@/lib/api-client';
 
@@ -60,12 +62,17 @@ export function LoginPage() {
   };
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-2">
+    <div className="relative grid min-h-screen lg:grid-cols-2">
+      {/* Reachable before sign-in, so the theme can be set without an account. */}
+      <div className="absolute right-5 top-5 z-10">
+        <ThemeToggle />
+      </div>
+
       <div className="flex items-center justify-center px-6 py-16">
         <div className="w-full max-w-sm space-y-8">
           <div className="space-y-2">
             <div className="flex items-center">
-              <img src="/brand/deploylane-logo.svg" alt="DeployLane" className="h-[32px] w-auto max-w-[160px] object-contain" />
+              <BrandLogo className="h-[32px] max-w-[160px]" />
             </div>
             <h1 className="text-2xl font-semibold tracking-tight text-content-primary">
               Deploy. Monitor. Debug. Fix.
@@ -129,10 +136,10 @@ export function LoginPage() {
 
       <div className="relative hidden items-center justify-center overflow-hidden border-l border-border-subtle bg-surface lg:flex">
         <div
-          className="absolute inset-0 opacity-40"
+          className="absolute inset-0"
           style={{
             backgroundImage:
-              'radial-gradient(circle at 30% 30%, rgba(203,216,16,0.1), transparent 50%), radial-gradient(circle at 75% 65%, rgba(238,247,115,0.06), transparent 50%)',
+              'radial-gradient(circle at 30% 30%, var(--dl-accent-soft), transparent 55%), radial-gradient(circle at 75% 65%, var(--dl-ring), transparent 55%)',
           }}
           aria-hidden="true"
         />

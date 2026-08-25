@@ -90,7 +90,7 @@ export function DeploymentDetailPage() {
             <Card>
               <CardHeader title="Failure" description={humanizeEnum(deployment.failure.stage)} />
               <CardBody>
-                <p className="break-words font-mono text-[12px] leading-relaxed text-[#f9a8a8]">
+                <p className="break-words font-mono text-[12px] leading-relaxed text-danger-foreground">
                   {deployment.failure.message}
                 </p>
                 {deployment.failure.exitCode !== null && deployment.failure.exitCode !== undefined ? (

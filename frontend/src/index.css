@@ -1,125 +1,351 @@
 @import 'tailwindcss';
 
 /*
- * DeployLane — Permanent dark mode
+ * DeployLane — lime fintech design system
  *
- * Dark canvas (#0a0a09) with the same Roobert type system, lime-chartreuse
- * accent, tight-tracked headlines, and flat hairline cards — inverted from
- * the Claymation light spec into a permanent dark palette with no toggle.
+ * Two complete variants of one system. The palettes below are raw custom
+ * properties swapped by `data-theme` on <html>; `@theme inline` then exposes
+ * them to Tailwind as var() references, so every existing semantic utility
+ * (bg-canvas, text-content-primary, border-border-subtle, …) resolves against
+ * whichever theme is active. No component needs to know which theme is on.
+ *
+ *   dark  (default) → near-black canvas, lime accent
+ *   light           → warm off-white canvas, lime accent
+ *
+ * Electric lime #ADE722 is the single dominant accent in BOTH themes. Colour is
+ * rationed: lime directs attention, near-black/off-white carries the surfaces,
+ * and status hues are the only other saturated values.
  */
+
+/* ─────────────────────────────────────────────────────────────
+   DARK PALETTE — default
+   ───────────────────────────────────────────────────────────── */
+:root {
+  color-scheme: dark;
+
+  /* canvas & surfaces */
+  --dl-canvas: #0f1113;
+  --dl-surface: #15181a;
+  --dl-surface-alt: #1a1e20;
+  --dl-surface-raised: #1f2426;
+  --dl-surface-hover: #232829;
+  --dl-surface-glass: rgba(21, 24, 26, 0.88);
+
+  /* borders */
+  --dl-border-subtle: rgba(230, 232, 235, 0.1);
+  --dl-border-strong: rgba(230, 232, 235, 0.24);
+  --dl-border-accent: #ade722;
+
+  /* ink */
+  --dl-content-primary: #e6e8eb;
+  --dl-content-secondary: #9ca3a1;
+  --dl-content-muted: #6b7270;
+  --dl-content-inverse: #0f1113;
+  --dl-ink-deep: #e6e8eb;
+
+  /* lime accent family */
+  --dl-accent: #ade722;
+  --dl-accent-hover: #bcee44;
+  --dl-accent-deep: #74cb12;
+  --dl-accent-soft: rgba(173, 231, 34, 0.12);
+  --dl-accent-border: rgba(173, 231, 34, 0.3);
+  --dl-lime-soft: #cbed60;
+  --dl-green-deep: #1d5813;
+  --dl-teal: #2dd4bf;
+  --dl-link: #ade722;
+  --dl-hero-primary: #ade722;
+
+  /* status */
+  --dl-success: #4ade80;
+  --dl-success-soft: rgba(74, 222, 128, 0.1);
+  --dl-success-border: rgba(74, 222, 128, 0.28);
+  --dl-success-foreground: #86efac;
+  --dl-warning: #fbbf24;
+  --dl-warning-soft: rgba(251, 191, 36, 0.1);
+  --dl-warning-border: rgba(251, 191, 36, 0.28);
+  --dl-warning-foreground: #fcd34d;
+  --dl-danger: #f87171;
+  --dl-danger-soft: rgba(248, 113, 113, 0.1);
+  --dl-danger-border: rgba(248, 113, 113, 0.26);
+  --dl-danger-foreground: #fca5a5;
+  --dl-info: #2dd4bf;
+  --dl-info-soft: rgba(45, 212, 191, 0.1);
+  --dl-info-border: rgba(45, 212, 191, 0.26);
+  --dl-info-foreground: #5eead4;
+
+  /* accent bands (used by panel-blue / panel-coral utilities) */
+  --dl-band-blue: rgba(45, 212, 191, 0.06);
+  --dl-band-coral: rgba(173, 231, 34, 0.07);
+
+  /* terminal / log sources */
+  --dl-terminal-system: #9ca3a1;
+  --dl-terminal-git: #2dd4bf;
+  --dl-terminal-build: #4ade80;
+  --dl-terminal-docker: #38bdf8;
+  --dl-terminal-health: #fbbf24;
+  --dl-terminal-ai: #a78bfa;
+
+  /* charts — read by Recharts through the useChartTheme hook */
+  --dl-chart-primary: #e6e8eb;
+  --dl-chart-accent: #ade722;
+  --dl-chart-grid: rgba(230, 232, 235, 0.1);
+  --dl-chart-tick: #6b7270;
+  --dl-chart-tooltip-bg: #1a1e20;
+  --dl-chart-tooltip-border: rgba(230, 232, 235, 0.14);
+  --dl-chart-label: #9ca3a1;
+
+  /* native <option> — one of the few properties browsers honour */
+  --dl-option-bg: #1a1e20;
+  --dl-option-fg: #e6e8eb;
+
+  /* elevation — deeper on dark so panels separate from the canvas */
+  --dl-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --dl-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --dl-shadow-lg: 0 18px 45px rgba(0, 0, 0, 0.5);
+  --dl-shadow-xl: 0 24px 60px rgba(0, 0, 0, 0.6);
+  --dl-shadow-2xl: 0 32px 80px rgba(0, 0, 0, 0.7);
+  --dl-shadow-inset-card: rgba(230, 232, 235, 0.06) 0 0 0 1px inset;
+
+  /* decorative */
+  --dl-ring: rgba(173, 231, 34, 0.22);
+  --dl-glyph: rgba(230, 232, 235, 0.04);
+  --dl-gradient-panel: linear-gradient(145deg, #2a2b2a 0%, #171817 100%);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LIGHT PALETTE
+   ───────────────────────────────────────────────────────────── */
+[data-theme='light'] {
+  color-scheme: light;
+
+  --dl-canvas: #e8e9e5;
+  --dl-surface: #f2f3ef;
+  --dl-surface-alt: #ffffff;
+  --dl-surface-raised: #ffffff;
+  --dl-surface-hover: #e1e3de;
+  --dl-surface-glass: rgba(242, 243, 239, 0.85);
+
+  --dl-border-subtle: rgba(33, 34, 33, 0.14);
+  --dl-border-strong: rgba(33, 34, 33, 0.38);
+  --dl-border-accent: #74cb12;
+
+  --dl-content-primary: #212221;
+  --dl-content-secondary: #5d5f5c;
+  --dl-content-muted: #8a8d88;
+  --dl-content-inverse: #f2f3ef;
+  --dl-ink-deep: #212221;
+
+  --dl-accent: #ade722;
+  --dl-accent-hover: #9bd91c;
+  --dl-accent-deep: #74cb12;
+  --dl-accent-soft: rgba(173, 231, 34, 0.2);
+  --dl-accent-border: rgba(116, 203, 18, 0.45);
+  --dl-lime-soft: #cbed60;
+  --dl-green-deep: #1d5813;
+  --dl-teal: #166a62;
+  --dl-link: #1d5813;
+  --dl-hero-primary: #ade722;
+
+  /* darker status hues so they stay legible on a pale canvas */
+  --dl-success: #15803d;
+  --dl-success-soft: rgba(21, 128, 61, 0.1);
+  --dl-success-border: rgba(21, 128, 61, 0.3);
+  --dl-success-foreground: #14612f;
+  --dl-warning: #a16207;
+  --dl-warning-soft: rgba(161, 98, 7, 0.1);
+  --dl-warning-border: rgba(161, 98, 7, 0.3);
+  --dl-warning-foreground: #854d0e;
+  --dl-danger: #b91c1c;
+  --dl-danger-soft: rgba(185, 28, 28, 0.08);
+  --dl-danger-border: rgba(185, 28, 28, 0.28);
+  --dl-danger-foreground: #991b1b;
+  --dl-info: #166a62;
+  --dl-info-soft: rgba(22, 106, 98, 0.1);
+  --dl-info-border: rgba(22, 106, 98, 0.28);
+  --dl-info-foreground: #12554f;
+
+  --dl-band-blue: rgba(22, 106, 98, 0.07);
+  --dl-band-coral: rgba(173, 231, 34, 0.18);
+
+  --dl-terminal-system: #5d5f5c;
+  --dl-terminal-git: #166a62;
+  --dl-terminal-build: #15803d;
+  --dl-terminal-docker: #0e7490;
+  --dl-terminal-health: #a16207;
+  --dl-terminal-ai: #6d28d9;
+
+  --dl-chart-primary: #212221;
+  --dl-chart-accent: #74cb12;
+  --dl-chart-grid: rgba(33, 34, 33, 0.12);
+  --dl-chart-tick: #5d5f5c;
+  --dl-chart-tooltip-bg: #ffffff;
+  --dl-chart-tooltip-border: rgba(33, 34, 33, 0.16);
+  --dl-chart-label: #5d5f5c;
+
+  --dl-option-bg: #ffffff;
+  --dl-option-fg: #212221;
+
+  /* flatter on light — depth is concentrated on floating product panels only */
+  --dl-shadow-sm: 0 1px 2px rgba(20, 24, 18, 0.06);
+  --dl-shadow-md: 0 8px 24px rgba(20, 24, 18, 0.08);
+  --dl-shadow-lg: 0 18px 45px rgba(20, 24, 18, 0.16);
+  --dl-shadow-xl: 0 24px 60px rgba(20, 24, 18, 0.22);
+  --dl-shadow-2xl: 0 32px 80px rgba(20, 24, 18, 0.26);
+  --dl-shadow-inset-card: rgba(33, 34, 33, 0.05) 0 0 0 1px inset;
+
+  --dl-ring: rgba(116, 203, 18, 0.35);
+  --dl-glyph: rgba(33, 34, 33, 0.05);
+  --dl-gradient-panel: linear-gradient(145deg, #2a2b2a 0%, #171817 100%);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   THEME-AWARE TOKENS
+   `inline` makes Tailwind emit var() instead of a resolved literal, which is
+   what allows a single stylesheet to serve both themes at runtime.
+   ───────────────────────────────────────────────────────────── */
+@theme inline {
+  --color-canvas: var(--dl-canvas);
+  --color-surface: var(--dl-surface);
+  --color-surface-alt: var(--dl-surface-alt);
+  --color-surface-raised: var(--dl-surface-raised);
+  --color-surface-hover: var(--dl-surface-hover);
+  --color-surface-glass: var(--dl-surface-glass);
+
+  --color-border-subtle: var(--dl-border-subtle);
+  --color-border-strong: var(--dl-border-strong);
+  --color-border-accent: var(--dl-border-accent);
+
+  --color-content-primary: var(--dl-content-primary);
+  --color-content-secondary: var(--dl-content-secondary);
+  --color-content-muted: var(--dl-content-muted);
+  --color-content-inverse: var(--dl-content-inverse);
+  --color-ink-deep: var(--dl-ink-deep);
+
+  --color-accent: var(--dl-accent);
+  --color-accent-hover: var(--dl-accent-hover);
+  --color-accent-deep: var(--dl-accent-deep);
+  --color-accent-soft: var(--dl-accent-soft);
+  --color-accent-border: var(--dl-accent-border);
+  --color-lime-soft: var(--dl-lime-soft);
+  --color-green-deep: var(--dl-green-deep);
+  --color-teal: var(--dl-teal);
+  --color-link: var(--dl-link);
+  --color-hero-primary: var(--dl-hero-primary);
+
+  --color-success: var(--dl-success);
+  --color-success-soft: var(--dl-success-soft);
+  --color-success-border: var(--dl-success-border);
+  --color-success-foreground: var(--dl-success-foreground);
+  --color-warning: var(--dl-warning);
+  --color-warning-soft: var(--dl-warning-soft);
+  --color-warning-border: var(--dl-warning-border);
+  --color-warning-foreground: var(--dl-warning-foreground);
+  --color-danger: var(--dl-danger);
+  --color-danger-soft: var(--dl-danger-soft);
+  --color-danger-border: var(--dl-danger-border);
+  --color-danger-foreground: var(--dl-danger-foreground);
+  --color-info: var(--dl-info);
+  --color-info-soft: var(--dl-info-soft);
+  --color-info-border: var(--dl-info-border);
+  --color-info-foreground: var(--dl-info-foreground);
+
+  --color-band-blue: var(--dl-band-blue);
+  --color-band-coral: var(--dl-band-coral);
+
+  --color-terminal-system: var(--dl-terminal-system);
+  --color-terminal-git: var(--dl-terminal-git);
+  --color-terminal-build: var(--dl-terminal-build);
+  --color-terminal-docker: var(--dl-terminal-docker);
+  --color-terminal-health: var(--dl-terminal-health);
+  --color-terminal-ai: var(--dl-terminal-ai);
+
+  --shadow-sm: var(--dl-shadow-sm);
+  --shadow-md: var(--dl-shadow-md);
+  --shadow-lg: var(--dl-shadow-lg);
+  --shadow-xl: var(--dl-shadow-xl);
+  --shadow-2xl: var(--dl-shadow-2xl);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   STATIC TOKENS — identical in both themes
+   ───────────────────────────────────────────────────────────── */
 @theme {
-  /* ——— canvas & surfaces (permanent dark mode) ——— */
-  --color-canvas: #0a0a09;
-  --color-surface: #141413;
-  --color-surface-alt: #1a1a18;
-  --color-surface-raised: #1f1f1d;
-  --color-surface-hover: #252522;
-  --color-surface-glass: rgba(20, 20, 19, 0.88);
-
-  /* ——— borders ——— */
-  --color-border-subtle: #2a2a27;
-  --color-border-strong: #3d3d38;
-  --color-border-accent: #cbd810;
-
-  /* ——— ink ——— */
-  --color-content-primary: #f5f5f4;
-  --color-content-secondary: #a8a29e;
-  --color-content-muted: #6b6560;
-  --color-content-inverse: #0a0a09;
-  --color-ink-deep: #f5f5f4;
-
-  /* ——— accent (lime-chartreuse, rationed) ——— */
-  --color-accent: #eef773;
-  --color-accent-hover: #e2eb5d;
-  --color-accent-deep: #cbd810;
-  --color-accent-soft: rgba(238, 247, 115, 0.12);
-  --color-accent-border: rgba(203, 216, 16, 0.32);
-  --color-link: #eef773;
-  --color-hero-primary: #cbd810;
-
-  /* ——— semantic status ——— */
-  --color-success: #34d399;
-  --color-success-soft: rgba(52, 211, 153, 0.1);
-  --color-success-border: rgba(52, 211, 153, 0.28);
-  --color-success-foreground: #6ee7b7;
-  --color-warning: #fbbf24;
-  --color-warning-soft: rgba(251, 191, 36, 0.1);
-  --color-warning-border: rgba(251, 191, 36, 0.28);
-  --color-warning-foreground: #fcd34d;
-  --color-danger: #f87171;
-  --color-danger-soft: rgba(248, 113, 113, 0.1);
-  --color-danger-border: rgba(248, 113, 113, 0.26);
-  --color-danger-foreground: #fca5a5;
-  --color-info: #60a5fa;
-  --color-info-soft: rgba(96, 165, 250, 0.1);
-  --color-info-border: rgba(96, 165, 250, 0.24);
-  --color-info-foreground: #93c5fd;
-
-  /* ——— section bands (dark variants) ——— */
-  --color-band-blue: rgba(96, 165, 250, 0.06);
-  --color-band-coral: rgba(251, 146, 60, 0.06);
-
-  /* ——— terminal / logs ——— */
-  --color-terminal-system: #a8a29e;
-  --color-terminal-git: #60a5fa;
-  --color-terminal-build: #34d399;
-  --color-terminal-docker: #38bdf8;
-  --color-terminal-health: #fbbf24;
-  --color-terminal-ai: #a78bfa;
-
-  /* ——— typography ——— */
+  /* Reference specifies Inter. Declared first, with geometric fallbacks so the
+     system renders correctly whether or not the webfont is bundled. */
   --font-sans:
-    'Roobert', 'Roobertvf', 'Avenir Next', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    'Inter', 'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Helvetica Neue', Arial, sans-serif;
   --font-display:
-    'Roobert', 'Roobertvf', 'Avenir Next', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    'Inter', 'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Helvetica Neue', Arial, sans-serif;
   --font-mono:
     'SFMono-Regular', ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', Menlo,
     Consolas, monospace;
 
-  /* ——— radii (flat, editorial) ——— */
+  /* Lime is bright in BOTH themes, so anything sitting on it keeps dark ink.
+     Deliberately theme-independent — unlike --color-ink-deep, which flips. */
+  --color-on-accent: #212221;
+
+  /* rounded geometry — nothing sharper than 6px on a major element */
+  --radius-xs: 6px;
   --radius-sm: 8px;
   --radius-md: 12px;
-  --radius-lg: 14px;
-  --radius-xl: 18px;
-  --radius-2xl: 24px;
-  --radius-panel: 18px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-3xl: 32px;
   --radius-control: 12px;
   --radius-control-lg: 16px;
   --radius-card: 18px;
-  --radius-card-lg: 24px;
+  --radius-card-lg: 28px;
+  --radius-panel: 20px;
   --radius-pill: 9999px;
 
-  /* ——— shadows (dark mode: subtle outer glow, not heavy) ——— */
-  --shadow-sm: rgba(0, 0, 0, 0.3) 0px 1px 2px;
-  --shadow-md: rgba(0, 0, 0, 0.4) 0px 2px 6px;
-  --shadow-lg: rgba(0, 0, 0, 0.5) 0px 4px 12px;
-  --shadow-xl: rgba(0, 0, 0, 0.6) 0px 8px 24px;
-  --shadow-2xl: rgba(0, 0, 0, 0.7) 0px 16px 48px;
-  --shadow-inset-card: rgba(255, 255, 255, 0.03) 0px 0px 0px 1px inset;
-  --shadow-inset-blue: rgba(96, 165, 250, 0.08) 0px 0px 0px 1px inset;
-  --shadow-inset-coral: rgba(251, 146, 60, 0.08) 0px 0px 0px 1px inset;
-
-  /* ——— motion ——— */
-  --ease-default: cubic-bezier(0.075, 0.82, 0.165, 1);
+  --ease-default: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-transform: cubic-bezier(0.165, 0.84, 0.44, 1);
+
   --animate-shimmer: shimmer 1.6s ease-in-out infinite;
   --animate-spin: spin 1s linear infinite;
   --animate-fadein: fadein 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) both;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-ring-pulse: ring-pulse 7s ease-in-out infinite;
 }
 
 :root {
-  --section-padding: 64px;
+  /* 4px spacing scale, for arbitrary values that need it explicitly */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-30: 120px;
+
+  --section-padding: 104px;
   --content-max-width: 1280px;
-  --chart-primary: #f5f5f4;
-  --chart-secondary: #a8a29e;
-  --chart-grid: #2a2a27;
-  --chart-tick: #6b6560;
-  --chart-tooltip: #1a1a18;
-  --chart-fill: rgba(203, 216, 16, 0.18);
+  --container-max: 1180px;
+
+  --duration-fast: 140ms;
+  --duration-normal: 220ms;
+
+  /* lime gradient is theme-independent: identical in both variants */
+  --gradient-lime: linear-gradient(135deg, #cbed60 0%, #ade722 42%, #74cb12 100%);
+  --gradient-green-wash: linear-gradient(
+    145deg,
+    rgba(203, 237, 96, 0.9),
+    rgba(116, 203, 18, 0.9)
+  );
 }
 
+/* ─────────────────────────────────────────────────────────────
+   KEYFRAMES
+   ───────────────────────────────────────────────────────────── */
 @keyframes shimmer {
   0%,
   100% {
@@ -165,17 +391,47 @@
   }
 }
 
+/* slow 3–6px drift for floating product surfaces */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* very slow, very low-contrast breathing on the decorative rings */
+@keyframes ring-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.03);
+    opacity: 1;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   BASE
+   ───────────────────────────────────────────────────────────── */
 @layer base {
   * {
-    border-color: var(--color-border-subtle);
+    border-color: var(--dl-border-subtle);
   }
 
   html {
     min-width: 320px;
-    background: var(--color-canvas);
-    color-scheme: dark;
+    background: var(--dl-canvas);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* only the two properties that actually change on theme switch */
+    transition:
+      background-color var(--duration-normal) var(--ease-default),
+      color var(--duration-normal) var(--ease-default);
   }
 
   body {
@@ -183,14 +439,17 @@
     min-height: 100vh;
     margin: 0;
     overflow-x: hidden;
-    background: var(--color-canvas);
-    color: var(--color-content-primary);
+    background: var(--dl-canvas);
+    color: var(--dl-content-primary);
     font-family: var(--font-sans);
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 400;
     font-style: normal;
     font-synthesis: none;
-    line-height: 1.5;
+    line-height: 1.55;
+    transition:
+      background-color var(--duration-normal) var(--ease-default),
+      color var(--duration-normal) var(--ease-default);
   }
 
   #root {
@@ -205,34 +464,34 @@
     margin: 0;
   }
 
+  /* compact, visually heavy headlines with tight negative tracking */
   h1 {
     font-family: var(--font-display);
-    font-weight: 600;
-    font-style: normal;
-    line-height: 1;
+    font-weight: 800;
+    line-height: 0.98;
     letter-spacing: -0.03em;
     text-wrap: balance;
   }
 
   h2 {
     font-family: var(--font-display);
-    font-weight: 500;
-    line-height: 1;
+    font-weight: 700;
+    line-height: 1.04;
     letter-spacing: -0.025em;
     text-wrap: balance;
   }
 
   h3 {
     font-family: var(--font-display);
-    font-weight: 500;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
     text-wrap: balance;
   }
 
   h4 {
     font-family: var(--font-sans);
-    font-weight: 500;
+    font-weight: 600;
     line-height: 1.3;
     letter-spacing: -0.01em;
   }
@@ -256,7 +515,7 @@
   select {
     font-style: normal;
     transition-property: background-color, border-color, color, box-shadow, opacity, transform;
-    transition-duration: 300ms;
+    transition-duration: var(--duration-normal);
     transition-timing-function: var(--ease-default);
   }
 
@@ -270,13 +529,13 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-accent-deep);
+    outline: 2px solid var(--dl-accent-deep);
     outline-offset: 2px;
   }
 
   ::selection {
-    background: var(--color-accent-soft);
-    color: var(--color-content-primary);
+    background: var(--dl-accent-soft);
+    color: var(--dl-content-primary);
   }
 
   ::-webkit-scrollbar {
@@ -289,20 +548,19 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: var(--color-border-subtle);
-    border: 2px solid var(--color-canvas);
+    background: var(--dl-border-strong);
+    border: 2px solid var(--dl-canvas);
     border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-border-strong);
+    background: var(--dl-content-muted);
   }
 
-  /* Native <option> elements inside <select> ignore most CSS in dark mode.
-     These two properties are the only ones browsers reliably apply. */
+  /* Native <option> ignores most CSS; these two are reliably applied. */
   option {
-    background-color: #1a1a18;
-    color: #f5f5f4;
+    background-color: var(--dl-option-bg);
+    color: var(--dl-option-fg);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -317,7 +575,10 @@
   }
 }
 
-/* Workspace view — content width cap and entrance animation */
+/* ─────────────────────────────────────────────────────────────
+   UTILITIES
+   ───────────────────────────────────────────────────────────── */
+
 .workspace-view {
   width: 100%;
   max-width: var(--content-max-width);
@@ -325,26 +586,57 @@
   animation: fadein 0.4s var(--ease-transform) both;
 }
 
-/* Card utility — flat with hairline inset */
 @utility panel {
-  border: 1px solid var(--color-border-subtle);
+  border: 1px solid var(--dl-border-subtle);
   border-radius: var(--radius-card);
-  background: var(--color-surface-alt);
-  box-shadow: var(--shadow-inset-card);
+  background: var(--dl-surface-alt);
+  box-shadow: var(--dl-shadow-inset-card);
 }
 
 @utility panel-blue {
-  border: none;
+  border: 1px solid var(--dl-info-border);
   border-radius: var(--radius-card-lg);
-  background: var(--color-band-blue);
-  box-shadow: var(--shadow-inset-blue);
+  background: var(--dl-band-blue);
 }
 
 @utility panel-coral {
-  border: none;
+  border: 1px solid var(--dl-accent-border);
   border-radius: var(--radius-card-lg);
-  background: var(--color-band-coral);
-  box-shadow: var(--shadow-inset-coral);
+  background: var(--dl-band-coral);
+}
+
+/* Dark product panel — intentionally dark in BOTH themes. The reference uses it
+   as a high-contrast object sitting on the canvas, not as a themed surface. */
+@utility panel-dark {
+  border-radius: var(--radius-card-lg);
+  background: var(--dl-gradient-panel);
+  color: #e6e8eb;
+  box-shadow: var(--dl-shadow-xl);
+}
+
+@utility gradient-lime {
+  background: var(--gradient-lime);
+  color: #212221;
+}
+
+@utility gradient-wash {
+  background: var(--gradient-green-wash);
+}
+
+/* thin concentric outline used behind hero/product clusters */
+@utility hero-ring {
+  position: absolute;
+  border: 1px solid var(--dl-ring);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* oversized low-contrast background glyph — texture, never information */
+@utility deco-glyph {
+  position: absolute;
+  color: var(--dl-glyph);
+  pointer-events: none;
+  user-select: none;
 }
 
 @utility text-mono {
@@ -354,22 +646,31 @@
 
 @utility display-tight {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-style: normal;
-  line-height: 1;
+  font-weight: 800;
+  line-height: 0.98;
   letter-spacing: -0.03em;
 }
 
 @utility headline-tight {
   font-family: var(--font-display);
-  font-weight: 500;
-  line-height: 1;
+  font-weight: 700;
+  line-height: 1.04;
   letter-spacing: -0.025em;
 }
 
 @utility label-tight {
   font-family: var(--font-display);
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+
+/* small uppercase section label, paired with the lime pill in the reference */
+@utility section-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
 }

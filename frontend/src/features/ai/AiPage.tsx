@@ -252,7 +252,7 @@ function ChatBubble({ turn }: { turn: Turn }) {
           className={cn(
             'inline-block rounded-xl px-3.5 py-2.5 text-left text-[13px] leading-relaxed',
             isUser
-              ? 'bg-accent text-white'
+              ? 'bg-accent text-on-accent'
               : 'border border-border-subtle bg-surface-raised text-content-primary',
           )}
         >

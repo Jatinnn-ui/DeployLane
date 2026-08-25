@@ -32,6 +32,8 @@ import {
   DropdownTrigger,
 } from '@/components/ui/overlay';
 import { EmptyState } from '@/components/ui/feedback';
+import { BrandLogo } from '@/components/BrandLogo';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { PlatformStatusBanner } from '@/components/layout/PlatformStatusBanner';
 import { useAuthStore } from '@/stores/auth-store';
 import { cn, relativeTime } from '@/lib/utils';
@@ -98,11 +100,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <>
       <div className="flex h-[72px] items-center px-6">
-        <img
-          src="/brand/deploylane-logo.png"
-          alt="DeployLane"
-          className="h-9 w-auto max-w-[165px] object-contain"
-        />
+        <BrandLogo className="h-9 max-w-[165px]" />
       </div>
 
       <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-4">
@@ -192,6 +190,8 @@ function TopBar({ onToggleNav, navOpen }: { onToggleNav: () => void; navOpen: bo
             {health.status === 'UP' ? 'Healthy' : 'Degraded'}
           </Badge>
         ) : null}
+
+        <ThemeToggle />
 
         <NotificationMenu />
 

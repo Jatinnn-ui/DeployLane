@@ -140,7 +140,7 @@ export function LogTerminal({
           <span className="text-[11px] tabular-nums text-content-muted">
             {entries.length} lines
             {errorCount > 0 ? (
-              <span className="ml-1.5 text-[#f77272]">· {errorCount} errors</span>
+              <span className="ml-1.5 text-danger-foreground">· {errorCount} errors</span>
             ) : null}
           </span>
         </div>

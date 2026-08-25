@@ -19,6 +19,7 @@ import { Card, CardBody, CardHeader } from '@/components/ui/card';
 import { EmptyState, InlineNotice, Skeleton } from '@/components/ui/feedback';
 import { Select } from '@/components/ui/form';
 import { HealthIndicator } from '@/components/DeploymentStatusBadge';
+import { useChartTheme } from '@/lib/chart-theme';
 import { clockTime, formatBytes, formatPercent, formatUptime } from '@/lib/utils';
 import type { Project } from '@/types/api';
 
@@ -39,6 +40,7 @@ const WINDOWS = [
 export function MonitoringPage() {
   const { project } = useOutletContext<{ project: Project }>();
   const [windowMinutes, setWindowMinutes] = useState(60);
+  const chart = useChartTheme();
   const { data: health, isLoading: healthLoading, refetch: refetchHealth } = useProjectHealth(project.id);
   const {
     data: metrics,
@@ -155,50 +157,50 @@ export function MonitoringPage() {
                 <AreaChart data={chartData} margin={{ top: 8, right: 8, bottom: 0, left: -12 }}>
                   <defs>
                     <linearGradient id="cpuGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#f5f5f4" stopOpacity={0.15} />
-                      <stop offset="100%" stopColor="#f5f5f4" stopOpacity={0.01} />
+                      <stop offset="0%" stopColor={chart.primary} stopOpacity={0.16} />
+                      <stop offset="100%" stopColor={chart.primary} stopOpacity={0.01} />
                     </linearGradient>
                     <linearGradient id="memoryGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#cbd810" stopOpacity={0.2} />
-                      <stop offset="100%" stopColor="#cbd810" stopOpacity={0.02} />
+                      <stop offset="0%" stopColor={chart.accent} stopOpacity={0.28} />
+                      <stop offset="100%" stopColor={chart.accent} stopOpacity={0.02} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid stroke="#2a2a27" vertical={false} />
+                  <CartesianGrid stroke={chart.grid} vertical={false} />
                   <XAxis
                     dataKey="time"
-                    tick={{ fill: '#6b6560', fontSize: 11 }}
-                    stroke="#2a2a27"
+                    tick={{ fill: chart.tick, fontSize: 11 }}
+                    stroke={chart.grid}
                     minTickGap={40}
                   />
                   <YAxis
                     yAxisId="cpu"
-                    tick={{ fill: '#6b6560', fontSize: 11 }}
-                    stroke="#2a2a27"
+                    tick={{ fill: chart.tick, fontSize: 11 }}
+                    stroke={chart.grid}
                     unit="%"
                   />
                   <YAxis
                     yAxisId="memory"
                     orientation="right"
-                    tick={{ fill: '#6b6560', fontSize: 11 }}
-                    stroke="#2a2a27"
+                    tick={{ fill: chart.tick, fontSize: 11 }}
+                    stroke={chart.grid}
                     unit="MB"
                   />
                   <ChartTooltip
                     contentStyle={{
-                      background: '#1a1a18',
-                      border: '1px solid #2a2a27',
+                      background: chart.tooltipBg,
+                      border: `1px solid ${chart.tooltipBorder}`,
                       borderRadius: 12,
                       fontSize: 12,
                     }}
-                    labelStyle={{ color: '#a8a29e' }}
+                    labelStyle={{ color: chart.label }}
                   />
-                  <Legend wrapperStyle={{ fontSize: 11, color: '#a8a29e' }} />
+                  <Legend wrapperStyle={{ fontSize: 11, color: chart.label }} />
                   <Area
                     yAxisId="cpu"
                     type="monotone"
                     dataKey="cpu"
                     name="CPU %"
-                    stroke="#f5f5f4"
+                    stroke={chart.primary}
                     strokeWidth={1.5}
                     fill="url(#cpuGradient)"
                   />
@@ -207,8 +209,8 @@ export function MonitoringPage() {
                     type="monotone"
                     dataKey="memoryMb"
                     name="Memory MB"
-                    stroke="#cbd810"
-                    strokeWidth={1.5}
+                    stroke={chart.accent}
+                    strokeWidth={1.75}
                     fill="url(#memoryGradient)"
                   />
                 </AreaChart>

@@ -40,7 +40,12 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: ['./src/test/setup.ts'],
+    // Absolute so it resolves regardless of how the project directory is reached.
+    setupFiles: [path.resolve(__dirname, './src/test/setup.ts')],
     css: false,
+    // Parallel workers fail to hand-shake on constrained machines ("Timeout waiting for
+    // worker to respond"), which reads as a suite failure when nothing is actually broken.
+    // Two small suites gain nothing from parallelism, so run them sequentially.
+    fileParallelism: false,
   },
 });

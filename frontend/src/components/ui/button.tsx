@@ -3,29 +3,37 @@ import { Loader2 } from 'lucide-react';
 import { forwardRef, type ButtonHTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
+/**
+ * Pill silhouette in every variant, per the design system.
+ *
+ * `primary` is the only lime fill on a screen: lime directs attention rather than
+ * decorating, so the secondary action is a thin outline instead of a second solid fill.
+ * Text on lime is always `on-accent` (dark ink) because lime stays bright in both themes.
+ */
 const buttonVariants = cva(
-  'inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-[12px] text-[14px] font-medium leading-none transition-[background-color,border-color,color,box-shadow,opacity,transform] duration-300 disabled:pointer-events-none disabled:opacity-45 active:scale-[0.97]',
+  'inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-full text-[14px] font-semibold leading-none transition-[background-color,border-color,color,box-shadow,opacity,transform] duration-200 disabled:pointer-events-none disabled:opacity-45 active:translate-y-px',
   {
     variants: {
       variant: {
-        primary:
-          'bg-accent-deep text-content-primary hover:bg-[#b5c30e]',
+        primary: 'bg-accent text-on-accent hover:bg-accent-hover',
         secondary:
-          'bg-ink-deep text-content-inverse border border-transparent hover:bg-[#282c35]',
+          'border border-border-strong bg-transparent text-content-primary hover:bg-surface-hover',
         ghost:
-          'text-content-secondary border border-transparent hover:bg-surface-hover hover:text-content-primary',
+          'border border-transparent text-content-secondary hover:bg-surface-hover hover:text-content-primary',
         danger:
-          'bg-danger-soft text-danger-foreground border border-danger-border hover:bg-danger hover:text-content-inverse',
+          'border border-danger-border bg-danger-soft text-danger-foreground hover:bg-danger hover:text-content-inverse',
         outline:
           'border border-border-subtle bg-transparent text-content-primary hover:border-border-strong hover:bg-surface',
-        link: 'h-auto p-0 text-content-primary underline-offset-4 hover:underline',
-        lime: 'bg-accent text-ink-deep rounded-[12px] hover:bg-accent-hover',
+        link: 'h-auto rounded-none p-0 text-link underline-offset-4 hover:underline',
+        lime: 'bg-accent text-on-accent hover:bg-accent-hover',
+        /** Solid high-contrast fill: near-white on dark, near-black on light. */
+        ink: 'bg-ink-deep text-content-inverse hover:opacity-90',
       },
       size: {
-        sm: 'h-[34px] px-3 text-[13px]',
-        md: 'h-[40px] px-4',
-        lg: 'h-[47px] px-[18px] text-[15px]',
-        icon: 'h-[34px] w-[34px] p-0',
+        sm: 'h-9 px-4 text-[13px]',
+        md: 'h-11 px-5',
+        lg: 'h-12 px-6 text-[15px]',
+        icon: 'h-9 w-9 p-0',
       },
     },
     defaultVariants: { variant: 'secondary', size: 'md' },

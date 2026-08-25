@@ -42,7 +42,7 @@ export function DeploymentTimeline({ steps }: { steps: DeploymentStep[] }) {
                   className={cn(
                     'text-[13px]',
                     step.status === 'PENDING' ? 'text-content-muted' : 'text-content-primary',
-                    step.status === 'FAILED' && 'font-medium text-[#f9a8a8]',
+                    step.status === 'FAILED' && 'font-medium text-danger-foreground',
                   )}
                 >
                   {step.label}
@@ -59,7 +59,7 @@ export function DeploymentTimeline({ steps }: { steps: DeploymentStep[] }) {
                   className={cn(
                     'mt-0.5 break-words text-[12px]',
                     step.status === 'FAILED'
-                      ? 'font-mono text-[#f77272]'
+                      ? 'font-mono text-danger-foreground'
                       : step.status === 'SKIPPED'
                         ? 'text-content-muted'
                         : 'text-content-secondary',

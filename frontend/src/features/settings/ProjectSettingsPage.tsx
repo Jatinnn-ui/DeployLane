@@ -213,7 +213,7 @@ export function ProjectSettingsPage() {
       ) : null}
 
       {canDelete ? (
-        <Card className="border-[#ef444440]">
+        <Card className="border-danger-border">
           <CardHeader
             title="Delete this project"
             description="Stops and removes every container, image and build directory it owns, then deletes its deployment history. This cannot be undone."
