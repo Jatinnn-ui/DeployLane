@@ -11,6 +11,7 @@ import { AllDeploymentsPage } from '@/features/deployments/AllDeploymentsPage';
 import { DeploymentDetailPage } from '@/features/deployments/DeploymentDetailPage';
 import { DeploymentsPage } from '@/features/deployments/DeploymentsPage';
 import { EnvironmentPage } from '@/features/environment/EnvironmentPage';
+import { LandingPage } from '@/features/landing/LandingPage';
 import { ProjectLogsPage } from '@/features/logs/ProjectLogsPage';
 import { MonitoringPage } from '@/features/monitoring/MonitoringPage';
 import { ImportProjectPage } from '@/features/projects/ImportProjectPage';
@@ -49,6 +50,8 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
 export function AppRoutes() {
   return (
     <Routes>
+      {/* Public marketing page. The product itself stays behind RequireAuth below. */}
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
 
       <Route
@@ -58,7 +61,6 @@ export function AppRoutes() {
           </RequireAuth>
         }
       >
-        <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/projects" element={<ProjectsListPage />} />
         <Route path="/projects/import" element={<ImportProjectPage />} />
@@ -78,9 +80,10 @@ export function AppRoutes() {
           <Route path="ai" element={<AiPage />} />
           <Route path="settings" element={<ProjectSettingsPage />} />
         </Route>
-
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Route>
+
+      {/* Unknown paths land on marketing rather than a login wall. */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

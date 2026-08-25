@@ -24,50 +24,51 @@
   color-scheme: dark;
 
   /* canvas & surfaces */
-  --dl-canvas: #0f1113;
-  --dl-surface: #15181a;
-  --dl-surface-alt: #1a1e20;
-  --dl-surface-raised: #1f2426;
-  --dl-surface-hover: #232829;
-  --dl-surface-glass: rgba(21, 24, 26, 0.88);
+  --dl-canvas: #0d0f10;
+  --dl-canvas-secondary: #101314;
+  --dl-surface: #15191a;
+  --dl-surface-alt: #191d1e;
+  --dl-surface-raised: #1e2324;
+  --dl-surface-hover: #1e2324;
+  --dl-surface-glass: rgba(21, 25, 26, 0.88);
 
   /* borders */
-  --dl-border-subtle: rgba(230, 232, 235, 0.1);
-  --dl-border-strong: rgba(230, 232, 235, 0.24);
-  --dl-border-accent: #ade722;
+  --dl-border-subtle: rgba(255, 255, 255, 0.1);
+  --dl-border-strong: rgba(255, 255, 255, 0.16);
+  --dl-border-accent: rgba(168, 240, 0, 0.35);
 
   /* ink */
-  --dl-content-primary: #e6e8eb;
+  --dl-content-primary: #f1f3f2;
   --dl-content-secondary: #9ca3a1;
-  --dl-content-muted: #6b7270;
-  --dl-content-inverse: #0f1113;
-  --dl-ink-deep: #e6e8eb;
+  --dl-content-muted: #666d6b;
+  --dl-content-inverse: #0d0f10;
+  --dl-ink-deep: #f1f3f2;
 
-  /* lime accent family */
-  --dl-accent: #ade722;
-  --dl-accent-hover: #bcee44;
-  --dl-accent-deep: #74cb12;
-  --dl-accent-soft: rgba(173, 231, 34, 0.12);
-  --dl-accent-border: rgba(173, 231, 34, 0.3);
-  --dl-lime-soft: #cbed60;
-  --dl-green-deep: #1d5813;
+  /* acid lime accent family */
+  --dl-accent: #a8f000;
+  --dl-accent-hover: #b7ff19;
+  --dl-accent-deep: #6c9700;
+  --dl-accent-soft: rgba(168, 240, 0, 0.12);
+  --dl-accent-border: rgba(168, 240, 0, 0.35);
+  --dl-lime-soft: #c9ff5c;
+  --dl-green-deep: #3d5600;
   --dl-teal: #2dd4bf;
-  --dl-link: #ade722;
-  --dl-hero-primary: #ade722;
+  --dl-link: #a8f000;
+  --dl-hero-primary: #a8f000;
 
   /* status */
-  --dl-success: #4ade80;
-  --dl-success-soft: rgba(74, 222, 128, 0.1);
-  --dl-success-border: rgba(74, 222, 128, 0.28);
-  --dl-success-foreground: #86efac;
+  --dl-success: #43dd82;
+  --dl-success-soft: rgba(67, 221, 130, 0.1);
+  --dl-success-border: rgba(67, 221, 130, 0.28);
+  --dl-success-foreground: #7ceaa8;
   --dl-warning: #fbbf24;
   --dl-warning-soft: rgba(251, 191, 36, 0.1);
   --dl-warning-border: rgba(251, 191, 36, 0.28);
   --dl-warning-foreground: #fcd34d;
-  --dl-danger: #f87171;
-  --dl-danger-soft: rgba(248, 113, 113, 0.1);
-  --dl-danger-border: rgba(248, 113, 113, 0.26);
-  --dl-danger-foreground: #fca5a5;
+  --dl-danger: #f16d70;
+  --dl-danger-soft: rgba(241, 109, 112, 0.1);
+  --dl-danger-border: rgba(241, 109, 112, 0.26);
+  --dl-danger-foreground: #f8a3a5;
   --dl-info: #2dd4bf;
   --dl-info-soft: rgba(45, 212, 191, 0.1);
   --dl-info-border: rgba(45, 212, 191, 0.26);
@@ -75,28 +76,28 @@
 
   /* accent bands (used by panel-blue / panel-coral utilities) */
   --dl-band-blue: rgba(45, 212, 191, 0.06);
-  --dl-band-coral: rgba(173, 231, 34, 0.07);
+  --dl-band-coral: rgba(168, 240, 0, 0.07);
 
   /* terminal / log sources */
   --dl-terminal-system: #9ca3a1;
   --dl-terminal-git: #2dd4bf;
-  --dl-terminal-build: #4ade80;
+  --dl-terminal-build: #43dd82;
   --dl-terminal-docker: #38bdf8;
   --dl-terminal-health: #fbbf24;
   --dl-terminal-ai: #a78bfa;
 
   /* charts — read by Recharts through the useChartTheme hook */
-  --dl-chart-primary: #e6e8eb;
-  --dl-chart-accent: #ade722;
-  --dl-chart-grid: rgba(230, 232, 235, 0.1);
-  --dl-chart-tick: #6b7270;
-  --dl-chart-tooltip-bg: #1a1e20;
-  --dl-chart-tooltip-border: rgba(230, 232, 235, 0.14);
+  --dl-chart-primary: #f1f3f2;
+  --dl-chart-accent: #a8f000;
+  --dl-chart-grid: rgba(255, 255, 255, 0.1);
+  --dl-chart-tick: #666d6b;
+  --dl-chart-tooltip-bg: #191d1e;
+  --dl-chart-tooltip-border: rgba(255, 255, 255, 0.16);
   --dl-chart-label: #9ca3a1;
 
   /* native <option> — one of the few properties browsers honour */
-  --dl-option-bg: #1a1e20;
-  --dl-option-fg: #e6e8eb;
+  --dl-option-bg: #191d1e;
+  --dl-option-fg: #f1f3f2;
 
   /* elevation — deeper on dark so panels separate from the canvas */
   --dl-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
@@ -107,9 +108,9 @@
   --dl-shadow-inset-card: rgba(230, 232, 235, 0.06) 0 0 0 1px inset;
 
   /* decorative */
-  --dl-ring: rgba(173, 231, 34, 0.22);
-  --dl-glyph: rgba(230, 232, 235, 0.04);
-  --dl-gradient-panel: linear-gradient(145deg, #2a2b2a 0%, #171817 100%);
+  --dl-ring: rgba(168, 240, 0, 0.28);
+  --dl-glyph: rgba(241, 243, 242, 0.04);
+  --dl-gradient-panel: linear-gradient(145deg, #1e2324 0%, #101314 100%);
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -119,6 +120,7 @@
   color-scheme: light;
 
   --dl-canvas: #e8e9e5;
+  --dl-canvas-secondary: #eeefeb;
   --dl-surface: #f2f3ef;
   --dl-surface-alt: #ffffff;
   --dl-surface-raised: #ffffff;
@@ -127,7 +129,7 @@
 
   --dl-border-subtle: rgba(33, 34, 33, 0.14);
   --dl-border-strong: rgba(33, 34, 33, 0.38);
-  --dl-border-accent: #74cb12;
+  --dl-border-accent: rgba(108, 151, 0, 0.45);
 
   --dl-content-primary: #212221;
   --dl-content-secondary: #5d5f5c;
@@ -135,16 +137,16 @@
   --dl-content-inverse: #f2f3ef;
   --dl-ink-deep: #212221;
 
-  --dl-accent: #ade722;
-  --dl-accent-hover: #9bd91c;
-  --dl-accent-deep: #74cb12;
-  --dl-accent-soft: rgba(173, 231, 34, 0.2);
-  --dl-accent-border: rgba(116, 203, 18, 0.45);
-  --dl-lime-soft: #cbed60;
-  --dl-green-deep: #1d5813;
+  --dl-accent: #a8f000;
+  --dl-accent-hover: #9adc00;
+  --dl-accent-deep: #6c9700;
+  --dl-accent-soft: rgba(168, 240, 0, 0.2);
+  --dl-accent-border: rgba(108, 151, 0, 0.45);
+  --dl-lime-soft: #c9ff5c;
+  --dl-green-deep: #3d5600;
   --dl-teal: #166a62;
-  --dl-link: #1d5813;
-  --dl-hero-primary: #ade722;
+  --dl-link: #4a6800;
+  --dl-hero-primary: #a8f000;
 
   /* darker status hues so they stay legible on a pale canvas */
   --dl-success: #15803d;
@@ -165,7 +167,7 @@
   --dl-info-foreground: #12554f;
 
   --dl-band-blue: rgba(22, 106, 98, 0.07);
-  --dl-band-coral: rgba(173, 231, 34, 0.18);
+  --dl-band-coral: rgba(168, 240, 0, 0.18);
 
   --dl-terminal-system: #5d5f5c;
   --dl-terminal-git: #166a62;
@@ -175,7 +177,7 @@
   --dl-terminal-ai: #6d28d9;
 
   --dl-chart-primary: #212221;
-  --dl-chart-accent: #74cb12;
+  --dl-chart-accent: #6c9700;
   --dl-chart-grid: rgba(33, 34, 33, 0.12);
   --dl-chart-tick: #5d5f5c;
   --dl-chart-tooltip-bg: #ffffff;
@@ -193,9 +195,9 @@
   --dl-shadow-2xl: 0 32px 80px rgba(20, 24, 18, 0.26);
   --dl-shadow-inset-card: rgba(33, 34, 33, 0.05) 0 0 0 1px inset;
 
-  --dl-ring: rgba(116, 203, 18, 0.35);
+  --dl-ring: rgba(108, 151, 0, 0.35);
   --dl-glyph: rgba(33, 34, 33, 0.05);
-  --dl-gradient-panel: linear-gradient(145deg, #2a2b2a 0%, #171817 100%);
+  --dl-gradient-panel: linear-gradient(145deg, #1e2324 0%, #101314 100%);
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -205,6 +207,7 @@
    ───────────────────────────────────────────────────────────── */
 @theme inline {
   --color-canvas: var(--dl-canvas);
+  --color-canvas-secondary: var(--dl-canvas-secondary);
   --color-surface: var(--dl-surface);
   --color-surface-alt: var(--dl-surface-alt);
   --color-surface-raised: var(--dl-surface-raised);
@@ -284,7 +287,7 @@
 
   /* Lime is bright in BOTH themes, so anything sitting on it keeps dark ink.
      Deliberately theme-independent — unlike --color-ink-deep, which flips. */
-  --color-on-accent: #212221;
+  --color-on-accent: #0d0f10;
 
   /* rounded geometry — nothing sharper than 6px on a major element */
   --radius-xs: 6px;
@@ -335,11 +338,19 @@
   --duration-normal: 220ms;
 
   /* lime gradient is theme-independent: identical in both variants */
-  --gradient-lime: linear-gradient(135deg, #cbed60 0%, #ade722 42%, #74cb12 100%);
+  --gradient-lime: linear-gradient(135deg, #c9ff5c 0%, #a8f000 42%, #6c9700 100%);
   --gradient-green-wash: linear-gradient(
     145deg,
-    rgba(203, 237, 96, 0.9),
-    rgba(116, 203, 18, 0.9)
+    rgba(201, 255, 92, 0.9),
+    rgba(108, 151, 0, 0.9)
+  );
+
+  /* hero illumination behind the 3D scene */
+  --gradient-hero-glow: radial-gradient(
+    circle,
+    rgba(168, 240, 0, 0.08) 0%,
+    rgba(168, 240, 0, 0.025) 40%,
+    transparent 70%
   );
 }
 
@@ -673,4 +684,115 @@
   line-height: 1.25;
   letter-spacing: 0.01em;
   text-transform: uppercase;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LANDING PAGE
+   The marketing page is dark-only by design, so it pins the dark palette
+   regardless of the dashboard's theme preference.
+   ───────────────────────────────────────────────────────────── */
+.landing-root {
+  color-scheme: dark;
+
+  --dl-canvas: #0d0f10;
+  --dl-canvas-secondary: #101314;
+  --dl-surface: #15191a;
+  --dl-surface-alt: #191d1e;
+  --dl-surface-raised: #1e2324;
+  --dl-surface-hover: #1e2324;
+  --dl-surface-glass: rgba(21, 25, 26, 0.88);
+
+  --dl-border-subtle: rgba(255, 255, 255, 0.1);
+  --dl-border-strong: rgba(255, 255, 255, 0.16);
+  --dl-border-accent: rgba(168, 240, 0, 0.35);
+
+  --dl-content-primary: #f1f3f2;
+  --dl-content-secondary: #9ca3a1;
+  --dl-content-muted: #666d6b;
+  --dl-content-inverse: #0d0f10;
+  --dl-ink-deep: #f1f3f2;
+
+  --dl-accent: #a8f000;
+  --dl-accent-hover: #b7ff19;
+  --dl-accent-deep: #6c9700;
+  --dl-accent-soft: rgba(168, 240, 0, 0.12);
+  --dl-accent-border: rgba(168, 240, 0, 0.35);
+  --dl-link: #a8f000;
+
+  --dl-success: #43dd82;
+  --dl-success-soft: rgba(67, 221, 130, 0.1);
+  --dl-success-border: rgba(67, 221, 130, 0.28);
+  --dl-success-foreground: #7ceaa8;
+  --dl-danger: #f16d70;
+  --dl-danger-soft: rgba(241, 109, 112, 0.1);
+  --dl-danger-border: rgba(241, 109, 112, 0.26);
+  --dl-danger-foreground: #f8a3a5;
+
+  --dl-ring: rgba(168, 240, 0, 0.28);
+  --dl-option-bg: #191d1e;
+  --dl-option-fg: #f1f3f2;
+
+  background: var(--dl-canvas);
+  color: var(--dl-content-primary);
+}
+
+/* 1360px content rail with the specified responsive gutters */
+@utility landing-container {
+  width: 100%;
+  max-width: 1360px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+
+@media (min-width: 768px) {
+  .landing-container {
+    padding-inline: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .landing-container {
+    padding-inline: 44px;
+  }
+}
+
+/* faint technical perspective grid behind the hero */
+@utility hero-grid {
+  background-image:
+    linear-gradient(to right, rgba(241, 243, 242, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(241, 243, 242, 0.055) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+@utility hero-glow {
+  background: var(--gradient-hero-glow);
+}
+
+/* dotted lime connector between workflow steps */
+@utility step-connector {
+  background-image: linear-gradient(
+    to right,
+    var(--dl-accent-border) 0 6px,
+    transparent 6px 12px
+  );
+  background-size: 12px 1px;
+  background-repeat: repeat-x;
+}
+
+@keyframes dash-flow {
+  to {
+    stroke-dashoffset: -1000;
+  }
+}
+
+@keyframes status-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(0.88);
+  }
 }
