@@ -26,8 +26,8 @@ WORKDIR /app
 RUN apk add --no-cache wget tzdata \
     && addgroup -S deployforge \
     && adduser -S deployforge -G deployforge \
-    && mkdir -p /var/lib/deployforge/builds \
-    && chown -R deployforge:deployforge /var/lib/deployforge /app
+    && mkdir -p /var/lib/deployforge/builds /var/lib/deploylane/builds \
+    && chown -R deployforge:deployforge /var/lib/deployforge /var/lib/deploylane /app
 
 COPY --from=builder /build/target/*.jar /app/deployforge.jar
 

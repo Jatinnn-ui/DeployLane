@@ -58,10 +58,10 @@ public class StartupConfigurationValidator {
         try {
             Files.createDirectories(buildRoot);
             if (!Files.isWritable(buildRoot)) {
-                failures.add("Deployment root " + buildRoot + " is not writable");
+                warnings.add("Deployment root " + buildRoot + " is not writable — deployments will fail until this is fixed");
             }
         } catch (IOException e) {
-            failures.add("Deployment root " + buildRoot + " could not be created: " + e.getMessage());
+            warnings.add("Deployment root " + buildRoot + " could not be created: " + e.getMessage() + " — deployments will fail until this is fixed");
         }
 
         String aiProvider = properties.ai().provider().toLowerCase(Locale.ROOT);
