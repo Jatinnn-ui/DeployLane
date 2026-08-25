@@ -1,6 +1,7 @@
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, GitBranch, Globe, ShieldCheck, Sparkles, Terminal, Zap } from 'lucide-react';
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { GithubIcon } from '@/components/icons/GithubIcon';
 import { Button } from '@/components/ui/button';
 import { useMediaQuery, usePrefersReducedMotion } from '@/lib/use-media-query';
 import { WebglBoundary } from '../hero/WebglBoundary';
@@ -15,31 +16,56 @@ const HeroScene = lazy(() =>
   import('../hero/HeroScene').then((module) => ({ default: module.HeroScene })),
 );
 
+const CAPABILITIES = [
+  { label: 'Git Integration', icon: GitBranch },
+  { label: 'Automated Builds', icon: Terminal },
+  { label: 'Instant Deploys', icon: Zap },
+  { label: 'Global CDN', icon: Globe },
+  { label: 'Secure by Default', icon: ShieldCheck },
+];
+
 /**
  * Static stand-in shown before the renderer is ready, and permanently if WebGL is
- * unavailable. Shares the ring language of the real scene so the handover is quiet.
+ * unavailable. Shares the cube-on-rings language of the real scene so the handover is quiet.
  */
-function HeroPoster() {
+export function HeroPoster() {
   return (
     <div className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
       <svg viewBox="0 0 400 400" className="h-full max-h-[520px] w-full max-w-[520px]">
-        {[196, 158, 120].map((r, i) => (
-          <circle
+        {[188, 152, 118, 88].map((r, i) => (
+          <ellipse
             key={r}
             cx="200"
-            cy="248"
-            r={r}
+            cy="262"
+            rx={r}
+            ry={r * 0.32}
             fill="none"
             stroke="#a8f000"
-            strokeOpacity={0.06 + i * 0.06}
+            strokeOpacity={0.07 + i * 0.07}
             strokeWidth="1"
           />
         ))}
-        <ellipse cx="200" cy="248" rx="96" ry="30" fill="#101314" />
-        <rect x="146" y="150" width="108" height="82" rx="12" fill="#15191a" />
-        <rect x="146" y="150" width="108" height="82" rx="12" fill="none" stroke="#ffffff" strokeOpacity="0.1" />
-        <rect x="166" y="206" width="68" height="2" rx="1" fill="#a8f000" fillOpacity="0.7" />
-        <circle cx="238" cy="220" r="3" fill="#43dd82" />
+        <ellipse cx="200" cy="262" rx="74" ry="24" fill="#0e1112" />
+        <rect x="152" y="150" width="96" height="96" rx="14" fill="#14181a" />
+        <rect
+          x="152"
+          y="150"
+          width="96"
+          height="96"
+          rx="14"
+          fill="none"
+          stroke="#ffffff"
+          strokeOpacity="0.1"
+        />
+        <path
+          d="M186 176 L212 198 L186 220"
+          fill="none"
+          stroke="#b7ff19"
+          strokeWidth="9"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <rect x="158" y="238" width="84" height="2" rx="1" fill="#a8f000" fillOpacity="0.8" />
       </svg>
     </div>
   );
@@ -58,46 +84,40 @@ export function Hero() {
 
   return (
     <section className="relative overflow-hidden" aria-labelledby="hero-heading">
-      {/* technical grid, faded out toward the edges so it never looks like a table */}
       <div
         aria-hidden="true"
-        className="hero-grid pointer-events-none absolute inset-0 opacity-60 [mask-image:radial-gradient(ellipse_70%_60%_at_60%_35%,#000_0%,transparent_100%)]"
-      />
-      {/* single warm lime light source behind the server */}
-      <div
-        aria-hidden="true"
-        className="hero-glow pointer-events-none absolute right-[-10%] top-[-14%] h-[820px] w-[820px] rounded-full lg:right-[2%]"
+        className="hero-glow pointer-events-none absolute right-[-14%] top-[-20%] h-[900px] w-[900px] rounded-full lg:right-0"
       />
 
-      <div className="landing-container relative grid items-center gap-10 pb-16 pt-14 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-6 lg:pb-28 lg:pt-20">
-        <div className="max-w-[560px]">
+      <div className="landing-container relative grid items-center gap-10 pb-14 pt-12 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:gap-4 lg:pb-20 lg:pt-16">
+        <div className="max-w-[520px]">
           <p className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-surface px-3 py-1.5">
-            <span
-              className="h-1.5 w-1.5 rounded-full bg-accent"
-              style={reducedMotion ? undefined : { animation: 'status-pulse 2.4s ease-in-out infinite' }}
-              aria-hidden="true"
-            />
-            <span className="text-[11.5px] font-semibold uppercase tracking-[0.08em] text-content-secondary">
-              Push to deploy · Zero config
+            <Sparkles className="h-3 w-3 text-accent" aria-hidden="true" />
+            <span className="text-[12px] font-medium text-content-secondary">
+              Deployments are now 2x faster
             </span>
           </p>
 
           <h1
             id="hero-heading"
-            className="mt-6 text-[34px] font-bold leading-[1.05] tracking-[-0.03em] text-content-primary sm:text-[44px] lg:text-[56px] xl:text-[64px]"
+            className="mt-7 text-[38px] font-bold leading-[1.06] tracking-[-0.035em] text-content-primary sm:text-[50px] lg:text-[56px] xl:text-[62px]"
           >
-            Ship every push to a <span className="text-accent">live URL</span>.
+            Deploy your code.
+            <br />
+            Anywhere.
+            <br />
+            <span className="text-accent">In seconds.</span>
           </h1>
 
-          <p className="mt-5 text-[16px] leading-[1.6] text-content-secondary sm:text-[17.5px]">
-            DeployLane builds your GitHub repository into a container, rolls it out with zero
-            downtime, and streams logs, metrics and AI failure analysis while it happens.
+          <p className="mt-6 max-w-[430px] text-[15.5px] leading-[1.62] text-content-secondary">
+            DeployLane helps developers build, deploy, and manage applications with zero friction.
+            From git push to global scale.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link to="/login">
-              <Button variant="primary" size="lg" className="group">
-                Deploy your first project
+              <Button variant="primary" size="md" className="group">
+                Start Deploying
                 <ArrowRight
                   className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
                   aria-hidden="true"
@@ -105,24 +125,32 @@ export function Hero() {
               </Button>
             </Link>
 
-            <a href="#how-it-works">
-              <Button variant="secondary" size="lg">
-                See how it works
+            <Link to="/login">
+              <Button variant="secondary" size="md">
+                <GithubIcon className="h-4 w-4" />
+                Connect GitHub
               </Button>
-            </a>
+            </Link>
           </div>
 
-          <p className="mt-6 font-mono text-[11.5px] text-content-muted">
-            GitHub OAuth · No credit card · Free tier included
-          </p>
+          <ul className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-3">
+            {CAPABILITIES.map((capability) => (
+              <li key={capability.label} className="flex items-center gap-1.5">
+                <capability.icon className="h-3.5 w-3.5 text-accent" aria-hidden="true" />
+                <span className="text-[11.5px] font-medium text-content-secondary">
+                  {capability.label}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        {/* Visual cell. Bleeds slightly past the content rail on desktop so the server has
-            room to sit large without pushing the copy narrower. */}
-        <div className="relative h-[430px] sm:h-[500px] lg:h-[600px] lg:-mr-[5%]">
+        {/* Visual cell. Bleeds past the content rail on desktop so the cube can sit large
+            without squeezing the copy column. */}
+        <div className="relative h-[420px] sm:h-[500px] lg:h-[560px] lg:-mr-[7%] xl:h-[600px]">
           {/* Below lg the stage cards sit in a row underneath, so the scene stops short of
               the bottom rather than rendering behind them. */}
-          <div className="absolute inset-x-0 top-0 bottom-[92px] lg:inset-0">
+          <div className="absolute inset-x-0 bottom-[84px] top-0 lg:inset-0">
             <WebglBoundary fallback={<HeroPoster />}>
               {renderScene ? (
                 <Suspense fallback={<HeroPoster />}>

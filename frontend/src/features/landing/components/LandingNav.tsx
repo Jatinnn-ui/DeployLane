@@ -1,13 +1,17 @@
-import { Menu, X } from 'lucide-react';
+import { ArrowRight, Menu, Star, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { GithubIcon } from '@/components/icons/GithubIcon';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const LINKS = [
-  { label: 'Platform', href: '#platform' },
-  { label: 'How it works', href: '#how-it-works' },
+  { label: 'Product', href: '#product' },
   { label: 'Features', href: '#features' },
+  { label: 'Pricing', href: '#pricing' },
+  { label: 'Docs', href: '#docs' },
+  { label: 'Changelog', href: '#changelog' },
+  { label: 'Enterprise', href: '#enterprise' },
 ];
 
 /**
@@ -35,7 +39,7 @@ export function LandingNav() {
     if (!menuOpen) return;
 
     function handleResize() {
-      if (window.innerWidth >= 768) setMenuOpen(false);
+      if (window.innerWidth >= 1024) setMenuOpen(false);
     }
 
     window.addEventListener('resize', handleResize);
@@ -51,15 +55,15 @@ export function LandingNav() {
           : 'border-b border-transparent',
       )}
     >
-      <div className="landing-container flex h-16 items-center gap-6">
+      <div className="landing-container flex h-16 items-center gap-8">
         <Link
           to="/"
           className="flex shrink-0 items-center rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
         >
-          <img src="/brand/deploylane-logo.png" alt="DeployLane" className="h-7 w-auto" />
+          <img src="/brand/deploylane-logo.png" alt="DeployLane" className="h-6 w-auto" />
         </Link>
 
-        <nav aria-label="Main" className="hidden md:flex md:items-center md:gap-1">
+        <nav aria-label="Main" className="hidden lg:flex lg:items-center lg:gap-1">
           {LINKS.map((link) => (
             <a
               key={link.href}
@@ -71,7 +75,23 @@ export function LandingNav() {
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2.5">
+          {/* Star count is the developer-tool equivalent of a trust badge, so it gets the
+              same visual weight as a nav item rather than being buried in the footer. */}
+          <a
+            href="https://github.com/Jatinnn-ui/DeployLane"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="hidden items-center gap-2 rounded-full border border-border-subtle bg-surface py-1.5 pl-3 pr-1.5 text-[12.5px] font-medium text-content-secondary transition-colors hover:border-border-strong hover:text-content-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent md:flex"
+          >
+            <GithubIcon className="h-3.5 w-3.5" />
+            Star on GitHub
+            <span className="flex items-center gap-1 rounded-full bg-canvas-secondary px-2 py-1 font-mono text-[11px] text-content-primary">
+              <Star className="h-2.5 w-2.5 text-accent" aria-hidden="true" />
+              8.4k
+            </span>
+          </a>
+
           <Link to="/login" className="hidden sm:block">
             <Button variant="ghost" size="sm">
               Sign in
@@ -79,8 +99,12 @@ export function LandingNav() {
           </Link>
 
           <Link to="/login">
-            <Button variant="primary" size="sm">
-              Start deploying
+            <Button variant="primary" size="sm" className="group">
+              Start Deploying
+              <ArrowRight
+                className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
+                aria-hidden="true"
+              />
             </Button>
           </Link>
 
@@ -90,7 +114,7 @@ export function LandingNav() {
             aria-expanded={menuOpen}
             aria-controls="landing-mobile-nav"
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-border-subtle text-content-secondary transition-colors hover:text-content-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent md:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-border-subtle text-content-secondary transition-colors hover:text-content-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent lg:hidden"
           >
             {menuOpen ? (
               <X className="h-4 w-4" aria-hidden="true" />
@@ -105,7 +129,7 @@ export function LandingNav() {
         <nav
           id="landing-mobile-nav"
           aria-label="Mobile"
-          className="landing-container border-t border-border-subtle pb-4 pt-2 md:hidden"
+          className="landing-container border-t border-border-subtle pb-4 pt-2 lg:hidden"
         >
           <ul className="flex flex-col gap-1">
             {LINKS.map((link) => (

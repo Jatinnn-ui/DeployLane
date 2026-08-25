@@ -1,13 +1,7 @@
-import {
-  Box,
-  CheckCircle2,
-  GitBranch,
-  Hammer,
-  Terminal,
-  UploadCloud,
-  type LucideIcon,
-} from 'lucide-react';
+import { Box, CheckCircle2, Globe, Layers, Rocket } from 'lucide-react';
+import { GithubIcon } from '@/components/icons/GithubIcon';
 import { cn } from '@/lib/utils';
+import type { IconComponent } from './icon-type';
 
 interface Point {
   x: number;
@@ -17,120 +11,145 @@ interface Point {
 interface Stage {
   id: string;
   label: string;
-  meta: string;
-  icon: LucideIcon;
+  lines: string[];
+  icon: IconComponent;
   at: Point;
-  /** Kept on small screens, where the overlay is reduced to the three key stages. */
+  /** Kept on small screens, where the overlay reduces to the three key stages. */
   essential?: boolean;
-  tone?: 'accent' | 'success';
 }
 
 /**
- * Where the server sits in the visual, in the same percentage space as the cards.
+ * Where the cube sits in the visual, in the same percentage space as the cards.
  * Every connector is drawn to or from this point.
  */
-const HUB: Point = { x: 50, y: 47 };
+const HUB: Point = { x: 44, y: 48 };
 
 const STAGES: Stage[] = [
   {
     id: 'repository',
     label: 'Repository',
-    meta: 'main · 2f8c1ae',
-    icon: GitBranch,
-    at: { x: 16, y: 9 },
+    lines: ['main', 'a1b2c3d'],
+    icon: GithubIcon,
+    at: { x: 17, y: 15 },
     essential: true,
   },
-  { id: 'build', label: 'Build', meta: 'Nixpacks · 41s', icon: Hammer, at: { x: 9, y: 40 } },
-  { id: 'container', label: 'Container', meta: 'Image · 84 MB', icon: Box, at: { x: 17, y: 72 } },
+  { id: 'build', label: 'Build', lines: ['Completed', '30s'], icon: Box, at: { x: 81, y: 13 } },
+  {
+    id: 'container',
+    label: 'Container',
+    lines: ['Ready', '84MB · 2.1.9'],
+    icon: Layers,
+    at: { x: 84, y: 43 },
+  },
   {
     id: 'deploy',
     label: 'Deploy',
-    meta: 'Rolling · 0 downtime',
-    icon: UploadCloud,
-    at: { x: 85, y: 18 },
+    lines: ['Success', 'v0-abc-1'],
+    icon: Rocket,
+    at: { x: 79, y: 74 },
     essential: true,
   },
   {
     id: 'live',
     label: 'Live',
-    meta: 'app.deploylane.online',
-    icon: CheckCircle2,
-    at: { x: 90, y: 51 },
+    lines: ['https://chessleam.app'],
+    icon: Globe,
+    at: { x: 37, y: 88 },
     essential: true,
-    tone: 'success',
   },
-  { id: 'logs', label: 'Build logs', meta: 'Streaming', icon: Terminal, at: { x: 79, y: 84 } },
+];
+
+const LOGS_AT: Point = { x: 11, y: 64 };
+
+const LOG_LINES = [
+  { text: 'Installing dependencies', done: false },
+  { text: 'Building project', done: false },
+  { text: 'Optimizing assets', done: false },
+  { text: 'Build completed', done: true },
 ];
 
 /**
- * The pipeline runs down the left into the server, then back out to the right — so the
- * connectors read as one continuous path rather than six spokes on a wheel.
+ * Connectors run from the cube out to every card, plus one along the top between Repository
+ * and Build. The result reads as infrastructure wiring rather than as spokes on a wheel.
  */
 const FLOW: Array<{ from: Point; to: Point; bend: number; delay: number }> = [
-  { from: STAGES[0].at, to: STAGES[1].at, bend: -7, delay: 0 },
-  { from: STAGES[1].at, to: STAGES[2].at, bend: -7, delay: 0.6 },
-  { from: STAGES[2].at, to: HUB, bend: 5, delay: 1.2 },
-  { from: HUB, to: STAGES[3].at, bend: -6, delay: 1.8 },
-  { from: STAGES[3].at, to: STAGES[4].at, bend: 7, delay: 2.4 },
-  { from: HUB, to: STAGES[5].at, bend: 6, delay: 1.5 },
+  { from: HUB, to: STAGES[0].at, bend: -4, delay: 0 },
+  { from: STAGES[0].at, to: STAGES[1].at, bend: 0, delay: 0.5 },
+  { from: HUB, to: STAGES[1].at, bend: 4, delay: 1 },
+  { from: HUB, to: STAGES[2].at, bend: 3, delay: 1.5 },
+  { from: HUB, to: STAGES[3].at, bend: -3, delay: 2 },
+  { from: HUB, to: STAGES[4].at, bend: -4, delay: 2.5 },
+  { from: HUB, to: LOGS_AT, bend: 4, delay: 3 },
 ];
 
 /** viewBox is 1000×700 and stretched, so strokes are pinned with `non-scaling-stroke`. */
 function curve(from: Point, to: Point, bend: number): string {
   const [x1, y1] = [from.x * 10, from.y * 7];
   const [x2, y2] = [to.x * 10, to.y * 7];
-  const mid = { x: (x1 + x2) / 2 + bend * 10, y: (y1 + y2) / 2 };
+  const mid = { x: (x1 + x2) / 2 + bend * 10, y: (y1 + y2) / 2 - bend * 7 };
 
   return `M ${x1} ${y1} Q ${mid.x} ${mid.y} ${x2} ${y2}`;
 }
 
-function StageCard({ stage, reducedMotion }: { stage: Stage; reducedMotion: boolean }) {
+/**
+ * Below lg a card is a grid item in normal flow; from lg it becomes an absolutely placed
+ * satellite around the cube. `left`/`top` are supplied inline but ignored until the element
+ * is actually positioned, so one style object serves both layouts.
+ */
+const CARD_BASE =
+  'pointer-events-auto min-w-0 rounded-xl border border-border-subtle bg-surface/95 backdrop-blur-sm transition-colors duration-200 hover:border-border-strong lg:absolute lg:-translate-x-1/2 lg:-translate-y-1/2';
+
+function StageCard({ stage }: { stage: Stage }) {
   const Icon = stage.icon;
-  const isSuccess = stage.tone === 'success';
 
   return (
     <li
-      className={cn(
-        // Below lg the card is a grid item in normal flow; from lg it becomes an absolutely
-        // placed satellite around the server. `left`/`top` are supplied inline but ignored
-        // until the element is actually positioned, so one style object serves both layouts.
-        'pointer-events-auto min-w-0 rounded-2xl border border-border-subtle bg-surface/95 p-2.5 backdrop-blur-sm transition-colors duration-200 hover:border-border-strong sm:p-3 lg:absolute lg:w-[168px] lg:-translate-x-1/2 lg:-translate-y-1/2',
-        !stage.essential && 'hidden lg:block',
-      )}
+      className={cn(CARD_BASE, 'p-2.5 lg:w-[172px]', !stage.essential && 'hidden lg:block')}
       style={{ left: `${stage.at.x}%`, top: `${stage.at.y}%` }}
     >
-      <div className="flex items-center gap-1.5 sm:gap-2">
-        <span
-          className={cn(
-            'flex h-6 w-6 shrink-0 items-center justify-center rounded-md border',
-            isSuccess
-              ? 'border-success-border bg-success-soft text-success'
-              : 'border-accent-border bg-accent-soft text-accent',
-          )}
-        >
-          <Icon className="h-3.5 w-3.5" aria-hidden="true" strokeWidth={2} />
+      <div className="flex items-start gap-2">
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-border-subtle bg-canvas-secondary text-content-secondary">
+          <Icon className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
         </span>
 
-        <span className="truncate text-[12px] font-semibold leading-none text-content-primary sm:text-[13px]">
-          {stage.label}
-        </span>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[12.5px] font-semibold leading-tight text-content-primary">
+            {stage.label}
+          </p>
+          {stage.lines.map((line) => (
+            <p key={line} className="truncate font-mono text-[9.5px] leading-[1.5] text-content-muted">
+              {line}
+            </p>
+          ))}
+        </div>
 
-        <span
-          className={cn(
-            'ml-auto h-1.5 w-1.5 shrink-0 rounded-full',
-            isSuccess ? 'bg-success' : 'bg-accent',
-          )}
-          style={
-            reducedMotion
-              ? undefined
-              : { animation: `status-pulse 2.4s ease-in-out ${stage.at.y / 40}s infinite` }
-          }
-        />
+        <CheckCircle2 className="h-4 w-4 shrink-0 text-success" aria-hidden="true" />
       </div>
+    </li>
+  );
+}
 
-      <p className="mt-2 truncate font-mono text-[10px] leading-none text-content-muted sm:text-[10.5px]">
-        {stage.meta}
-      </p>
+function BuildLogsCard() {
+  return (
+    <li
+      className={cn(CARD_BASE, 'hidden p-2.5 lg:block lg:w-[168px]')}
+      style={{ left: `${LOGS_AT.x}%`, top: `${LOGS_AT.y}%` }}
+    >
+      <p className="text-[12.5px] font-semibold leading-tight text-content-primary">Build Logs</p>
+
+      <div className="mt-2 space-y-1">
+        {LOG_LINES.map((line) => (
+          <p
+            key={line.text}
+            className={cn(
+              'truncate font-mono text-[9.5px] leading-[1.4]',
+              line.done ? 'text-accent' : 'text-content-muted',
+            )}
+          >
+            <span aria-hidden="true">›</span> {line.text}
+          </p>
+        ))}
+      </div>
     </li>
   );
 }
@@ -138,11 +157,10 @@ function StageCard({ stage, reducedMotion }: { stage: Stage; reducedMotion: bool
 /**
  * DOM/SVG overlay for the hero, layered above the WebGL canvas.
  *
- * Deliberately not rendered inside the 3D scene: small type rasterised by WebGL looks
- * soft, cannot be selected or read by assistive tech, and would cost a draw call per
- * label. As DOM it stays crisp at any DPR, inherits the dashboard's card styling, and the
- * stage names end up in the accessibility tree — which is where the meaning of the
- * visualisation actually lives.
+ * Deliberately not rendered inside the 3D scene: small type rasterised by WebGL looks soft,
+ * cannot be selected or read by assistive tech, and would cost a draw call per label. As DOM
+ * it stays crisp at any DPR, inherits the dashboard's card styling, and the stage names end
+ * up in the accessibility tree — which is where the meaning of the visualisation lives.
  */
 export function PipelineOverlay({ reducedMotion = false }: { reducedMotion?: boolean }) {
   return (
@@ -164,7 +182,7 @@ export function PipelineOverlay({ reducedMotion = false }: { reducedMotion?: boo
               <path
                 d={path}
                 fill="none"
-                stroke="rgba(168, 240, 0, 0.16)"
+                stroke="rgba(168, 240, 0, 0.28)"
                 strokeWidth={1}
                 vectorEffect="non-scaling-stroke"
               />
@@ -172,22 +190,32 @@ export function PipelineOverlay({ reducedMotion = false }: { reducedMotion?: boo
               <path
                 d={path}
                 fill="none"
-                stroke="rgba(168, 240, 0, 0.85)"
+                stroke="rgba(183, 255, 25, 0.95)"
                 strokeWidth={1.5}
                 strokeLinecap="round"
-                strokeDasharray="26 974"
+                strokeDasharray="30 970"
                 vectorEffect="non-scaling-stroke"
                 style={
                   reducedMotion
                     ? { opacity: 0 }
-                    : {
-                        animation: `dash-flow 7s linear ${segment.delay}s infinite`,
-                      }
+                    : { animation: `dash-flow 7s linear ${segment.delay}s infinite` }
                 }
               />
             </g>
           );
         })}
+
+        {/* junction nodes where a connector meets a card */}
+        {[...STAGES.map((stage) => stage.at), LOGS_AT, HUB].map((point) => (
+          <circle
+            key={`${point.x}:${point.y}`}
+            cx={point.x * 10}
+            cy={point.y * 7}
+            r={3.5}
+            fill="#a8f000"
+            fillOpacity={0.9}
+          />
+        ))}
       </svg>
 
       <ul
@@ -195,8 +223,9 @@ export function PipelineOverlay({ reducedMotion = false }: { reducedMotion?: boo
         className="grid list-none grid-cols-3 gap-2 lg:absolute lg:inset-0 lg:block lg:gap-0"
       >
         {STAGES.map((stage) => (
-          <StageCard key={stage.id} stage={stage} reducedMotion={reducedMotion} />
+          <StageCard key={stage.id} stage={stage} />
         ))}
+        <BuildLogsCard />
       </ul>
     </div>
   );

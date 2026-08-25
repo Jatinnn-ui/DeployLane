@@ -756,6 +756,15 @@
   }
 }
 
+/* Each marketing section sits inside its own bordered panel, one step lighter than the
+   page. This is the structural motif of the layout — sections read as separated cards
+   rather than as full-bleed bands. */
+@utility landing-panel {
+  border-radius: 20px;
+  border: 1px solid var(--dl-border-subtle);
+  background: var(--dl-canvas-secondary);
+}
+
 /* faint technical perspective grid behind the hero */
 @utility hero-grid {
   background-image:

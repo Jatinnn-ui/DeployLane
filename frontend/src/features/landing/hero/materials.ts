@@ -5,56 +5,65 @@ export const LIME_BRIGHT = '#b7ff19';
 export const SUCCESS = '#43dd82';
 
 /**
- * One material set, created once and shared by every mesh in the server object.
+ * One material set, created once and shared by every mesh in the hero.
  *
- * Creating materials inline per-mesh is the usual cause of a heavy R3F scene: each
- * unique material is a separate shader program and a separate draw call. Twenty-odd
- * meshes sharing six materials keeps the whole object cheap.
+ * Creating materials inline per-mesh is the usual cause of a heavy R3F scene: each unique
+ * material is a separate shader program and a separate draw call. Thirty-odd meshes sharing
+ * seven materials keeps the whole composition cheap.
  *
- * `toneMapped: false` on the emissive materials is what makes the lime read as
- * genuinely luminous without a bloom pass — tone mapping would otherwise pull the
- * bright values back toward the dark end of the scene.
+ * `toneMapped: false` on the emissive materials is what makes the lime read as genuinely
+ * luminous without a bloom pass — tone mapping would otherwise pull the bright values back
+ * toward the dark end of the scene.
  */
-export interface ServerMaterials {
+export interface HeroMaterials {
   body: THREE.MeshStandardMaterial;
+  bodyDark: THREE.MeshStandardMaterial;
   panel: THREE.MeshStandardMaterial;
   trim: THREE.MeshStandardMaterial;
-  glass: THREE.MeshStandardMaterial;
-  seam: THREE.MeshStandardMaterial;
+  edge: THREE.MeshStandardMaterial;
+  chevron: THREE.MeshStandardMaterial;
   status: THREE.MeshStandardMaterial;
   dispose: () => void;
 }
 
-export function createServerMaterials(): ServerMaterials {
+export function createHeroMaterials(): HeroMaterials {
   const body = new THREE.MeshStandardMaterial({
-    color: '#15191a',
-    metalness: 0.62,
-    roughness: 0.38,
+    color: '#14181a',
+    metalness: 0.68,
+    roughness: 0.32,
+  });
+
+  const bodyDark = new THREE.MeshStandardMaterial({
+    color: '#0c0f10',
+    metalness: 0.6,
+    roughness: 0.42,
   });
 
   const panel = new THREE.MeshStandardMaterial({
     color: '#101314',
     metalness: 0.45,
-    roughness: 0.6,
+    roughness: 0.58,
   });
 
   const trim = new THREE.MeshStandardMaterial({
     color: '#2b3133',
     metalness: 0.85,
-    roughness: 0.28,
+    roughness: 0.26,
   });
 
-  // Smoked black glass for the recessed front inset.
-  const glass = new THREE.MeshStandardMaterial({
-    color: '#0a0c0d',
-    metalness: 0.5,
-    roughness: 0.15,
-  });
-
-  const seam = new THREE.MeshStandardMaterial({
+  // Edge lighting along the cube's seams: lime, bright, but below the chevron.
+  const edge = new THREE.MeshStandardMaterial({
     color: LIME,
     emissive: LIME,
-    emissiveIntensity: 2.4,
+    emissiveIntensity: 2.2,
+    toneMapped: false,
+  });
+
+  // The brand mark itself, the brightest thing in the scene.
+  const chevron = new THREE.MeshStandardMaterial({
+    color: LIME_BRIGHT,
+    emissive: LIME_BRIGHT,
+    emissiveIntensity: 3.4,
     toneMapped: false,
   });
 
@@ -65,15 +74,16 @@ export function createServerMaterials(): ServerMaterials {
     toneMapped: false,
   });
 
+  const all = [body, bodyDark, panel, trim, edge, chevron, status];
+
   return {
     body,
+    bodyDark,
     panel,
     trim,
-    glass,
-    seam,
+    edge,
+    chevron,
     status,
-    dispose: () => {
-      [body, panel, trim, glass, seam, status].forEach((material) => material.dispose());
-    },
+    dispose: () => all.forEach((material) => material.dispose()),
   };
 }

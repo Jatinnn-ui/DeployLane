@@ -1,12 +1,11 @@
 import { useEffect } from 'react';
+import { BuiltForDevelopers } from './components/BuiltForDevelopers';
 import { DashboardShowcase } from './components/DashboardShowcase';
-import { FeatureCards } from './components/FeatureCards';
-import { FinalCta } from './components/FinalCta';
 import { Hero } from './components/Hero';
 import { HowItWorks } from './components/HowItWorks';
-import { IntegrationStrip } from './components/IntegrationStrip';
 import { LandingFooter } from './components/LandingFooter';
 import { LandingNav } from './components/LandingNav';
+import { TrustedBy } from './components/TrustedBy';
 
 /**
  * Public marketing page.
@@ -18,7 +17,7 @@ import { LandingNav } from './components/LandingNav';
 export function LandingPage() {
   useEffect(() => {
     const previous = document.title;
-    document.title = 'DeployLane — ship every push to a live URL';
+    document.title = 'DeployLane — deploy your code anywhere, in seconds';
     return () => {
       document.title = previous;
     };
@@ -37,11 +36,10 @@ export function LandingPage() {
 
       <main id="main">
         <Hero />
-        <IntegrationStrip />
+        <TrustedBy />
         <HowItWorks />
         <DashboardShowcase />
-        <FeatureCards />
-        <FinalCta />
+        <BuiltForDevelopers />
       </main>
 
       <LandingFooter />
