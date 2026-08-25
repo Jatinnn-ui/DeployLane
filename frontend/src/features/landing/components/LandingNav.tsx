@@ -1,9 +1,10 @@
-import { ArrowRight, Menu, Star, X } from 'lucide-react';
+import { ArrowRight, Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { GithubIcon } from '@/components/icons/GithubIcon';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { Wordmark } from './Wordmark';
 
 const LINKS = [
   { label: 'Product', href: '#product' },
@@ -55,51 +56,57 @@ export function LandingNav() {
           : 'border-b border-transparent',
       )}
     >
-      <div className="landing-container flex h-16 items-center gap-8">
+      <div className="landing-container flex h-[76px] items-center gap-7">
         <Link
           to="/"
           className="flex shrink-0 items-center rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
         >
-          <img src="/brand/deploylane-logo.png" alt="DeployLane" className="h-6 w-auto" />
+          <Wordmark />
         </Link>
 
-        <nav aria-label="Main" className="hidden lg:flex lg:items-center lg:gap-1">
+        <nav aria-label="Main" className="hidden lg:flex lg:items-center lg:gap-0.5">
           {LINKS.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className="rounded-full px-3 py-2 text-[13.5px] font-medium text-content-secondary transition-colors hover:text-content-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="rounded-md px-3 py-2 text-[12.5px] font-medium text-content-secondary transition-colors hover:text-content-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               {link.label}
             </a>
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2.5">
+        <div className="ml-auto flex items-center gap-3">
           {/* Star count is the developer-tool equivalent of a trust badge, so it gets the
               same visual weight as a nav item rather than being buried in the footer. */}
           <a
             href="https://github.com/Jatinnn-ui/DeployLane"
             target="_blank"
             rel="noreferrer noopener"
-            className="hidden items-center gap-2 rounded-full border border-border-subtle bg-surface py-1.5 pl-3 pr-1.5 text-[12.5px] font-medium text-content-secondary transition-colors hover:border-border-strong hover:text-content-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent md:flex"
+            className="hidden items-center gap-2 text-[12.5px] font-medium text-content-secondary transition-colors hover:text-content-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent md:flex"
           >
-            <GithubIcon className="h-3.5 w-3.5" />
+            <GithubIcon className="h-4 w-4" />
             Star on GitHub
-            <span className="flex items-center gap-1 rounded-full bg-canvas-secondary px-2 py-1 font-mono text-[11px] text-content-primary">
-              <Star className="h-2.5 w-2.5 text-accent" aria-hidden="true" />
+            <span className="rounded-md border border-border-subtle bg-surface px-1.5 py-0.5 font-mono text-[10.5px] text-content-primary">
               8.4k
             </span>
           </a>
 
+          {/* Vertical rule separating the repository link from account actions. */}
+          <span className="hidden h-4 w-px bg-border-subtle md:block" aria-hidden="true" />
+
           <Link to="/login" className="hidden sm:block">
-            <Button variant="ghost" size="sm">
+            <span className="text-[12.5px] font-medium text-content-secondary transition-colors hover:text-content-primary">
               Sign in
-            </Button>
+            </span>
           </Link>
 
           <Link to="/login">
-            <Button variant="primary" size="sm" className="group">
+            <Button
+              variant="primary"
+              size="sm"
+              className="group h-8 rounded-md px-3 text-[12.5px] shadow-[0_0_18px_-4px_rgba(168,240,0,0.45)]"
+            >
               Start Deploying
               <ArrowRight
                 className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5"

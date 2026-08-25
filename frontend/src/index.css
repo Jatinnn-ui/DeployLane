@@ -694,23 +694,25 @@
 .landing-root {
   color-scheme: dark;
 
-  --dl-canvas: #0d0f10;
-  --dl-canvas-secondary: #101314;
-  --dl-surface: #15191a;
-  --dl-surface-alt: #191d1e;
-  --dl-surface-raised: #1e2324;
-  --dl-surface-hover: #1e2324;
-  --dl-surface-glass: rgba(21, 25, 26, 0.88);
+  /* Sampled from the reference: the page is near-black, and elevated surfaces are only
+     a few values lighter. Raising these even slightly makes every panel read as grey. */
+  --dl-canvas: #050708;
+  --dl-canvas-secondary: #080b0c;
+  --dl-surface: #0b0e0f;
+  --dl-surface-alt: #101314;
+  --dl-surface-raised: #131718;
+  --dl-surface-hover: #131718;
+  --dl-surface-glass: rgba(11, 14, 15, 0.9);
 
   --dl-border-subtle: rgba(255, 255, 255, 0.1);
   --dl-border-strong: rgba(255, 255, 255, 0.16);
   --dl-border-accent: rgba(168, 240, 0, 0.35);
 
-  --dl-content-primary: #f1f3f2;
-  --dl-content-secondary: #9ca3a1;
-  --dl-content-muted: #666d6b;
-  --dl-content-inverse: #0d0f10;
-  --dl-ink-deep: #f1f3f2;
+  --dl-content-primary: #f5f5f5;
+  --dl-content-secondary: #9a9ea3;
+  --dl-content-muted: #686d72;
+  --dl-content-inverse: #050708;
+  --dl-ink-deep: #f5f5f5;
 
   --dl-accent: #a8f000;
   --dl-accent-hover: #b7ff19;
@@ -729,8 +731,8 @@
   --dl-danger-foreground: #f8a3a5;
 
   --dl-ring: rgba(168, 240, 0, 0.28);
-  --dl-option-bg: #191d1e;
-  --dl-option-fg: #f1f3f2;
+  --dl-option-bg: #101314;
+  --dl-option-fg: #f5f5f5;
 
   background: var(--dl-canvas);
   color: var(--dl-content-primary);
@@ -739,7 +741,7 @@
 /* 1360px content rail with the specified responsive gutters */
 @utility landing-container {
   width: 100%;
-  max-width: 1360px;
+  max-width: 1460px;
   margin-inline: auto;
   padding-inline: 20px;
 }
@@ -760,8 +762,8 @@
    page. This is the structural motif of the layout — sections read as separated cards
    rather than as full-bleed bands. */
 @utility landing-panel {
-  border-radius: 20px;
-  border: 1px solid var(--dl-border-subtle);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
   background: var(--dl-canvas-secondary);
 }
 

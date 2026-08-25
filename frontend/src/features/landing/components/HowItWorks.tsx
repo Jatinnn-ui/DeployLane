@@ -32,15 +32,15 @@ const STEPS: Array<{ n: number; title: string; body: string; icon: IconComponent
 
 export function HowItWorks() {
   return (
-    <section id="product" className="pb-6" aria-labelledby="how-it-works-heading">
+    <section id="product" className="pb-4" aria-labelledby="how-it-works-heading">
       <div className="landing-container">
-        <div className="landing-panel px-5 py-9 sm:px-8 sm:py-11">
-          <p className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-accent">
+        <div className="landing-panel px-5 py-7 sm:px-7 sm:py-8">
+          <p className="text-[9.5px] font-semibold uppercase tracking-[0.14em] text-accent">
             How DeployLane works
           </p>
           <h2
             id="how-it-works-heading"
-            className="mt-3.5 text-[26px] font-bold leading-[1.14] tracking-[-0.03em] text-content-primary sm:text-[32px]"
+            className="mt-3 text-[25px] font-bold leading-[1.14] tracking-[-0.03em] text-content-primary sm:text-[31px]"
           >
             From code to production in <span className="text-accent">minutes</span>
           </h2>

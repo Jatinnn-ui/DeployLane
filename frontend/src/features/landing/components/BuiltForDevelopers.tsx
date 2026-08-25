@@ -60,9 +60,9 @@ export function BuiltForDevelopers() {
   }, []);
 
   return (
-    <section id="built-for-developers" className="py-6" aria-labelledby="pillars-heading">
+    <section id="built-for-developers" className="pb-4" aria-labelledby="pillars-heading">
       <div className="landing-container">
-        <div className="landing-panel grid gap-8 px-5 py-9 sm:px-8 sm:py-11 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-10">
+        <div className="landing-panel grid gap-8 px-5 py-7 sm:px-7 sm:py-8 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:gap-9">
           {/* secondary 3D scene */}
           <div className="relative h-[260px] sm:h-[320px] lg:h-auto lg:min-h-[400px]">
             <WebglBoundary fallback={<HeroPoster />}>
@@ -77,7 +77,7 @@ export function BuiltForDevelopers() {
           </div>
 
           <div>
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-accent">
+            <p className="text-[9.5px] font-semibold uppercase tracking-[0.14em] text-accent">
               Built for developers
             </p>
             <h2 id="pillars-heading" className="sr-only">
@@ -104,10 +104,10 @@ export function BuiltForDevelopers() {
             </ul>
 
             <div className="mt-9">
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-accent">
-                Ready to deploy
+              <p className="text-[9.5px] font-semibold uppercase tracking-[0.14em] text-accent">
+                Ready to deploy?
               </p>
-              <p className="mt-3 text-[22px] font-bold leading-[1.16] tracking-[-0.03em] text-content-primary sm:text-[27px]">
+              <p className="mt-3 text-[22px] font-bold leading-[1.16] tracking-[-0.03em] text-content-primary sm:text-[26px]">
                 Ship faster. Scale further.
                 <br />
                 DeployLane has your back.

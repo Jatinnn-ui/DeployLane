@@ -1,9 +1,11 @@
-import { ArrowRight, MessagesSquare } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { GithubIcon } from '@/components/icons/GithubIcon';
 import { LinkedinIcon } from '@/components/icons/LinkedinIcon';
+import { DiscordIcon, XIcon } from '@/components/icons/SocialIcons';
 import type { IconComponent } from './icon-type';
+import { Wordmark } from './Wordmark';
 
 const COLUMNS: Array<{ heading: string; links: Array<{ label: string; href: string }> }> = [
   {
@@ -37,7 +39,8 @@ const COLUMNS: Array<{ heading: string; links: Array<{ label: string; href: stri
 
 const SOCIALS: Array<{ label: string; href: string; icon: IconComponent }> = [
   { label: 'GitHub', href: 'https://github.com/Jatinnn-ui/DeployLane', icon: GithubIcon },
-  { label: 'Community', href: 'mailto:hello@deploylane.online', icon: MessagesSquare },
+  { label: 'X', href: 'https://x.com', icon: XIcon },
+  { label: 'Discord', href: 'https://discord.com', icon: DiscordIcon },
   { label: 'LinkedIn', href: 'https://www.linkedin.com', icon: LinkedinIcon },
 ];
 
@@ -100,12 +103,12 @@ function NewsletterForm() {
 
 export function LandingFooter() {
   return (
-    <footer className="pb-8 pt-6">
+    <footer className="pb-5">
       <div className="landing-container">
-        <div className="landing-panel px-5 py-9 sm:px-8">
+        <div className="landing-panel px-5 py-8 sm:px-7">
           <div className="grid gap-9 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.25fr)_repeat(3,minmax(0,0.75fr))_minmax(0,1.2fr)]">
             <div>
-              <img src="/brand/deploylane-logo.png" alt="DeployLane" className="h-6 w-auto" />
+              <Wordmark />
               <p className="mt-3.5 max-w-[230px] text-[12.5px] leading-[1.6] text-content-secondary">
                 The modern deployment platform for developers and teams.
               </p>
@@ -152,7 +155,7 @@ export function LandingFooter() {
 
           <div className="mt-10 flex flex-col gap-3 border-t border-border-subtle pt-5 sm:flex-row sm:items-center">
             <p className="text-[11.5px] text-content-muted">
-              © {new Date().getFullYear()} DeployLane. All rights reserved.
+              © 2024 DeployLane. All rights reserved.
             </p>
 
             <ul className="flex flex-wrap items-center gap-x-5 gap-y-2 sm:ml-auto">

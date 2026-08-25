@@ -21,23 +21,25 @@ const PLATFORMS: Array<{ name: string; icon: IconComponent }> = [
 
 export function TrustedBy() {
   return (
-    <section className="py-10" aria-labelledby="trusted-by-heading">
-      <div className="landing-container">
+    <section className="pb-7 pt-4" aria-labelledby="trusted-by-heading">
+      {/* Reference keeps the label inline at the left of the same row as the logos, which is
+          what makes this read as one quiet strip rather than a titled section. */}
+      <div className="landing-container flex flex-wrap items-center justify-center gap-x-8 gap-y-4 lg:flex-nowrap lg:justify-between lg:gap-x-6">
         <h2
           id="trusted-by-heading"
-          className="text-center text-[10.5px] font-semibold uppercase tracking-[0.16em] text-content-muted"
+          className="shrink-0 text-[9.5px] font-semibold uppercase tracking-[0.14em] text-content-muted"
         >
           Trusted by developers at
         </h2>
 
-        <ul className="mt-7 flex flex-wrap items-center justify-center gap-x-9 gap-y-5 lg:gap-x-12">
+        <ul className="flex flex-1 flex-wrap items-center justify-center gap-x-8 gap-y-4 lg:justify-between lg:gap-x-4">
           {PLATFORMS.map((platform) => (
             <li
               key={platform.name}
-              className="flex items-center gap-2 text-content-secondary opacity-70 transition-opacity duration-200 hover:opacity-100"
+              className="flex items-center gap-1.5 text-content-secondary opacity-65 transition-opacity duration-200 hover:opacity-100"
             >
-              <platform.icon className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
-              <span className="text-[15px] font-semibold tracking-[-0.01em]">{platform.name}</span>
+              <platform.icon className="h-[15px] w-[15px]" strokeWidth={2} aria-hidden="true" />
+              <span className="text-[14px] font-semibold tracking-[-0.01em]">{platform.name}</span>
             </li>
           ))}
         </ul>

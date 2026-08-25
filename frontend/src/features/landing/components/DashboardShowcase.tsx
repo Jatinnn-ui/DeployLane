@@ -15,6 +15,7 @@ import {
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { Wordmark } from './Wordmark';
 
 const BENEFITS = [
   'Real-time deployment status',
@@ -44,24 +45,24 @@ const STATS = [
 
 const PROJECTS = [
   {
-    name: 'chessleam',
-    repo: 'jatinn-ui/chessleam',
+    name: 'cheslearn',
+    repo: 'Jatinnn/cheslearn',
     branch: 'main',
     sha: '1a97fa9',
-    domain: 'chessleam.deploylane.app',
+    domain: 'cheslearn.deploylane.app',
     state: 'Live' as const,
   },
   {
-    name: 'Epsl_chess_code_new',
-    repo: 'trulsdemo/Epsl_chess_code_new',
+    name: 'Erpli_chess_code_new',
+    repo: 'Jatinnn/Erpli_chess_code_new',
     branch: 'main',
     sha: '1e1e566',
-    domain: 'epsl-chess-code-new-2.deploylane.app',
+    domain: 'erpli-chess-code-new-2.deploylane.app',
     state: 'Live' as const,
   },
   {
     name: 'web-store',
-    repo: 'jatinn/web-store',
+    repo: 'Jatinnn/web-store',
     branch: 'main',
     sha: '778acc1',
     domain: 'web-store.deploylane.app',
@@ -72,7 +73,7 @@ const PROJECTS = [
 const ACTIVITY = [
   { text: 'Deployment #129 went live', time: '3 hours ago', tone: 'success' as const },
   { text: 'Jatinnn started deployment #129', time: '3 hours ago', tone: 'default' as const },
-  { text: 'Imported konnektor/Epsl_chess_code_new', time: '3 hours ago', tone: 'default' as const },
+  { text: 'Imported Jatinnn/Erpli_chess_code_new', time: '3 hours ago', tone: 'default' as const },
   { text: 'Deployment #128 went live', time: '5 hours ago', tone: 'success' as const },
   { text: 'Failure analysis completed', time: '6 hours ago', tone: 'danger' as const },
 ];
@@ -96,7 +97,7 @@ function ConsoleMock() {
       <div className="flex">
         {/* nav rail */}
         <div className="hidden w-[132px] shrink-0 flex-col border-r border-border-subtle p-2.5 sm:flex">
-          <img src="/brand/deploylane-logo.png" alt="" className="mb-4 h-4 w-auto self-start" />
+          <Wordmark className="mb-4" markSize={12} textClass="text-[11px]" />
 
           <ul className="space-y-0.5">
             {NAV.map((item) => (
@@ -290,16 +291,16 @@ function ConsoleMock() {
 
 export function DashboardShowcase() {
   return (
-    <section id="features" className="py-6" aria-labelledby="showcase-heading">
+    <section id="features" className="pb-4" aria-labelledby="showcase-heading">
       <div className="landing-container">
-        <div className="landing-panel grid gap-9 px-5 py-9 sm:px-8 sm:py-11 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:items-center lg:gap-10">
+        <div className="landing-panel grid gap-8 px-5 py-7 sm:px-7 sm:py-8 lg:grid-cols-[minmax(0,0.52fr)_minmax(0,1.48fr)] lg:items-center lg:gap-9">
           <div>
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-accent">
+            <p className="text-[9.5px] font-semibold uppercase tracking-[0.14em] text-accent">
               Full control
             </p>
             <h2
               id="showcase-heading"
-              className="mt-3.5 text-[26px] font-bold leading-[1.14] tracking-[-0.03em] text-content-primary sm:text-[32px]"
+              className="mt-3 text-[25px] font-bold leading-[1.14] tracking-[-0.03em] text-content-primary sm:text-[30px]"
             >
               Everything you need,
               <br />

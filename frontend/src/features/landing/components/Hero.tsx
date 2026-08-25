@@ -1,4 +1,4 @@
-import { ArrowRight, GitBranch, Globe, ShieldCheck, Sparkles, Terminal, Zap } from 'lucide-react';
+import { ArrowRight, GitBranch, Globe, ShieldCheck, Terminal, Zap } from 'lucide-react';
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { GithubIcon } from '@/components/icons/GithubIcon';
@@ -19,7 +19,7 @@ const HeroScene = lazy(() =>
 const CAPABILITIES = [
   { label: 'Git Integration', icon: GitBranch },
   { label: 'Automated Builds', icon: Terminal },
-  { label: 'Instant Deploys', icon: Zap },
+  { label: 'Instant Deployments', icon: Zap },
   { label: 'Global CDN', icon: Globe },
   { label: 'Secure by Default', icon: ShieldCheck },
 ];
@@ -154,18 +154,18 @@ export function Hero() {
         className="hero-glow pointer-events-none absolute right-[-14%] top-[-20%] h-[900px] w-[900px] rounded-full lg:right-0"
       />
 
-      <div className="landing-container relative grid items-center gap-10 pb-14 pt-12 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:gap-4 lg:pb-20 lg:pt-16">
-        <div className="max-w-[520px]">
-          <p className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-surface px-3 py-1.5">
-            <Sparkles className="h-3 w-3 text-accent" aria-hidden="true" />
-            <span className="text-[12px] font-medium text-content-secondary">
+      <div className="landing-container relative grid items-center gap-10 pb-10 pt-10 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:gap-4 lg:pb-10 lg:pt-12">
+        <div className="max-w-[540px]">
+          <p className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-surface/70 px-3 py-1.5">
+            <Zap className="h-3 w-3 text-accent" aria-hidden="true" />
+            <span className="text-[11.5px] font-medium text-content-secondary">
               Deployments are now 2x faster
             </span>
           </p>
 
           <h1
             id="hero-heading"
-            className="mt-7 text-[38px] font-bold leading-[1.06] tracking-[-0.035em] text-content-primary sm:text-[50px] lg:text-[56px] xl:text-[62px]"
+            className="mt-7 text-[40px] font-bold leading-[1.04] tracking-[-0.04em] text-content-primary sm:text-[52px] lg:text-[58px] xl:text-[63px]"
           >
             Deploy your code.
             <br />
@@ -174,14 +174,18 @@ export function Hero() {
             <span className="text-accent">In seconds.</span>
           </h1>
 
-          <p className="mt-6 max-w-[430px] text-[15.5px] leading-[1.62] text-content-secondary">
+          <p className="mt-6 max-w-[400px] text-[14.5px] leading-[1.68] text-content-secondary">
             DeployLane helps developers build, deploy, and manage applications with zero friction.
             From git push to global scale.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link to="/login">
-              <Button variant="primary" size="md" className="group">
+              <Button
+                variant="primary"
+                size="md"
+                className="group h-11 rounded-lg px-5 text-[13.5px] shadow-[0_0_26px_-6px_rgba(168,240,0,0.5)]"
+              >
                 Start Deploying
                 <ArrowRight
                   className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
@@ -191,18 +195,21 @@ export function Hero() {
             </Link>
 
             <Link to="/login">
-              <Button variant="secondary" size="md">
+              <Button variant="secondary" size="md" className="h-11 rounded-lg px-5 text-[13.5px]">
                 <GithubIcon className="h-4 w-4" />
                 Connect GitHub
               </Button>
             </Link>
           </div>
 
-          <ul className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-3">
+          {/* Reference renders each indicator as a lime-outlined circle, not a bare glyph. */}
+          <ul className="mt-10 flex flex-wrap items-center gap-x-5 gap-y-3">
             {CAPABILITIES.map((capability) => (
               <li key={capability.label} className="flex items-center gap-1.5">
-                <capability.icon className="h-3.5 w-3.5 text-accent" aria-hidden="true" />
-                <span className="text-[11.5px] font-medium text-content-secondary">
+                <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-accent-border">
+                  <capability.icon className="h-2 w-2 text-accent" aria-hidden="true" />
+                </span>
+                <span className="text-[10.5px] font-medium text-content-secondary">
                   {capability.label}
                 </span>
               </li>
