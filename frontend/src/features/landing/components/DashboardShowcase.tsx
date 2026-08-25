@@ -293,7 +293,7 @@ export function DashboardShowcase() {
   return (
     <section id="features" className="pb-4" aria-labelledby="showcase-heading">
       <div className="landing-container">
-        <div className="landing-panel grid gap-8 px-5 py-7 sm:px-7 sm:py-8 lg:grid-cols-[minmax(0,0.52fr)_minmax(0,1.48fr)] lg:items-center lg:gap-9">
+        <div className="landing-panel grid gap-8 px-5 py-7 sm:px-7 sm:py-8 lg:grid-cols-[minmax(0,0.54fr)_minmax(0,1.46fr)] lg:items-center lg:gap-8">
           <div>
             <p className="text-[9.5px] font-semibold uppercase tracking-[0.14em] text-accent">
               Full control

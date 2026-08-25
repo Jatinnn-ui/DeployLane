@@ -1,15 +1,7 @@
 import { ArrowRight, Globe, ShieldCheck, Zap, type LucideIcon } from 'lucide-react';
-import { Suspense, lazy, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useMediaQuery, usePrefersReducedMotion } from '@/lib/use-media-query';
-import { WebglBoundary } from '../hero/WebglBoundary';
-import { HeroPoster } from './Hero';
-
-/** Same chunk as the hero scene, so this reuses an already-loaded module. */
-const FeatureScene = lazy(() =>
-  import('../hero/HeroScene').then((module) => ({ default: module.FeatureScene })),
-);
+import { ServerIllustration } from './ServerIllustration';
 
 const PILLARS: Array<{ title: string; body: string; icon: LucideIcon }> = [
   {
@@ -30,50 +22,20 @@ const PILLARS: Array<{ title: string; body: string; icon: LucideIcon }> = [
 ];
 
 export function BuiltForDevelopers() {
-  const reducedMotion = usePrefersReducedMotion();
-  const isCompact = useMediaQuery('(max-width: 1023px)');
-  const [renderScene, setRenderScene] = useState(false);
-
-  // Only build the second GL context once this section is close to the viewport. Two live
-  // contexts on a page is fine, but paying for both up front is not.
-  useEffect(() => {
-    const target = document.getElementById('built-for-developers');
-    if (!target) return;
-
-    if (!('IntersectionObserver' in window)) {
-      setRenderScene(true);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          setRenderScene(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: '300px' },
-    );
-
-    observer.observe(target);
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <section id="built-for-developers" className="pb-4" aria-labelledby="pillars-heading">
       <div className="landing-container">
         <div className="landing-panel grid gap-8 px-5 py-7 sm:px-7 sm:py-8 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:gap-9">
-          {/* secondary 3D scene */}
-          <div className="relative h-[260px] sm:h-[320px] lg:h-auto lg:min-h-[400px]">
-            <WebglBoundary fallback={<HeroPoster />}>
-              {renderScene ? (
-                <Suspense fallback={<HeroPoster />}>
-                  <FeatureScene reducedMotion={reducedMotion} simplified={isCompact} />
-                </Suspense>
-              ) : (
-                <HeroPoster />
-              )}
-            </WebglBoundary>
+          {/* Same illustration as the hero, framed a little wider for this panel. */}
+          <div className="relative flex items-center justify-center">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute left-1/2 top-1/2 h-[340px] w-[340px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+              style={{
+                background: 'radial-gradient(circle, rgba(160,255,0,0.08), transparent 55%)',
+              }}
+            />
+            <ServerIllustration className="relative w-full max-w-[430px]" />
           </div>
 
           <div>

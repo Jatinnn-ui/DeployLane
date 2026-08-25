@@ -45,7 +45,7 @@ export function HowItWorks() {
             From code to production in <span className="text-accent">minutes</span>
           </h2>
 
-          <ol className="mt-9 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+          <ol className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
             {STEPS.map((step, index) => (
               <li key={step.n} className="relative">
                 {/* Dashed rail toward the next step. Desktop only, and suppressed on the last

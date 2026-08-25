@@ -23,24 +23,13 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       output: {
-        // Charting is only needed on the monitoring screen, and the 3D renderer only on the
-        // marketing hero, so neither should sit in the bundle that gates first paint.
+        // Charting is only needed on the monitoring screen, so it should not sit in the
+        // bundle that gates first paint of the dashboard.
         manualChunks: (id: string) => {
           if (id.includes('node_modules/recharts') || id.includes('node_modules/d3')) {
             return 'charts';
           }
-          const threeDeps = [
-            'node_modules/three',
-            'node_modules/@react-three',
-            'node_modules/its-fine',
-            'node_modules/meshline',
-            'node_modules/maath',
-            'node_modules/suspend-react',
-            'node_modules/camera-controls',
-          ];
-          if (threeDeps.some((dep) => id.includes(dep))) {
-            return 'three';
-          }
+
           if (id.includes('node_modules/react-dom') || id.includes('node_modules/react-router')) {
             return 'vendor';
           }
