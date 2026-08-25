@@ -126,10 +126,10 @@ services:
       - traefik.http.services.deploylane-api.loadbalancer.server.port=8080
     healthcheck:
       test: ['CMD', 'wget', '--spider', '-q', 'http://localhost:8080/actuator/health']
-      interval: 10s
-      timeout: 5s
-      retries: 12
-      start_period: 40s
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 120s
     networks:
       - internal
       - deployforge-apps
