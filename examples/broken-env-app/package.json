@@ -1,0 +1,13 @@
+{
+  "name": "deployforge-broken-env-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fails at startup because a required environment variable is missing - used to demonstrate AI failure analysis",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

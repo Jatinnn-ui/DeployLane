@@ -1,0 +1,47 @@
+# ---- Java / Maven ----
+target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/timing.properties
+*.class
+*.jar
+!**/.mvn/wrapper/maven-wrapper.jar
+hs_err_pid*
+replay_pid*
+
+# ---- Node ----
+node_modules/
+dist/
+dist-ssr/
+.vite/
+coverage/
+*.local
+.eslintcache
+
+# ---- Environment / secrets ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+!**/src/**/*.key
+
+# ---- DeployForge runtime data ----
+/data/
+builds/
+deployforge-builds/
+
+# ---- Editors / OS ----
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+
+# ---- Logs ----
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

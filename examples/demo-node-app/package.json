@@ -1,0 +1,13 @@
+{
+  "name": "deployforge-demo-node-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Minimal Node.js service used to demonstrate a successful DeployForge deployment",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,173 @@
+##############################################################################
+# DeployLane — Production stack with Traefik
+#
+# Prerequisites:
+#   1. A domain (e.g. deploylane.app) with wildcard DNS:
+#      *.deploylane.app → your VPS IP
+#   2. ACME_EMAIL and BASE_DOMAIN set in .env
+#   3. DNS provider credentials for wildcard cert (see Traefik docs)
+#
+# Usage:
+#   docker compose -f infra/traefik/docker-compose.production.yml up -d
+#
+# Every project deployed through DeployLane gets:
+#   https://<project-slug>.<BASE_DOMAIN>
+##############################################################################
+
+name: deploylane-production
+
+services:
+  traefik:
+    image: traefik:v3.1
+    container_name: deploylane-traefik
+    restart: unless-stopped
+    command:
+      - --api.dashboard=false
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      # Only discover containers on the application network.
+      - --providers.docker.network=deployforge-apps
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      # Redirect all HTTP to HTTPS.
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      # Let's Encrypt wildcard certificate via DNS challenge.
+      - --certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:?Set ACME_EMAIL in .env}
+      - --certificatesresolvers.letsencrypt.acme.storage=/acme/acme.json
+      - --certificatesresolvers.letsencrypt.acme.dnschallenge=true
+      - --certificatesresolvers.letsencrypt.acme.dnschallenge.provider=${DNS_PROVIDER:-cloudflare}
+    ports:
+      - '80:80'
+      - '443:443'
+    environment:
+      # Cloudflare DNS API token for the DNS challenge (if using Cloudflare).
+      # Other providers use different env vars — see https://doc.traefik.io/traefik/https/acme/
+      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN:-}
+      CF_API_EMAIL: ${CF_API_EMAIL:-}
+    volumes:
+      # Read-only Docker socket: Traefik only needs to discover containers, not control them.
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-acme:/acme
+    networks:
+      - deployforge-apps
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: deploylane-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-deployforge}
+      POSTGRES_USER: ${POSTGRES_USER:-deployforge}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale=C'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-deployforge}']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    networks:
+      - internal
+
+  redis:
+    image: redis:7-alpine
+    container_name: deploylane-redis
+    restart: unless-stopped
+    command: ['redis-server', '--appendonly', 'yes']
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    networks:
+      - internal
+
+  backend:
+    build:
+      context: ../../backend
+      dockerfile: Dockerfile
+    container_name: deploylane-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-deployforge}
+      DATABASE_USERNAME: ${POSTGRES_USER:-deployforge}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?Set ENCRYPTION_KEY}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+      GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET:-}
+      AI_PROVIDER: ${AI_PROVIDER:-heuristic}
+      FRONTEND_URL: https://${BASE_DOMAIN}
+      PUBLIC_BACKEND_URL: https://api.${BASE_DOMAIN}
+      COOKIE_SECURE: 'true'
+      DOCKER_HOST_URI: unix:///var/run/docker.sock
+      DEPLOYMENT_ROOT_PATH: /var/lib/deploylane/builds
+      DEPLOYMENT_ROUTING_MODE: traefik
+      DEPLOYMENT_BASE_DOMAIN: ${BASE_DOMAIN:?Set BASE_DOMAIN in .env}
+      DEPLOYMENT_PUBLIC_HOST: ${BASE_DOMAIN}
+      DEPLOYMENT_PORT_RANGE_START: 30000
+      DEPLOYMENT_PORT_RANGE_END: 30999
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - build-workspace:/var/lib/deploylane/builds
+    labels:
+      # Expose the backend API via Traefik on api.<BASE_DOMAIN>
+      - traefik.enable=true
+      - traefik.http.routers.deploylane-api.rule=Host(`api.${BASE_DOMAIN}`)
+      - traefik.http.routers.deploylane-api.entrypoints=websecure
+      - traefik.http.routers.deploylane-api.tls.certresolver=letsencrypt
+      - traefik.http.services.deploylane-api.loadbalancer.server.port=8080
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'http://localhost:8080/actuator/health']
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+    networks:
+      - internal
+      - deployforge-apps
+
+  frontend:
+    build:
+      context: ../../frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: https://api.${BASE_DOMAIN}
+    container_name: deploylane-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    labels:
+      # Expose the frontend via Traefik on <BASE_DOMAIN>
+      - traefik.enable=true
+      - traefik.http.routers.deploylane-frontend.rule=Host(`${BASE_DOMAIN}`)
+      - traefik.http.routers.deploylane-frontend.entrypoints=websecure
+      - traefik.http.routers.deploylane-frontend.tls.certresolver=letsencrypt
+      - traefik.http.services.deploylane-frontend.loadbalancer.server.port=80
+    networks:
+      - deployforge-apps
+
+volumes:
+  postgres-data:
+  redis-data:
+  build-workspace:
+  traefik-acme:
+
+networks:
+  internal:
+    driver: bridge
+  deployforge-apps:
+    name: deployforge-apps
+    driver: bridge

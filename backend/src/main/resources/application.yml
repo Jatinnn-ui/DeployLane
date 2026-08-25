@@ -1,0 +1,163 @@
+spring:
+  application:
+    name: deployforge
+
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/deployforge}
+    username: ${DATABASE_USERNAME:deployforge}
+    password: ${DATABASE_PASSWORD:deployforge_local_password}
+    hikari:
+      pool-name: deployforge-pool
+      maximum-pool-size: 16
+      minimum-idle: 2
+      connection-timeout: 10000
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      # Schema ownership belongs to Flyway. Hibernate only validates.
+      ddl-auto: validate
+    properties:
+      hibernate.jdbc.time_zone: UTC
+      hibernate.default_batch_fetch_size: 32
+      hibernate.order_inserts: true
+      hibernate.order_updates: true
+      hibernate.jdbc.batch_size: 50
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 5s
+      connect-timeout: 5s
+
+  servlet:
+    multipart:
+      enabled: false
+
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
+  forward-headers-strategy: framework
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+  health:
+    redis:
+      enabled: true
+    db:
+      enabled: true
+  info:
+    env:
+      enabled: true
+
+logging:
+  level:
+    root: INFO
+    com.deployforge: INFO
+    org.springframework.web: INFO
+    org.hibernate.SQL: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{requestId:-}] [%thread] %logger{36} - %msg%n"
+
+springdoc:
+  api-docs:
+    path: /api/docs
+  swagger-ui:
+    path: /api/docs/ui
+    disable-swagger-default-url: true
+
+# ---------------------------------------------------------------------------
+# DeployLane configuration. Validated at startup, see
+# com.deployforge.config.DeployForgeProperties + StartupConfigurationValidator
+# ---------------------------------------------------------------------------
+deployforge:
+  frontend-url: ${FRONTEND_URL:http://localhost:5173}
+  public-backend-url: ${PUBLIC_BACKEND_URL:http://localhost:8080}
+
+  security:
+    jwt-secret: ${JWT_SECRET:}
+    encryption-key: ${ENCRYPTION_KEY:}
+    access-token-ttl: 15m
+    refresh-token-ttl: 30d
+    oauth-state-ttl: 10m
+    cookie-secure: ${COOKIE_SECURE:false}
+    cookie-same-site: Lax
+
+  github:
+    client-id: ${GITHUB_CLIENT_ID:}
+    client-secret: ${GITHUB_CLIENT_SECRET:}
+    webhook-secret: ${GITHUB_WEBHOOK_SECRET:}
+    api-base-url: https://api.github.com
+    oauth-authorize-url: https://github.com/login/oauth/authorize
+    oauth-token-url: https://github.com/login/oauth/access_token
+    scopes: read:user,user:email,repo
+
+  ai:
+    provider: ${AI_PROVIDER:heuristic}
+    request-timeout: 60s
+    max-log-lines: 250
+    gemini:
+      api-key: ${GEMINI_API_KEY:}
+      model: ${GEMINI_MODEL:gemini-2.0-flash}
+      base-url: https://generativelanguage.googleapis.com
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      model: ${OPENAI_MODEL:gpt-4o-mini}
+      base-url: https://api.openai.com
+
+  deployment:
+    root-path: ${DEPLOYMENT_ROOT_PATH:./data/builds}
+    public-host: ${DEPLOYMENT_PUBLIC_HOST:localhost}
+    port-range-start: ${DEPLOYMENT_PORT_RANGE_START:30000}
+    port-range-end: ${DEPLOYMENT_PORT_RANGE_END:30999}
+    memory-limit-mb: ${DEPLOYMENT_MEMORY_LIMIT_MB:1024}
+    cpu-limit: ${DEPLOYMENT_CPU_LIMIT:1.0}
+    pids-limit: ${DEPLOYMENT_PIDS_LIMIT:256}
+    build-timeout: ${DEPLOYMENT_BUILD_TIMEOUT_SECONDS:900}s
+    clone-timeout: 180s
+    worker-concurrency: 2
+    docker-host-uri: ${DOCKER_HOST_URI:npipe:////./pipe/docker_engine}
+    docker-network: deployforge-apps
+    docker-api-version: ${DOCKER_API_VERSION:}
+    health-check-path: /
+    health-check-timeout: 90s
+    health-check-interval: 3s
+    metrics-interval: 30s
+    build-retention-hours: 24
+    log-retention-days: 30
+    metrics-retention-hours: 72
+    # Routing mode: "local" (host port publishing) or "traefik" (subdomain via reverse proxy).
+    # When "traefik", containers get Traefik labels and base-domain is required.
+    routing-mode: ${DEPLOYMENT_ROUTING_MODE:local}
+    # Base domain for Traefik routing, e.g. "deploylane.app". Each project gets <slug>.<base-domain>.
+    base-domain: ${DEPLOYMENT_BASE_DOMAIN:}
+
+  rate-limit:
+    deployment-per-minute: 10
+    ai-analysis-per-minute: 6
+    ai-chat-per-minute: 20
+    webhook-per-minute: 120

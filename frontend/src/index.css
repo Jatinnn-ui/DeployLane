@@ -1,0 +1,375 @@
+@import 'tailwindcss';
+
+/*
+ * DeployLane — Permanent dark mode
+ *
+ * Dark canvas (#0a0a09) with the same Roobert type system, lime-chartreuse
+ * accent, tight-tracked headlines, and flat hairline cards — inverted from
+ * the Claymation light spec into a permanent dark palette with no toggle.
+ */
+@theme {
+  /* ——— canvas & surfaces (permanent dark mode) ——— */
+  --color-canvas: #0a0a09;
+  --color-surface: #141413;
+  --color-surface-alt: #1a1a18;
+  --color-surface-raised: #1f1f1d;
+  --color-surface-hover: #252522;
+  --color-surface-glass: rgba(20, 20, 19, 0.88);
+
+  /* ——— borders ——— */
+  --color-border-subtle: #2a2a27;
+  --color-border-strong: #3d3d38;
+  --color-border-accent: #cbd810;
+
+  /* ——— ink ——— */
+  --color-content-primary: #f5f5f4;
+  --color-content-secondary: #a8a29e;
+  --color-content-muted: #6b6560;
+  --color-content-inverse: #0a0a09;
+  --color-ink-deep: #f5f5f4;
+
+  /* ——— accent (lime-chartreuse, rationed) ——— */
+  --color-accent: #eef773;
+  --color-accent-hover: #e2eb5d;
+  --color-accent-deep: #cbd810;
+  --color-accent-soft: rgba(238, 247, 115, 0.12);
+  --color-accent-border: rgba(203, 216, 16, 0.32);
+  --color-link: #eef773;
+  --color-hero-primary: #cbd810;
+
+  /* ——— semantic status ——— */
+  --color-success: #34d399;
+  --color-success-soft: rgba(52, 211, 153, 0.1);
+  --color-success-border: rgba(52, 211, 153, 0.28);
+  --color-success-foreground: #6ee7b7;
+  --color-warning: #fbbf24;
+  --color-warning-soft: rgba(251, 191, 36, 0.1);
+  --color-warning-border: rgba(251, 191, 36, 0.28);
+  --color-warning-foreground: #fcd34d;
+  --color-danger: #f87171;
+  --color-danger-soft: rgba(248, 113, 113, 0.1);
+  --color-danger-border: rgba(248, 113, 113, 0.26);
+  --color-danger-foreground: #fca5a5;
+  --color-info: #60a5fa;
+  --color-info-soft: rgba(96, 165, 250, 0.1);
+  --color-info-border: rgba(96, 165, 250, 0.24);
+  --color-info-foreground: #93c5fd;
+
+  /* ——— section bands (dark variants) ——— */
+  --color-band-blue: rgba(96, 165, 250, 0.06);
+  --color-band-coral: rgba(251, 146, 60, 0.06);
+
+  /* ——— terminal / logs ——— */
+  --color-terminal-system: #a8a29e;
+  --color-terminal-git: #60a5fa;
+  --color-terminal-build: #34d399;
+  --color-terminal-docker: #38bdf8;
+  --color-terminal-health: #fbbf24;
+  --color-terminal-ai: #a78bfa;
+
+  /* ——— typography ——— */
+  --font-sans:
+    'Roobert', 'Roobertvf', 'Avenir Next', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-display:
+    'Roobert', 'Roobertvf', 'Avenir Next', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono:
+    'SFMono-Regular', ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', Menlo,
+    Consolas, monospace;
+
+  /* ——— radii (flat, editorial) ——— */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 24px;
+  --radius-panel: 18px;
+  --radius-control: 12px;
+  --radius-control-lg: 16px;
+  --radius-card: 18px;
+  --radius-card-lg: 24px;
+  --radius-pill: 9999px;
+
+  /* ——— shadows (dark mode: subtle outer glow, not heavy) ——— */
+  --shadow-sm: rgba(0, 0, 0, 0.3) 0px 1px 2px;
+  --shadow-md: rgba(0, 0, 0, 0.4) 0px 2px 6px;
+  --shadow-lg: rgba(0, 0, 0, 0.5) 0px 4px 12px;
+  --shadow-xl: rgba(0, 0, 0, 0.6) 0px 8px 24px;
+  --shadow-2xl: rgba(0, 0, 0, 0.7) 0px 16px 48px;
+  --shadow-inset-card: rgba(255, 255, 255, 0.03) 0px 0px 0px 1px inset;
+  --shadow-inset-blue: rgba(96, 165, 250, 0.08) 0px 0px 0px 1px inset;
+  --shadow-inset-coral: rgba(251, 146, 60, 0.08) 0px 0px 0px 1px inset;
+
+  /* ——— motion ——— */
+  --ease-default: cubic-bezier(0.075, 0.82, 0.165, 1);
+  --ease-transform: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --animate-shimmer: shimmer 1.6s ease-in-out infinite;
+  --animate-spin: spin 1s linear infinite;
+  --animate-fadein: fadein 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) both;
+}
+
+:root {
+  --section-padding: 64px;
+  --content-max-width: 1280px;
+  --chart-primary: #f5f5f4;
+  --chart-secondary: #a8a29e;
+  --chart-grid: #2a2a27;
+  --chart-tick: #6b6560;
+  --chart-tooltip: #1a1a18;
+  --chart-fill: rgba(203, 216, 16, 0.18);
+}
+
+@keyframes shimmer {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.75;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 currentColor;
+    opacity: 0.5;
+  }
+  70% {
+    box-shadow: 0 0 0 5px transparent;
+    opacity: 0;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+    opacity: 0;
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border-subtle);
+  }
+
+  html {
+    min-width: 320px;
+    background: var(--color-canvas);
+    color-scheme: dark;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+    background: var(--color-canvas);
+    color: var(--color-content-primary);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 400;
+    font-style: normal;
+    font-synthesis: none;
+    line-height: 1.5;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  p {
+    margin: 0;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  h4 {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  code,
+  pre,
+  kbd,
+  samp {
+    font-family: var(--font-mono);
+    font-variant-ligatures: none;
+  }
+
+  button,
+  a,
+  input,
+  textarea,
+  select {
+    font-style: normal;
+    transition-property: background-color, border-color, color, box-shadow, opacity, transform;
+    transition-duration: 300ms;
+    transition-timing-function: var(--ease-default);
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+    font-style: normal;
+    font-synthesis: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent-deep);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--color-accent-soft);
+    color: var(--color-content-primary);
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border-subtle);
+    border: 2px solid var(--color-canvas);
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-border-strong);
+  }
+
+  /* Native <option> elements inside <select> ignore most CSS in dark mode.
+     These two properties are the only ones browsers reliably apply. */
+  option {
+    background-color: #1a1a18;
+    color: #f5f5f4;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Workspace view — content width cap and entrance animation */
+.workspace-view {
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin-inline: auto;
+  animation: fadein 0.4s var(--ease-transform) both;
+}
+
+/* Card utility — flat with hairline inset */
+@utility panel {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-alt);
+  box-shadow: var(--shadow-inset-card);
+}
+
+@utility panel-blue {
+  border: none;
+  border-radius: var(--radius-card-lg);
+  background: var(--color-band-blue);
+  box-shadow: var(--shadow-inset-blue);
+}
+
+@utility panel-coral {
+  border: none;
+  border-radius: var(--radius-card-lg);
+  background: var(--color-band-coral);
+  box-shadow: var(--shadow-inset-coral);
+}
+
+@utility text-mono {
+  font-family: var(--font-mono);
+  font-variant-ligatures: none;
+}
+
+@utility display-tight {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+@utility headline-tight {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+
+@utility label-tight {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}

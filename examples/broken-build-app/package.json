@@ -1,0 +1,14 @@
+{
+  "name": "deployforge-broken-build-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fails during the build because a dependency is imported but never declared - used to demonstrate build failure analysis",
+  "main": "server.js",
+  "scripts": {
+    "build": "node build.js",
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

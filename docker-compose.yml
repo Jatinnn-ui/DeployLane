@@ -1,0 +1,143 @@
+##############################################################################
+# DeployLane - local stack
+#
+#   docker compose up -d postgres redis     # datastores only (recommended for development)
+#   docker compose up -d                    # everything, backend included
+#
+# Copy .env.example to .env first. JWT_SECRET and ENCRYPTION_KEY are mandatory:
+#   ./scripts/generate-secrets.sh           (or scripts/generate-secrets.ps1 on Windows)
+#
+# ---------------------------------------------------------------------------
+# SECURITY NOTE - read before running the backend in this file
+# ---------------------------------------------------------------------------
+# The backend needs the Docker engine to build images and run application containers, so the
+# container below mounts the host's Docker socket. Access to that socket is equivalent to root on
+# the host. That is acceptable for local development of a self hosted platform, and it is why:
+#
+#   * application containers themselves never receive the socket or any host bind mount
+#   * they run unprivileged, with dropped capabilities and hard CPU / memory / PID limits
+#   * only repositories you trust should be deployed (see docs/security.md)
+#
+# For development, the usual choice is to run only postgres and redis here and start the backend
+# from your IDE against the host Docker engine.
+##############################################################################
+
+name: deployforge
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: deployforge-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-deployforge}
+      POSTGRES_USER: ${POSTGRES_USER:-deployforge}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-deployforge_local_password}
+      # Deterministic collation so index behaviour matches production images.
+      POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale=C'
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-deployforge} -d ${POSTGRES_DB:-deployforge}']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    networks:
+      - deployforge
+
+  redis:
+    image: redis:7-alpine
+    container_name: deployforge-redis
+    restart: unless-stopped
+    # Deployment queue and rate limiting only; persistence is not required for correctness because
+    # the database is the source of truth. AOF is enabled anyway so a restart does not lose a queued job.
+    command: ['redis-server', '--appendonly', 'yes', '--save', '60', '1']
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    networks:
+      - deployforge
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: deployforge-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-deployforge}
+      DATABASE_USERNAME: ${POSTGRES_USER:-deployforge}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-deployforge_local_password}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required - run scripts/generate-secrets.sh}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?ENCRYPTION_KEY is required - run scripts/generate-secrets.sh}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+      GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET:-}
+      AI_PROVIDER: ${AI_PROVIDER:-heuristic}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      PUBLIC_BACKEND_URL: ${PUBLIC_BACKEND_URL:-http://localhost:8080}
+      # Inside a container the engine is reached through the mounted socket.
+      DOCKER_HOST_URI: unix:///var/run/docker.sock
+      DEPLOYMENT_ROOT_PATH: /var/lib/deployforge/builds
+      # Deployed containers publish ports on the host, so the browser reaches them at localhost.
+      DEPLOYMENT_PUBLIC_HOST: ${DEPLOYMENT_PUBLIC_HOST:-localhost}
+      DEPLOYMENT_PORT_RANGE_START: ${DEPLOYMENT_PORT_RANGE_START:-30000}
+      DEPLOYMENT_PORT_RANGE_END: ${DEPLOYMENT_PORT_RANGE_END:-30999}
+    ports:
+      - '8080:8080'
+    volumes:
+      # See the security note at the top of this file.
+      - /var/run/docker.sock:/var/run/docker.sock
+      - build-workspace:/var/lib/deployforge/builds
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'http://localhost:8080/actuator/health']
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+    networks:
+      - deployforge
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${PUBLIC_BACKEND_URL:-http://localhost:8080}
+    container_name: deployforge-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - '5173:80'
+    networks:
+      - deployforge
+
+volumes:
+  postgres-data:
+  redis-data:
+  build-workspace:
+
+networks:
+  deployforge:
+    name: deployforge
+    driver: bridge
+  # Application containers are attached to a separate network created by the backend
+  # (deployforge-apps), so deployed user code cannot reach PostgreSQL or Redis.
