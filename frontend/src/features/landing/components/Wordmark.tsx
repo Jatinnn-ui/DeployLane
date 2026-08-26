@@ -9,21 +9,18 @@ import { cn } from '@/lib/utils';
  */
 export function Wordmark({
   className,
-  markSize = 18,
   textClass = 'text-[16.5px]',
 }: {
   className?: string;
-  markSize?: number;
+  /** Sizes the whole lockup: the mark is sized in `em`, so it tracks the wordmark. */
   textClass?: string;
 }) {
   return (
-    <span className={cn('inline-flex items-center gap-2', className)}>
+    <span className={cn('inline-flex items-center gap-[0.4em]', textClass, className)}>
       <svg
-        width={markSize}
-        height={markSize}
         viewBox="0 0 24 24"
         aria-hidden="true"
-        className="shrink-0"
+        className="h-[0.95em] w-[0.95em] shrink-0"
       >
         {/* Directional chevron: the brand mark, and the same shape used on the 3D server. */}
         <path

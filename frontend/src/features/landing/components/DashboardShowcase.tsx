@@ -97,7 +97,7 @@ function ConsoleMock() {
       <div className="flex">
         {/* nav rail */}
         <div className="hidden w-[132px] shrink-0 flex-col border-r border-border-subtle p-2.5 sm:flex">
-          <Wordmark className="mb-4" markSize={12} textClass="text-[11px]" />
+          <Wordmark className="mb-4" textClass="text-[11px]" />
 
           <ul className="space-y-0.5">
             {NAV.map((item) => (

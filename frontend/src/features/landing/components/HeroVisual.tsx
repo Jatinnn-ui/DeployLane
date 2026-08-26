@@ -28,6 +28,10 @@ interface Card {
   essential?: boolean;
 }
 
+/**
+ * Card widths are percentages of the scene, not pixels, so the diagram scales as one unit.
+ * The reference scene is 614px wide, so 135px becomes 22%.
+ */
 const CARDS: Card[] = [
   {
     id: 'repository',
@@ -36,7 +40,7 @@ const CARDS: Card[] = [
     meta: 'a1b2c3d',
     icon: GithubIcon,
     at: { x: 21.7, y: 14.3 },
-    width: 135,
+    width: 22,
     rotate: -4,
     essential: true,
   },
@@ -47,7 +51,7 @@ const CARDS: Card[] = [
     meta: '32s',
     icon: Box,
     at: { x: 80.5, y: 14.8 },
-    width: 130,
+    width: 21.2,
     rotate: 3,
   },
   {
@@ -57,7 +61,7 @@ const CARDS: Card[] = [
     meta: 'alpine:3.19',
     icon: Layers,
     at: { x: 86.9, y: 41.7 },
-    width: 145,
+    width: 23.6,
     rotate: 2,
   },
   {
@@ -67,7 +71,7 @@ const CARDS: Card[] = [
     meta: 'us-east-1',
     icon: Rocket,
     at: { x: 83, y: 69.7 },
-    width: 160,
+    width: 26,
     rotate: 3,
     essential: true,
   },
@@ -77,7 +81,7 @@ const CARDS: Card[] = [
     status: 'https://cheslearn.app',
     icon: Globe,
     at: { x: 39.7, y: 81.8 },
-    width: 175,
+    width: 28.5,
     rotate: -2,
     essential: true,
   },
@@ -121,9 +125,15 @@ const JOINTS = [
   [430, 292],
 ];
 
-/** HUD panel: darker and smaller than a normal product card. */
+/**
+ * HUD panel: darker and smaller than a normal product card.
+ *
+ * Sized in `cqw` — percent of the scene's own width — so the panels grow with the diagram
+ * rather than staying at 1024px-calibrated pixel sizes on a large display. The reference
+ * scene is 614px wide, so its 10px title is 1.63cqw.
+ */
 const PANEL =
-  'rounded-[11px] border border-[rgba(255,255,255,0.17)] bg-[linear-gradient(135deg,rgba(19,23,21,0.94),rgba(7,10,9,0.96))] shadow-[0_12px_35px_rgba(0,0,0,0.38),inset_0_1px_rgba(255,255,255,0.035)]';
+  'rounded-[1.8cqw] border border-[rgba(255,255,255,0.17)] bg-[linear-gradient(135deg,rgba(19,23,21,0.94),rgba(7,10,9,0.96))] shadow-[0_12px_35px_rgba(0,0,0,0.38),inset_0_1px_rgba(255,255,255,0.035)]';
 
 function StatusCard({ card, reducedMotion }: { card: Card; reducedMotion: boolean }) {
   const Icon = card.icon;
@@ -141,31 +151,37 @@ function StatusCard({ card, reducedMotion }: { card: Card; reducedMotion: boolea
       }}
     >
       <div
-        className={cn(PANEL, 'pipeline-card-float px-2 py-1.5 lg:px-2.5 lg:py-2')}
+        className={cn(
+          PANEL,
+          'pipeline-card-float w-full px-2 py-1.5',
+          'lg:w-[var(--card-w)] lg:px-[1.6cqw] lg:py-[1.3cqw]',
+        )}
         style={
           {
             '--card-tilt': `perspective(900px) rotateY(-4deg) rotate(${card.rotate}deg)`,
             '--float-delay': `${card.at.x / -26}s`,
-            width: `${card.width}px`,
-            maxWidth: '100%',
+            '--card-w': `${card.width}%`,
           } as React.CSSProperties
         }
       >
-        <div className="flex items-center gap-1.5">
-          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-[6px] border border-[rgba(255,255,255,0.12)] bg-[#111516] text-content-secondary">
-            <Icon className="h-2.5 w-2.5" strokeWidth={2} aria-hidden="true" />
+        <div className="flex items-center gap-1.5 lg:gap-[1cqw]">
+          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-[rgba(255,255,255,0.12)] bg-[#111516] text-content-secondary lg:h-[3.3cqw] lg:w-[3.3cqw] lg:rounded-[1cqw]">
+            <Icon className="h-2.5 w-2.5 lg:h-[1.7cqw] lg:w-[1.7cqw]" strokeWidth={2} aria-hidden="true" />
           </span>
-          <p className="min-w-0 flex-1 truncate text-[10px] font-semibold leading-none text-content-primary">
+          <p className="min-w-0 flex-1 truncate text-[10px] font-semibold leading-none text-content-primary lg:text-[1.63cqw]">
             {card.label}
           </p>
-          <CheckCircle2 className="h-3 w-3 shrink-0 text-success" aria-hidden="true" />
+          <CheckCircle2
+            className="h-3 w-3 shrink-0 text-success lg:h-[2cqw] lg:w-[2cqw]"
+            aria-hidden="true"
+          />
         </div>
 
-        <p className="mt-1 truncate pl-6.5 text-[7.5px] leading-tight text-content-secondary">
+        <p className="mt-1 truncate pl-6.5 text-[8px] leading-tight text-content-secondary lg:mt-[0.7cqw] lg:pl-[4.3cqw] lg:text-[1.22cqw]">
           {card.status}
         </p>
         {card.meta && (
-          <p className="truncate pl-6.5 font-mono text-[7px] leading-tight text-content-muted">
+          <p className="truncate pl-6.5 font-mono text-[7.5px] leading-tight text-content-muted lg:pl-[4.3cqw] lg:text-[1.14cqw]">
             {card.meta}
           </p>
         )}
@@ -185,27 +201,26 @@ function BuildLogsCard({ reducedMotion }: { reducedMotion: boolean }) {
       }}
     >
       <div
-        className={cn(PANEL, 'pipeline-card-float px-2.5 py-2')}
+        className={cn(PANEL, 'pipeline-card-float w-[23.6%] px-[1.6cqw] py-[1.3cqw]')}
         style={
           {
             '--card-tilt': 'perspective(900px) rotateY(3deg) rotate(-2deg)',
             '--float-delay': '-2.4s',
-            width: '145px',
           } as React.CSSProperties
         }
       >
-        <p className="text-[9.5px] font-semibold leading-none text-content-primary">Build Logs</p>
+        <p className="text-[1.55cqw] font-semibold leading-none text-content-primary">Build Logs</p>
 
-        <div className="mt-1.5 space-y-[2px] font-mono">
+        <div className="mt-[1cqw] space-y-[0.35cqw] font-mono">
           {LOG_LINES.map((line) => (
-            <p key={line} className="truncate text-[7px] leading-tight text-content-muted">
+            <p key={line} className="truncate text-[1.14cqw] leading-tight text-content-muted">
               <span aria-hidden="true">›</span> {line}
             </p>
           ))}
-          <p className="truncate text-[7px] leading-tight text-accent">
+          <p className="truncate text-[1.14cqw] leading-tight text-accent">
             <span aria-hidden="true">›</span> Build completed
           </p>
-          <p className="text-[7px] leading-tight text-content-muted" aria-hidden="true">
+          <p className="text-[1.14cqw] leading-tight text-content-muted" aria-hidden="true">
             _
           </p>
         </div>
@@ -219,7 +234,9 @@ export function HeroVisual({ reducedMotion = false }: { reducedMotion?: boolean 
   const glowId = `link-glow-${uid}`;
 
   return (
-    <div className="relative h-[330px] sm:h-[380px] lg:h-[412px]">
+    // `container-type` makes cqw resolve against this box, and the reference aspect ratio
+    // (614x412) lets the whole composition scale without re-deriving any coordinate.
+    <div className="@container relative h-[330px] sm:h-[380px] lg:h-auto lg:aspect-[614/412]">
       <NetworkBackground />
 
       {/* Server: 67% of the scene width lands the cube near 215px, matching the reference. */}
@@ -277,7 +294,7 @@ export function HeroVisual({ reducedMotion = false }: { reducedMotion?: boolean 
 
       <ul
         aria-label="Deployment pipeline stages"
-        className="absolute inset-x-0 bottom-0 grid list-none grid-cols-3 gap-1.5 lg:inset-0 lg:block lg:gap-0"
+        className="absolute inset-x-0 bottom-0 grid list-none grid-cols-3 items-end gap-1.5 lg:inset-0 lg:block lg:gap-0"
       >
         {CARDS.map((card) => (
           <StatusCard key={card.id} card={card} reducedMotion={reducedMotion} />

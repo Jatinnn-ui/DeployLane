@@ -734,32 +734,34 @@
   --dl-option-bg: #101314;
   --dl-option-fg: #f5f5f5;
 
+  /* Hero type scale, derived from the reference at 1024px wide and expressed in vw so the
+     composition grows with the window instead of staying tiny on a large display.
+     Each lower bound is the reference pixel value; each vw figure is that value / 1024. */
+  --dl-hero-h1: clamp(30px, 3.81vw, 62px);
+  --dl-hero-lead: clamp(12px, 1.17vw, 19px);
+  --dl-hero-pill: clamp(8px, 0.78vw, 13px);
+  --dl-hero-cta: clamp(10px, 0.98vw, 16px);
+  --dl-hero-feat: clamp(7px, 0.68vw, 11px);
+  --dl-nav-link: clamp(10px, 0.98vw, 15px);
+  --dl-nav-logo: clamp(17px, 1.76vw, 28px);
+  --dl-trust-label: clamp(7px, 0.68vw, 11px);
+  --dl-trust-logo: clamp(11px, 1.17vw, 19px);
+
   background: var(--dl-canvas);
   color: var(--dl-content-primary);
 }
 
 /* 1360px content rail with the specified responsive gutters */
-/* Rail measured from the reference: content begins 38px from the left edge at a 1024px
-   viewport, with a slightly tighter right gutter. */
+/* The reference is authored on a 1024px-wide canvas. Rather than pinning its measurements to
+   fixed pixels — which shrinks the whole design into the middle of a large monitor — each one
+   is expressed as its share of that canvas and clamped. 38px at 1024 is 3.71vw, so the rail
+   and its gutters keep the reference proportions at any width. */
 @utility landing-container {
   width: 100%;
-  max-width: 1180px;
+  max-width: 1680px;
   margin-inline: auto;
-  padding-inline: 20px;
-}
-
-@media (min-width: 768px) {
-  .landing-container {
-    padding-left: 30px;
-    padding-right: 22px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .landing-container {
-    padding-left: 38px;
-    padding-right: 26px;
-  }
+  padding-left: clamp(20px, 3.71vw, 62px);
+  padding-right: clamp(16px, 2.54vw, 43px);
 }
 
 /* Each marketing section sits inside its own bordered panel, one step lighter than the

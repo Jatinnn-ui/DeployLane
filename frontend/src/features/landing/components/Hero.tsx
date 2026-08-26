@@ -32,17 +32,17 @@ export function Hero() {
       {/* At lg the scene column starts flush with the navbar, so the 29px offset from the
           reference lives on the copy column. That keeps the trusted row at its measured y. */}
       <div className="landing-container relative grid gap-8 pb-6 pt-7 lg:grid-cols-[36%_64%] lg:items-start lg:gap-0 lg:pb-0 lg:pt-0">
-        <div className="lg:pr-6 lg:pt-[29px]">
-          <p className="inline-flex h-[22px] items-center gap-1.5 rounded-full border border-[rgba(160,255,0,0.22)] bg-[rgba(8,12,10,0.7)] px-[11px]">
-            <Zap className="h-2 w-2 shrink-0 text-accent" aria-hidden="true" />
-            <span className="whitespace-nowrap text-[8px] font-medium tracking-[0.01em] text-content-secondary">
+        <div className="lg:pr-[2vw] lg:pt-[2.8vw]">
+          <p className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(160,255,0,0.22)] bg-[rgba(8,12,10,0.7)] px-[1.1em] py-[0.55em] text-[length:var(--dl-hero-pill)]">
+            <Zap className="h-[1em] w-[1em] shrink-0 text-accent" aria-hidden="true" />
+            <span className="whitespace-nowrap font-medium tracking-[0.01em] text-content-secondary">
               Deployments are now 2x faster
             </span>
           </p>
 
           <h1
             id="hero-heading"
-            className="mt-[21px] max-w-[350px] text-[30px] font-bold leading-[1.04] tracking-[-0.038em] text-[#f4f4f4] sm:text-[35px] lg:text-[39px]"
+            className="mt-[0.55em] max-w-[9em] text-[length:var(--dl-hero-h1)] font-bold leading-[1.04] tracking-[-0.038em] text-[#f4f4f4]"
           >
             Deploy your code.
             <br />
@@ -51,23 +51,20 @@ export function Hero() {
             <span className="text-[#9cff00]">In seconds.</span>
           </h1>
 
-          <p className="mt-[17px] max-w-[300px] text-[12px] leading-[1.6] text-white/65">
+          <p className="mt-[1.45em] max-w-[25em] text-[length:var(--dl-hero-lead)] leading-[1.6] text-white/65">
             DeployLane helps developers build, deploy, and manage applications with zero friction.
             From git push to global scale.
           </p>
 
-          <div className="mt-[27px] flex flex-wrap items-center gap-3">
+          <div className="mt-[2.2em] flex flex-wrap items-center gap-[1.2em] text-[length:var(--dl-hero-cta)]">
             <Link to="/login">
               <Button
                 variant="primary"
                 size="md"
-                className="group h-9 min-w-[130px] justify-center gap-2 rounded-[5px] px-4 text-[10px] font-medium"
+                className="group h-[3.6em] min-w-[13em] justify-center gap-[0.8em] rounded-[0.5em] px-[1.6em] text-[1em] font-medium"
               >
                 Start Deploying
-                <ArrowRight
-                  className="h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5"
-                  aria-hidden="true"
-                />
+                <ArrowRight className="h-[1.2em] w-[1.2em] transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true" />
               </Button>
             </Link>
 
@@ -75,9 +72,9 @@ export function Hero() {
               <Button
                 variant="secondary"
                 size="md"
-                className="h-9 justify-center gap-2 rounded-[5px] border-[rgba(255,255,255,0.24)] bg-[rgba(10,13,12,0.65)] px-[15px] text-[10px] font-medium"
+                className="h-[3.6em] justify-center gap-[0.8em] rounded-[0.5em] border-[rgba(255,255,255,0.24)] bg-[rgba(10,13,12,0.65)] px-[1.5em] text-[1em] font-medium"
               >
-                <GithubIcon className="h-3 w-3" />
+                <GithubIcon className="h-[1.2em] w-[1.2em]" />
                 Connect GitHub
               </Button>
             </Link>
@@ -85,13 +82,13 @@ export function Hero() {
 
           {/* Runs wider than the copy column in the reference, so it overflows the grid cell
               rather than wrapping onto a second line. */}
-          <ul className="mt-[31px] flex w-max max-w-full flex-wrap items-center gap-x-[13px] gap-y-2 lg:flex-nowrap">
+          <ul className="mt-[2.6em] flex w-max max-w-full flex-wrap items-center gap-x-[1.9em] gap-y-[0.9em] text-[length:var(--dl-hero-feat)] lg:flex-nowrap">
             {CAPABILITIES.map((capability) => (
-              <li key={capability.label} className="flex shrink-0 items-center gap-1">
-                <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border border-[rgba(160,255,0,0.45)]">
-                  <capability.icon className="h-2 w-2 text-accent" aria-hidden="true" />
+              <li key={capability.label} className="flex shrink-0 items-center gap-[0.5em]">
+                <span className="flex h-[2.6em] w-[2.6em] shrink-0 items-center justify-center rounded-full border border-[rgba(160,255,0,0.45)]">
+                  <capability.icon className="h-[1.15em] w-[1.15em] text-accent" aria-hidden="true" />
                 </span>
-                <span className="whitespace-nowrap text-[7px] font-medium text-white/68">
+                <span className="whitespace-nowrap font-medium text-white/68">
                   {capability.label}
                 </span>
               </li>
