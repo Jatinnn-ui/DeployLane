@@ -17,44 +17,55 @@ export function Hero() {
   const reducedMotion = usePrefersReducedMotion();
 
   return (
-    <section className="relative overflow-hidden" aria-labelledby="hero-heading">
+    <section
+      className="relative overflow-hidden"
+      style={{
+        background:
+          'radial-gradient(ellipse at 68% 48%, rgba(120,190,0,0.055) 0%, rgba(0,0,0,0) 42%)',
+      }}
+      aria-labelledby="hero-heading"
+    >
       {/* Left column is ~39%, matching the reference. Explicit padding rather than a viewport
           min-height: the reference hero is ~640px tall, not a full screen. */}
-      <div className="landing-container relative grid items-center gap-9 pb-8 pt-8 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:gap-5 lg:pb-9 lg:pt-9">
-        <div>
-          <p className="inline-flex items-center gap-1.5 rounded-full border border-border-subtle bg-surface/70 px-2.5 py-1">
-            <Zap className="h-2.5 w-2.5 text-accent" aria-hidden="true" />
-            <span className="text-[11px] font-medium text-content-secondary">
+      {/* 36/64 split and explicit vertical rhythm, both measured from the reference. The
+          hero deliberately has no viewport-height rule, so the trusted row stays in view. */}
+      {/* At lg the scene column starts flush with the navbar, so the 29px offset from the
+          reference lives on the copy column. That keeps the trusted row at its measured y. */}
+      <div className="landing-container relative grid gap-8 pb-6 pt-7 lg:grid-cols-[36%_64%] lg:items-start lg:gap-0 lg:pb-0 lg:pt-0">
+        <div className="lg:pr-6 lg:pt-[29px]">
+          <p className="inline-flex h-[22px] items-center gap-1.5 rounded-full border border-[rgba(160,255,0,0.22)] bg-[rgba(8,12,10,0.7)] px-[11px]">
+            <Zap className="h-2 w-2 shrink-0 text-accent" aria-hidden="true" />
+            <span className="whitespace-nowrap text-[8px] font-medium tracking-[0.01em] text-content-secondary">
               Deployments are now 2x faster
             </span>
           </p>
 
           <h1
             id="hero-heading"
-            className="mt-9 max-w-[470px] text-[36px] font-bold leading-[1.02] tracking-[-0.04em] text-content-primary sm:text-[46px] lg:text-[55px]"
+            className="mt-[21px] max-w-[350px] text-[30px] font-bold leading-[1.04] tracking-[-0.038em] text-[#f4f4f4] sm:text-[35px] lg:text-[39px]"
           >
             Deploy your code.
             <br />
             Anywhere.
             <br />
-            <span className="text-accent">In seconds.</span>
+            <span className="text-[#9cff00]">In seconds.</span>
           </h1>
 
-          <p className="mt-5 max-w-[400px] text-[15px] leading-[1.6] text-content-secondary">
+          <p className="mt-[17px] max-w-[300px] text-[12px] leading-[1.6] text-white/65">
             DeployLane helps developers build, deploy, and manage applications with zero friction.
             From git push to global scale.
           </p>
 
-          <div className="mt-7 flex flex-wrap items-center gap-3">
+          <div className="mt-[27px] flex flex-wrap items-center gap-3">
             <Link to="/login">
               <Button
                 variant="primary"
                 size="md"
-                className="group h-12 w-[182px] justify-center rounded-[9px] text-[13.5px] shadow-[0_0_20px_-8px_rgba(168,240,0,0.45)]"
+                className="group h-9 min-w-[130px] justify-center gap-2 rounded-[5px] px-4 text-[10px] font-medium"
               >
                 Start Deploying
                 <ArrowRight
-                  className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
+                  className="h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5"
                   aria-hidden="true"
                 />
               </Button>
@@ -64,23 +75,23 @@ export function Hero() {
               <Button
                 variant="secondary"
                 size="md"
-                className="h-12 w-[170px] justify-center rounded-[9px] text-[13.5px]"
+                className="h-9 justify-center gap-2 rounded-[5px] border-[rgba(255,255,255,0.24)] bg-[rgba(10,13,12,0.65)] px-[15px] text-[10px] font-medium"
               >
-                <GithubIcon className="h-4 w-4" />
+                <GithubIcon className="h-3 w-3" />
                 Connect GitHub
               </Button>
             </Link>
           </div>
 
-          {/* Row runs wider than the copy column in the reference, so it is allowed to
-              overflow the grid cell rather than wrapping. */}
-          <ul className="mt-8 flex w-max max-w-full flex-wrap items-center gap-x-4 gap-y-2.5 lg:flex-nowrap">
+          {/* Runs wider than the copy column in the reference, so it overflows the grid cell
+              rather than wrapping onto a second line. */}
+          <ul className="mt-[31px] flex w-max max-w-full flex-wrap items-center gap-x-[13px] gap-y-2 lg:flex-nowrap">
             {CAPABILITIES.map((capability) => (
-              <li key={capability.label} className="flex shrink-0 items-center gap-1.5">
-                <span className="flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded-full border border-accent-border">
+              <li key={capability.label} className="flex shrink-0 items-center gap-1">
+                <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border border-[rgba(160,255,0,0.45)]">
                   <capability.icon className="h-2 w-2 text-accent" aria-hidden="true" />
                 </span>
-                <span className="whitespace-nowrap text-[11px] font-medium text-content-secondary">
+                <span className="whitespace-nowrap text-[7px] font-medium text-white/68">
                   {capability.label}
                 </span>
               </li>

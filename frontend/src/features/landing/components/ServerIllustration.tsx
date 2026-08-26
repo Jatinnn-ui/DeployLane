@@ -2,212 +2,282 @@ import { useId } from 'react';
 import { cn } from '@/lib/utils';
 
 /**
- * The DeployLane deployment server, drawn as an inline SVG isometric model.
+ * The DeployLane deployment server: a rounded hardware cube on a lit circular platform.
  *
- * Deliberately not WebGL. A canvas-based server depends on a GL context that can fail, gets
- * deferred behind a lazy chunk, and cannot be positioned against a CSS bounding box — all of
- * which made the previous version read as missing. An SVG renders on first paint, every time,
- * and its geometry is measurable against the reference.
+ * Inline SVG rather than WebGL so it renders on first paint and its geometry can be measured
+ * against the reference's bounding boxes.
  *
- * Construction: one unit square is mapped onto each visible face with a transform matrix, so
- * face decoration (logo, vents, seams) is authored in flat 0–1 coordinates and inherits the
- * correct isometric shear automatically.
+ * Corners are genuinely rounded rather than mitred: `roundedPath` walks each polygon and
+ * replaces every vertex with a quadratic through pulled-back edge points. That is what stops
+ * the body reading as a flat open-top box, which a plain `<polygon>` cannot avoid.
  */
 
-/* Cube corners. Top rhombus is 220 wide × 116 tall; body height is 78. */
-const TOP = '270,54';
-const LEFT = '160,112';
-const FRONT = '270,170';
-const RIGHT = '380,112';
-const LEFT_B = '160,190';
-const FRONT_B = '270,248';
-const RIGHT_B = '380,190';
+type Point = [number, number];
 
-/** Maps the unit square onto each face: (0,0) is the face's upper-left corner. */
-const FACE_LEFT = 'matrix(110 58 0 78 160 112)';
-const FACE_RIGHT = 'matrix(110 -58 0 78 270 170)';
-const FACE_TOP = 'matrix(110 58 110 -58 160 112)';
+function roundedPath(points: Point[], radius: number): string {
+  const count = points.length;
+  const segments: string[] = [];
 
-/** Thick chevron in unit space — the brand mark. */
-const CHEVRON = 'M 0.30 0.20 L 0.60 0.50 L 0.30 0.80 L 0.43 0.92 L 0.85 0.50 L 0.43 0.08 Z';
+  for (let i = 0; i < count; i += 1) {
+    const previous = points[(i - 1 + count) % count];
+    const current = points[i];
+    const next = points[(i + 1) % count];
 
-const PLATFORM_CX = 270;
-const PLATFORM_CY = 196;
-/** Isometric foreshortening for a circle on the ground plane. */
-const RY_RATIO = 0.527;
+    // Clamp the pull-back so short edges cannot invert the curve.
+    const back = pullBack(current, previous, radius);
+    const forward = pullBack(current, next, radius);
 
-function SmallCube({ x, y, scale }: { x: number; y: number; scale: number }) {
-  return (
-    <g transform={`translate(${x} ${y}) scale(${scale})`}>
-      <polygon points="0,-14 24,0 0,14 -24,0" fill="#1e2426" />
-      <polygon points="-24,0 0,14 0,34 -24,20" fill="#0d1112" />
-      <polygon points="0,14 24,0 24,20 0,34" fill="#080b0c" />
-      <path d="M-24,20 L0,34 L24,20" fill="none" stroke="#a8f000" strokeOpacity="0.5" strokeWidth="1.4" />
-    </g>
-  );
+    segments.push(
+      i === 0 ? `M ${back[0]} ${back[1]}` : `L ${back[0]} ${back[1]}`,
+      `Q ${current[0]} ${current[1]} ${forward[0]} ${forward[1]}`,
+    );
+  }
+
+  return `${segments.join(' ')} Z`;
 }
 
+function pullBack(from: Point, toward: Point, radius: number): Point {
+  const dx = toward[0] - from[0];
+  const dy = toward[1] - from[1];
+  const length = Math.hypot(dx, dy) || 1;
+  const distance = Math.min(radius, length / 2);
+
+  return [from[0] + (dx / length) * distance, from[1] + (dy / length) * distance];
+}
+
+/* Isometric cube. Top rhombus is 210 wide × 110 tall; the body drops 88. */
+const HALF_W = 105;
+const HALF_D = 55;
+const BODY = 88;
+const CX = 200;
+const TOP_Y = 150;
+
+const T: Point = [CX, TOP_Y - HALF_D];
+const R: Point = [CX + HALF_W, TOP_Y];
+const B: Point = [CX, TOP_Y + HALF_D];
+const L: Point = [CX - HALF_W, TOP_Y];
+const LB: Point = [L[0], L[1] + BODY];
+const BB: Point = [B[0], B[1] + BODY];
+const RB: Point = [R[0], R[1] + BODY];
+
+const RADIUS = 15;
+
+/** Unit-square mapping for each visible face, so decoration inherits the isometric shear. */
+const FACE_LEFT = `matrix(${HALF_W} ${HALF_D} 0 ${BODY} ${L[0]} ${L[1]})`;
+const FACE_RIGHT = `matrix(${HALF_W} ${-HALF_D} 0 ${BODY} ${B[0]} ${B[1]})`;
+const FACE_TOP = `matrix(${HALF_W} ${HALF_D} ${HALF_W} ${-HALF_D} ${L[0]} ${L[1]})`;
+
+const CHEVRON = 'M 0.32 0.20 L 0.60 0.50 L 0.32 0.80 L 0.44 0.91 L 0.83 0.50 L 0.44 0.09 Z';
+
+/* Platform. Flatter than the cube's top face, matching the reference's lower camera. */
+const BASE_CY = 276;
+const BASE_RX = 144;
+const BASE_RATIO = 0.27;
+
 export function ServerIllustration({ className }: { className?: string }) {
-  // The illustration appears twice on the page. Paint-server ids must therefore be scoped
-  // per instance, otherwise both copies reference the first one's defs via duplicate ids.
+  // Two instances of this component appear on the page, so paint-server ids must be scoped
+  // per instance or the second copy would reference the first one's defs.
   const uid = useId().replace(/:/g, '');
   const ref = (name: string) => `${name}-${uid}`;
   const url = (name: string) => `url(#${ref(name)})`;
 
   return (
     <svg
-      viewBox="50 30 440 290"
+      viewBox="0 40 400 320"
       className={cn('h-auto w-full', className)}
       aria-hidden="true"
       focusable="false"
     >
       <defs>
-        <linearGradient id={ref('dl-face-top')} x1="0" y1="0" x2="0.7" y2="1">
-          <stop offset="0" stopColor="#333b3d" />
-          <stop offset="0.55" stopColor="#202728" />
-          <stop offset="1" stopColor="#161b1c" />
+        <linearGradient id={ref('top')} x1="0.1" y1="0" x2="0.8" y2="1">
+          <stop offset="0" stopColor="#3d4548" />
+          <stop offset="0.5" stopColor="#242b2d" />
+          <stop offset="1" stopColor="#171d1e" />
         </linearGradient>
-        <linearGradient id={ref('dl-face-left')} x1="0" y1="0" x2="0.35" y2="1">
-          <stop offset="0" stopColor="#1b2122" />
-          <stop offset="1" stopColor="#0d1112" />
+        <linearGradient id={ref('left')} x1="0" y1="0" x2="0.4" y2="1">
+          <stop offset="0" stopColor="#20272a" />
+          <stop offset="0.55" stopColor="#14191b" />
+          <stop offset="1" stopColor="#0b0f10" />
         </linearGradient>
-        <linearGradient id={ref('dl-face-right')} x1="0" y1="0" x2="0.6" y2="1">
-          <stop offset="0" stopColor="#121718" />
-          <stop offset="1" stopColor="#07090a" />
+        <linearGradient id={ref('right')} x1="0" y1="0" x2="0.7" y2="1">
+          <stop offset="0" stopColor="#151b1c" />
+          <stop offset="1" stopColor="#080b0c" />
         </linearGradient>
-        <radialGradient id={ref('dl-underglow')}>
-          <stop offset="0" stopColor="#a8f000" stopOpacity="0.34" />
-          <stop offset="0.45" stopColor="#a8f000" stopOpacity="0.1" />
+        <linearGradient id={ref('cyl')} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#0a0e0f" />
+          <stop offset="0.5" stopColor="#151a1b" />
+          <stop offset="1" stopColor="#080b0c" />
+        </linearGradient>
+        <radialGradient id={ref('bloom')}>
+          <stop offset="0" stopColor="#a8f000" stopOpacity="0.42" />
+          <stop offset="0.5" stopColor="#a8f000" stopOpacity="0.11" />
           <stop offset="1" stopColor="#a8f000" stopOpacity="0" />
         </radialGradient>
-        <radialGradient id={ref('dl-ambient')}>
-          <stop offset="0" stopColor="#a8f000" stopOpacity="0.08" />
-          <stop offset="0.55" stopColor="#a8f000" stopOpacity="0.02" />
-          <stop offset="1" stopColor="#a8f000" stopOpacity="0" />
-        </radialGradient>
-        <filter id={ref('dl-glow')} x="-70%" y="-70%" width="240%" height="240%">
-          <feGaussianBlur stdDeviation="3.4" result="b" />
+        <filter id={ref('glow')} x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="2.6" result="b" />
           <feMerge>
             <feMergeNode in="b" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
-        <filter id={ref('dl-glow-soft')} x="-70%" y="-70%" width="240%" height="240%">
-          <feGaussianBlur stdDeviation="6" />
+        <filter id={ref('soft')} x="-90%" y="-90%" width="280%" height="280%">
+          <feGaussianBlur stdDeviation="7" />
         </filter>
       </defs>
 
-      {/* Contained ambient light. Kept small so the field stays black, not green. */}
-      <ellipse cx={PLATFORM_CX} cy={190} rx={215} ry={125} fill={url('dl-ambient')} />
+      {/* Ground bloom, tight to the platform so the field stays black. */}
+      <ellipse cx={CX} cy={BASE_CY + 6} rx={190} ry={62} fill={url('bloom')} />
 
-      {/* Deployment platform: dark base plus concentric lime rings on the ground plane. */}
-      <ellipse cx={PLATFORM_CX} cy={PLATFORM_CY + 6} rx={205} ry={205 * RY_RATIO} fill={url('dl-underglow')} />
-      {[
-        { rx: 192, o: 0.16 },
-        { rx: 162, o: 0.3 },
-        { rx: 132, o: 0.5 },
-      ].map((ring) => (
+      {/* Wide, very faint outer rings. */}
+      {[196, 172].map((rx, index) => (
         <ellipse
-          key={ring.rx}
-          cx={PLATFORM_CX}
-          cy={PLATFORM_CY}
-          rx={ring.rx}
-          ry={ring.rx * RY_RATIO}
+          key={rx}
+          cx={CX}
+          cy={BASE_CY}
+          rx={rx}
+          ry={rx * BASE_RATIO}
           fill="none"
           stroke="#a8f000"
-          strokeOpacity={ring.o}
-          strokeWidth="1.3"
+          strokeOpacity={index === 0 ? 0.1 : 0.16}
+          strokeWidth="1"
         />
       ))}
-      <ellipse
-        cx={PLATFORM_CX}
-        cy={PLATFORM_CY}
-        rx={116}
-        ry={116 * RY_RATIO}
-        fill="#070a0b"
-        stroke="#a8f000"
-        strokeOpacity="0.62"
-        strokeWidth="1.5"
+
+      {/* Platform: cylinder wall, lit top rim, concentric interface rings. */}
+      <path
+        d={`M ${CX - BASE_RX} ${BASE_CY} A ${BASE_RX} ${BASE_RX * BASE_RATIO} 0 0 0 ${CX + BASE_RX} ${BASE_CY} L ${CX + BASE_RX} ${BASE_CY + 15} A ${BASE_RX} ${BASE_RX * BASE_RATIO} 0 0 1 ${CX - BASE_RX} ${BASE_CY + 15} Z`}
+        fill={url('cyl')}
       />
-
-      <SmallCube x={112} y={128} scale={0.72} />
-      <SmallCube x={432} y={150} scale={0.56} />
-
-      {/* Body: three visible faces, each its own gradient so the form reads as solid. */}
-      <polygon points={`${LEFT} ${FRONT} ${RIGHT} ${TOP}`} fill={url('dl-face-top')} />
-      <polygon points={`${LEFT} ${FRONT} ${FRONT_B} ${LEFT_B}`} fill={url('dl-face-left')} />
-      <polygon points={`${FRONT} ${RIGHT} ${RIGHT_B} ${FRONT_B}`} fill={url('dl-face-right')} />
-
-      {/* Thin machined edges. */}
-      <polygon
-        points={`${LEFT} ${FRONT} ${RIGHT} ${TOP}`}
-        fill="none"
-        stroke="#4c5658"
-        strokeWidth="1.1"
-      />
-      <polyline points={`${LEFT_B} ${FRONT_B} ${RIGHT_B}`} fill="none" stroke="#3a4344" strokeWidth="1.1" />
-      <line x1="160" y1="112" x2="160" y2="190" stroke="#3a4344" strokeWidth="1.1" />
-      <line x1="380" y1="112" x2="380" y2="190" stroke="#2d3536" strokeWidth="1.1" />
-
-      {/* Recessed top lid with its own chevron. */}
-      <g transform={FACE_TOP}>
-        <rect x="0.1" y="0.1" width="0.8" height="0.8" fill="#141a1b" stroke="#394243" strokeWidth="0.008" />
-        <rect x="0.17" y="0.17" width="0.66" height="0.66" fill="#0d1213" />
-      </g>
-      <g transform={FACE_TOP} filter={url('dl-glow')}>
-        <path d={CHEVRON} transform="translate(0.28 0.28) scale(0.44)" fill="#b5ff00" />
-      </g>
-
-      {/* Illuminated seam directly under the top edge — the reference's signature detail. */}
-      <g filter={url('dl-glow')}>
-        <polyline
-          points="162,120 270,177 378,120"
+      <ellipse cx={CX} cy={BASE_CY} rx={BASE_RX} ry={BASE_RX * BASE_RATIO} fill="#0a0e0f" />
+      <g filter={url('glow')}>
+        <ellipse
+          cx={CX}
+          cy={BASE_CY}
+          rx={BASE_RX}
+          ry={BASE_RX * BASE_RATIO}
           fill="none"
           stroke="#a8f000"
-          strokeWidth="2.6"
+          strokeOpacity="0.85"
+          strokeWidth="1.5"
+        />
+      </g>
+      {[118, 92].map((rx) => (
+        <ellipse
+          key={rx}
+          cx={CX}
+          cy={BASE_CY}
+          rx={rx}
+          ry={rx * BASE_RATIO}
+          fill="none"
+          stroke="#a8f000"
+          strokeOpacity="0.34"
+          strokeWidth="1"
+        />
+      ))}
+
+      {/* Body faces. Left and right first, then the top so its rounding overlaps cleanly. */}
+      <path d={roundedPath([L, B, BB, LB], RADIUS)} fill={url('left')} />
+      <path d={roundedPath([B, R, RB, BB], RADIUS)} fill={url('right')} />
+      <path
+        d={roundedPath([L, B, BB, LB], RADIUS)}
+        fill="none"
+        stroke="#394244"
+        strokeOpacity="0.75"
+        strokeWidth="1"
+      />
+      <path
+        d={roundedPath([B, R, RB, BB], RADIUS)}
+        fill="none"
+        stroke="#2c3435"
+        strokeOpacity="0.7"
+        strokeWidth="1"
+      />
+      <path d={roundedPath([T, R, B, L], RADIUS)} fill={url('top')} />
+      <path
+        d={roundedPath([T, R, B, L], RADIUS)}
+        fill="none"
+        stroke="#535d60"
+        strokeOpacity="0.9"
+        strokeWidth="1.1"
+      />
+
+      {/* Recessed lid panel with the small brand mark. */}
+      <g transform={FACE_TOP}>
+        <rect
+          x="0.13"
+          y="0.13"
+          width="0.74"
+          height="0.74"
+          rx="0.06"
+          fill="#161c1d"
+          stroke="#404a4c"
+          strokeWidth="0.009"
+        />
+      </g>
+      <g transform={FACE_TOP} filter={url('glow')}>
+        <path d={CHEVRON} transform="translate(0.3 0.3) scale(0.4)" fill="#b5ff00" />
+      </g>
+
+      {/* Neon rim under the top edge — the reference's defining highlight. */}
+      <g filter={url('glow')}>
+        <path
+          d={`M ${L[0] + 6} ${L[1] + 10} Q ${CX} ${B[1] + 12} ${R[0] - 6} ${R[1] + 10}`}
+          fill="none"
+          stroke="#a8f000"
+          strokeWidth="2.4"
           strokeLinecap="round"
         />
       </g>
-      <polyline
-        points="162,182 270,239 378,182"
-        fill="none"
-        stroke="#a8f000"
-        strokeOpacity="0.55"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
 
-      {/* Left face: brand mark, panel seam and fasteners. */}
+      {/* Left face: illuminated logo, panel seam, fasteners. */}
       <g transform={FACE_LEFT}>
-        <rect x="0.08" y="0.14" width="0.84" height="0.72" fill="none" stroke="#2b3334" strokeWidth="0.012" />
-        {[0.14, 0.86].map((fx) =>
-          [0.2, 0.8].map((fy) => (
-            <circle key={`${fx}-${fy}`} cx={fx} cy={fy} r="0.022" fill="#394243" />
+        <rect
+          x="0.09"
+          y="0.12"
+          width="0.82"
+          height="0.74"
+          rx="0.05"
+          fill="none"
+          stroke="#2f3739"
+          strokeWidth="0.011"
+        />
+        {[0.15, 0.85].map((fx) =>
+          [0.19, 0.81].map((fy) => (
+            <circle key={`${fx}-${fy}`} cx={fx} cy={fy} r="0.019" fill="#3d4749" />
           )),
         )}
       </g>
-      <g transform={FACE_LEFT} filter={url('dl-glow')}>
-        <path d={CHEVRON} transform="translate(0.26 0.26) scale(0.5)" fill="#b5ff00" />
+      <g transform={FACE_LEFT} filter={url('glow')}>
+        <path d={CHEVRON} transform="translate(0.27 0.24) scale(0.5)" fill="#b5ff00" />
       </g>
 
-      {/* Right face: ventilation bank and status indicator. */}
+      {/* Right face: ventilation bank and status light. */}
       <g transform={FACE_RIGHT}>
-        <rect x="0.1" y="0.16" width="0.5" height="0.62" fill="#0a0d0e" stroke="#232a2b" strokeWidth="0.01" />
-        {[0.26, 0.38, 0.5, 0.62].map((vy) => (
-          <rect key={vy} x="0.16" y={vy} width="0.38" height="0.045" rx="0.02" fill="#2a3132" />
+        <rect
+          x="0.12"
+          y="0.14"
+          width="0.52"
+          height="0.66"
+          rx="0.04"
+          fill="#0a0e0f"
+          stroke="#242b2c"
+          strokeWidth="0.01"
+        />
+        {[0.24, 0.37, 0.5, 0.63].map((vy) => (
+          <rect key={vy} x="0.18" y={vy} width="0.4" height="0.04" rx="0.02" fill="#2e3637" />
         ))}
-        <circle cx="0.78" cy="0.72" r="0.045" fill="#43dd82" />
+        <circle cx="0.8" cy="0.7" r="0.038" fill="#43dd82" />
       </g>
 
-      {/* Base bloom where the chassis meets the platform. */}
+      {/* Contact bloom where the chassis meets the platform. */}
       <ellipse
-        cx={PLATFORM_CX}
-        cy={244}
-        rx={78}
-        ry={20}
+        cx={CX}
+        cy={BB[1] - 6}
+        rx={62}
+        ry={16}
         fill="#a8f000"
         fillOpacity="0.5"
-        filter={url('dl-glow-soft')}
+        filter={url('soft')}
       />
     </svg>
   );

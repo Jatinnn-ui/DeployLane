@@ -739,22 +739,26 @@
 }
 
 /* 1360px content rail with the specified responsive gutters */
+/* Rail measured from the reference: content begins 38px from the left edge at a 1024px
+   viewport, with a slightly tighter right gutter. */
 @utility landing-container {
   width: 100%;
-  max-width: 1480px;
+  max-width: 1180px;
   margin-inline: auto;
   padding-inline: 20px;
 }
 
 @media (min-width: 768px) {
   .landing-container {
-    padding-inline: 30px;
+    padding-left: 30px;
+    padding-right: 22px;
   }
 }
 
 @media (min-width: 1024px) {
   .landing-container {
-    padding-inline: 44px;
+    padding-left: 38px;
+    padding-right: 26px;
   }
 }
 

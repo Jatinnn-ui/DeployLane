@@ -21,25 +21,25 @@ const PLATFORMS: Array<{ name: string; icon: IconComponent }> = [
 
 export function TrustedBy() {
   return (
-    <section className="pb-7 pt-4" aria-labelledby="trusted-by-heading">
-      {/* Reference keeps the label inline at the left of the same row as the logos, which is
-          what makes this read as one quiet strip rather than a titled section. */}
-      <div className="landing-container flex flex-wrap items-center justify-center gap-x-8 gap-y-4 lg:flex-nowrap lg:justify-between lg:gap-x-6">
+    <section className="pb-9 pt-3 lg:pt-4" aria-labelledby="trusted-by-heading">
+      {/* Label sits inline at the left of the logo row, and the whole strip is inset from the
+          rail so it lands at the reference's y position inside the first viewport. */}
+      <div className="landing-container flex flex-wrap items-center justify-center gap-x-7 gap-y-3 lg:flex-nowrap lg:justify-between lg:gap-x-5 lg:px-[60px]">
         <h2
           id="trusted-by-heading"
-          className="shrink-0 text-[9.5px] font-semibold uppercase tracking-[0.14em] text-content-muted"
+          className="shrink-0 text-[7px] font-semibold uppercase tracking-[0.03em] text-white/45"
         >
           Trusted by developers at
         </h2>
 
-        <ul className="flex flex-1 flex-wrap items-center justify-center gap-x-8 gap-y-4 lg:justify-between lg:gap-x-4">
+        <ul className="flex flex-1 flex-wrap items-center justify-center gap-x-7 gap-y-3 opacity-45 grayscale lg:justify-between lg:gap-x-4">
           {PLATFORMS.map((platform) => (
             <li
               key={platform.name}
-              className="flex items-center gap-1.5 text-content-secondary opacity-65 transition-opacity duration-200 hover:opacity-100"
+              className="flex items-center gap-1.5 text-content-primary transition-opacity duration-200"
             >
-              <platform.icon className="h-[15px] w-[15px]" strokeWidth={2} aria-hidden="true" />
-              <span className="text-[14px] font-semibold tracking-[-0.01em]">{platform.name}</span>
+              <platform.icon className="h-[13px] w-[13px]" strokeWidth={2} aria-hidden="true" />
+              <span className="text-[12px] font-semibold tracking-[-0.01em]">{platform.name}</span>
             </li>
           ))}
         </ul>
