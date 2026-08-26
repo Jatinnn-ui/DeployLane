@@ -1,3 +1,183 @@
+# Shared layouts
+
+## `frontend/src/features/landing/components/LandingNav.tsx`
+
+```tsx
+import { ArrowRight, Menu, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { GithubIcon } from '@/components/icons/GithubIcon';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { Wordmark } from './Wordmark';
+
+const LINKS = [
+  { label: 'Product', href: '#product' },
+  { label: 'Features', href: '#features' },
+  { label: 'Pricing', href: '#pricing' },
+  { label: 'Docs', href: '#docs' },
+  { label: 'Changelog', href: '#changelog' },
+  { label: 'Enterprise', href: '#enterprise' },
+];
+
+/**
+ * Marketing header.
+ *
+ * Transparent over the hero and solid once scrolled, so the 3D scene is never cropped by a
+ * bar at the top of the fold but the nav stays readable over content further down.
+ */
+export function LandingNav() {
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    function handleScroll() {
+      setScrolled(window.scrollY > 12);
+    }
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close the mobile sheet once the viewport is wide enough to show the inline nav.
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    function handleResize() {
+      if (window.innerWidth >= 1024) setMenuOpen(false);
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [menuOpen]);
+
+  return (
+    <header
+      className={cn(
+        'sticky top-0 z-50 transition-colors duration-300',
+        scrolled || menuOpen
+          ? 'border-b border-border-subtle bg-canvas/85 backdrop-blur-xl'
+          : 'border-b border-transparent',
+      )}
+    >
+      {/* Reference navbar is 58px at 1024px wide (5.66vw), and stays secondary to the hero. */}
+      <div className="landing-container flex h-[clamp(56px,5.66vw,90px)] items-center gap-6 text-[length:var(--dl-nav-link)]">
+        <Link
+          to="/"
+          className="flex shrink-0 items-center rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+        >
+          <Wordmark textClass="text-[length:var(--dl-nav-logo)]" />
+        </Link>
+
+        <nav
+          aria-label="Main"
+          className="hidden lg:ml-[4.4vw] lg:flex lg:items-center lg:gap-[2.6em]"
+        >
+          {LINKS.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="font-normal text-content-secondary transition-colors hover:text-content-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+
+        <div className="ml-auto flex items-center gap-[1.4em]">
+          {/* Star count is the developer-tool equivalent of a trust badge, so it sits inline
+              with the nav rather than being buried in the footer. */}
+          <a
+            href="https://github.com/Jatinnn-ui/DeployLane"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="hidden items-center gap-[0.6em] font-normal text-content-secondary transition-colors hover:text-content-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent md:flex"
+          >
+            <GithubIcon className="h-[1.4em] w-[1.4em]" />
+            Star on GitHub
+            <span className="rounded-[0.3em] border border-border-subtle bg-surface px-[0.6em] py-[0.15em] font-mono text-[0.9em] text-content-primary">
+              8.4k
+            </span>
+          </a>
+
+          {/* Vertical rule separating the repository link from account actions. */}
+          <span className="hidden h-[1.4em] w-px bg-border-subtle md:block" aria-hidden="true" />
+
+          <Link to="/login" className="hidden sm:block">
+            <span className="font-normal text-content-secondary transition-colors hover:text-content-primary">
+              Sign in
+            </span>
+          </Link>
+
+          <Link to="/login">
+            <Button
+              variant="primary"
+              size="sm"
+              className="group h-[3.2em] gap-[0.8em] rounded-[0.4em] px-[1.6em] text-[1em] font-medium"
+            >
+              Start Deploying
+              <ArrowRight
+                className="h-[1.2em] w-[1.2em] transition-transform duration-200 group-hover:translate-x-0.5"
+                aria-hidden="true"
+              />
+            </Button>
+          </Link>
+
+          <button
+            type="button"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-expanded={menuOpen}
+            aria-controls="landing-mobile-nav"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-border-subtle text-content-secondary transition-colors hover:text-content-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent lg:hidden"
+          >
+            {menuOpen ? (
+              <X className="h-4 w-4" aria-hidden="true" />
+            ) : (
+              <Menu className="h-4 w-4" aria-hidden="true" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {menuOpen && (
+        <nav
+          id="landing-mobile-nav"
+          aria-label="Mobile"
+          className="landing-container border-t border-border-subtle pb-4 pt-2 lg:hidden"
+        >
+          <ul className="flex flex-col gap-1">
+            {LINKS.map((link) => (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="block rounded-lg px-2 py-2.5 text-[14px] font-medium text-content-secondary transition-colors hover:bg-surface-hover hover:text-content-primary"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+            <li className="sm:hidden">
+              <Link
+                to="/login"
+                className="block rounded-lg px-2 py-2.5 text-[14px] font-medium text-content-secondary transition-colors hover:bg-surface-hover hover:text-content-primary"
+              >
+                Sign in
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      )}
+    </header>
+  );
+}
+```
+
+## `frontend/src/features/landing/components/LandingFooter.tsx`
+
+```tsx
 import { ArrowRight } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
@@ -155,7 +335,7 @@ export function LandingFooter() {
 
           <div className="mt-10 flex flex-col gap-3 border-t border-border-subtle pt-5 sm:flex-row sm:items-center">
             <p className="text-[11.5px] text-content-muted">
-              © 2026 DeployLane. All rights reserved.
+              © 2024 DeployLane. All rights reserved.
             </p>
 
             <ul className="flex flex-wrap items-center gap-x-5 gap-y-2 sm:ml-auto">
@@ -183,3 +363,5 @@ export function LandingFooter() {
     </footer>
   );
 }
+```
+

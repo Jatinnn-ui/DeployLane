@@ -107,6 +107,10 @@ cd frontend && npm install && npm run dev # http://localhost:5173
 ./scripts/run-backend-dev.ps1
 backend 
 
+<!-- most important
+to run server 
+ssh -i "D:\downloads\ssh-key-2026-08-24.key" opc@137.23.60.90 -->
+
 
 On Windows the backend step is `./scripts/run-backend-dev.ps1`, which loads `.env` into the process
 first because PowerShell cannot `source` it.

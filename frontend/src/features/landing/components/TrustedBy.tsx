@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { Cloud, Container, Droplet, Layers, Triangle } from 'lucide-react';
 import { GithubIcon } from '@/components/icons/GithubIcon';
 import type { IconComponent } from './icon-type';
@@ -24,25 +25,30 @@ export function TrustedBy() {
     <section className="pb-9 pt-3 lg:pt-4" aria-labelledby="trusted-by-heading">
       {/* Label sits inline at the left of the logo row, and the whole strip is inset from the
           rail so it lands at the reference's y position inside the first viewport. */}
-      <div className="landing-container flex flex-wrap items-center justify-center gap-x-7 gap-y-3 lg:flex-nowrap lg:justify-between lg:gap-x-5 lg:px-[5.8vw]">
+      <div className="landing-container flex flex-col items-center justify-center gap-y-3 lg:flex-row lg:flex-nowrap lg:justify-between lg:gap-x-5 lg:px-[5.8vw]">
         <h2
           id="trusted-by-heading"
-          className="shrink-0 text-[length:var(--dl-trust-label)] font-semibold uppercase tracking-[0.03em] text-white/45"
+          className="shrink-0 text-center text-[length:var(--dl-trust-label)] font-semibold uppercase tracking-[0.03em] text-white/45 lg:text-left"
         >
           Trusted by developers at
         </h2>
 
-        <ul className="flex flex-1 flex-wrap items-center justify-center gap-x-7 gap-y-3 text-[length:var(--dl-trust-logo)] opacity-45 grayscale lg:justify-between lg:gap-x-4">
-          {PLATFORMS.map((platform) => (
-            <li
-              key={platform.name}
-              className="flex items-center gap-[0.5em] text-content-primary transition-opacity duration-200"
-            >
-              <platform.icon className="h-[1.1em] w-[1.1em]" strokeWidth={2} aria-hidden="true" />
-              <span className="font-semibold tracking-[-0.01em]">{platform.name}</span>
-            </li>
-          ))}
-        </ul>
+        <div className="trusted-logo-viewport min-w-0 w-full overflow-hidden lg:flex-1">
+          <ul className="trusted-logo-strip flex w-max items-center gap-x-8 text-[length:var(--dl-trust-logo)] grayscale">
+            {[0, 1].flatMap((copy) =>
+              PLATFORMS.map((platform, index) => (
+                <li
+                  key={`${copy}-${platform.name}`}
+                  className="trusted-logo-float flex shrink-0 items-center gap-[0.5em] text-content-primary"
+                  style={{ '--logo-delay': `${index * -0.55 - copy * 3.8}s` } as CSSProperties}
+                >
+                  <platform.icon className="h-[1.1em] w-[1.1em]" strokeWidth={2} aria-hidden="true" />
+                  <span className="font-semibold tracking-[-0.01em]">{platform.name}</span>
+                </li>
+              )),
+            )}
+          </ul>
+        </div>
       </div>
     </section>
   );

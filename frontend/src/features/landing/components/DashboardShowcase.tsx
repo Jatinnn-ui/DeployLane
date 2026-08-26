@@ -45,37 +45,38 @@ const STATS = [
 
 const PROJECTS = [
   {
-    name: 'cheslearn',
-    repo: 'Jatinnn/cheslearn',
+    name: 'LaunchPad',
+    repo: 'deploylane/launchpad',
     branch: 'main',
-    sha: '1a97fa9',
-    domain: 'cheslearn.deploylane.app',
+    sha: '8d42c1e',
+    domain: 'launchpad.deploylane.app',
     state: 'Live' as const,
   },
   {
-    name: 'Erpli_chess_code_new',
-    repo: 'Jatinnn/Erpli_chess_code_new',
+    name: 'PixelBoard',
+    repo: 'deploylane/pixelboard',
     branch: 'main',
-    sha: '1e1e566',
-    domain: 'erpli-chess-code-new-2.deploylane.app',
+    sha: '4f7a9b2',
+    domain: 'pixelboard.deploylane.app',
     state: 'Live' as const,
   },
   {
-    name: 'web-store',
-    repo: 'Jatinnn/web-store',
+    name: 'FieldNotes',
+    repo: 'deploylane/fieldnotes',
     branch: 'main',
-    sha: '778acc1',
-    domain: 'web-store.deploylane.app',
+    sha: 'c19e2a4',
+    domain: 'fieldnotes.deploylane.app',
     state: 'Building' as const,
   },
 ];
 
 const ACTIVITY = [
-  { text: 'Deployment #129 went live', time: '3 hours ago', tone: 'success' as const },
-  { text: 'Jatinnn started deployment #129', time: '3 hours ago', tone: 'default' as const },
-  { text: 'Imported Jatinnn/Erpli_chess_code_new', time: '3 hours ago', tone: 'default' as const },
-  { text: 'Deployment #128 went live', time: '5 hours ago', tone: 'success' as const },
-  { text: 'Failure analysis completed', time: '6 hours ago', tone: 'danger' as const },
+  { text: 'LaunchPad deployment #42 went live', time: '18 minutes ago', tone: 'success' as const },
+  { text: 'Maya Chen started deployment #42', time: '18 minutes ago', tone: 'default' as const },
+  { text: 'Imported deploylane/pixelboard', time: '1 hour ago', tone: 'default' as const },
+  { text: 'FieldNotes deployment #41 went live', time: '3 hours ago', tone: 'success' as const },
+  { text: 'Security scan completed with warnings', time: '3 hours ago', tone: 'danger' as const },
+  { text: 'Build checks passed', time: '4 hours ago', tone: 'default' as const },
 ];
 
 /**
@@ -133,10 +134,10 @@ function ConsoleMock() {
 
           <div className="mt-auto flex items-center gap-2 border-t border-border-subtle pt-2.5">
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[9px] font-bold text-on-accent">
-              J
+              M
             </span>
             <div className="min-w-0">
-              <p className="truncate text-[10px] font-medium text-content-primary">Jatinnn</p>
+              <p className="truncate text-[10px] font-medium text-content-primary">Maya Chen</p>
               <p className="truncate text-[8.5px] text-content-muted">Owner</p>
             </div>
           </div>
@@ -149,7 +150,7 @@ function ConsoleMock() {
               <p className="text-[13px] font-semibold tracking-[-0.01em] text-content-primary">
                 Overview
               </p>
-              <p className="text-[9.5px] text-content-muted">Jatinnn&apos;s workspace</p>
+              <p className="text-[9.5px] text-content-muted">Maya&apos;s workspace</p>
             </div>
 
             <span className="ml-auto inline-flex items-center gap-1 rounded-full border border-success-border bg-success-soft px-2 py-0.5 text-[9px] font-semibold text-success-foreground">
@@ -273,7 +274,7 @@ function ConsoleMock() {
                       )}
                     />
                     <div className="min-w-0">
-                      <p className="truncate text-[9.5px] leading-tight text-content-primary">
+                      <p className="break-words text-[9.5px] leading-tight text-content-primary">
                         {entry.text}
                       </p>
                       <p className="text-[8px] text-content-muted">{entry.time}</p>

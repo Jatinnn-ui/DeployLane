@@ -59,25 +59,26 @@ export function HowItWorks() {
 
                 <div
                   className={cn(
-                    'h-full rounded-2xl border p-4 transition-colors duration-200 sm:p-5',
+                    'group h-full rounded-2xl border p-4 transition-[background-color,border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-accent hover:bg-accent hover:shadow-[0_16px_35px_rgba(168,240,0,0.14)] sm:p-5',
+                    step.n === 2 && 'workflow-build-card',
                     step.n === 1
                       ? 'border-accent-border bg-accent-soft'
-                      : 'border-border-subtle bg-surface hover:border-border-strong',
+                      : 'border-border-subtle bg-surface',
                   )}
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent font-mono text-[11px] font-bold text-on-accent">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent font-mono text-[11px] font-bold text-on-accent transition-colors duration-300 group-hover:bg-on-accent group-hover:text-accent">
                       {step.n}
                     </span>
-                    <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-border-subtle bg-canvas-secondary text-content-secondary">
+                    <span className="workflow-stage-icon flex h-7 w-7 items-center justify-center text-content-secondary transition-colors duration-300 group-hover:text-on-accent">
                       <step.icon className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
                     </span>
                   </div>
 
-                  <h3 className="mt-4 text-[14.5px] font-semibold tracking-[-0.01em] text-content-primary">
+                  <h3 className="mt-4 text-[14.5px] font-semibold tracking-[-0.01em] text-content-primary transition-colors duration-300 group-hover:text-on-accent">
                     {step.title}
                   </h3>
-                  <p className="mt-2 text-[12.5px] leading-[1.6] text-content-secondary">
+                  <p className="mt-2 text-[12.5px] leading-[1.6] text-content-secondary transition-colors duration-300 group-hover:text-black/70">
                     {step.body}
                   </p>
                 </div>

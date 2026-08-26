@@ -81,8 +81,7 @@ export function LandingNav() {
         </nav>
 
         <div className="ml-auto flex items-center gap-[1.4em]">
-          {/* Star count is the developer-tool equivalent of a trust badge, so it sits inline
-              with the nav rather than being buried in the footer. */}
+          {/* Repository action stays visible without presenting an unverified star count. */}
           <a
             href="https://github.com/Jatinnn-ui/DeployLane"
             target="_blank"
@@ -91,9 +90,6 @@ export function LandingNav() {
           >
             <GithubIcon className="h-[1.4em] w-[1.4em]" />
             Star on GitHub
-            <span className="rounded-[0.3em] border border-border-subtle bg-surface px-[0.6em] py-[0.15em] font-mono text-[0.9em] text-content-primary">
-              8.4k
-            </span>
           </a>
 
           {/* Vertical rule separating the repository link from account actions. */}

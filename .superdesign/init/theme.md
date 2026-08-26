@@ -1,3 +1,138 @@
+# Theme
+
+## Compact token summary
+
+- Dark landing canvas: #050708; surfaces: charcoal/near-black; accent: #a8f000.
+- Inter/system sans for UI; system monospace for code, logs, hashes, and URLs.
+- Tailwind CSS 4 semantic tokens with vanilla global CSS and @utility declarations.
+- Rounded cards, thin translucent borders, restrained black shadows, lime as the only dominant accent.
+- Landing motion uses staged reveal, floating cards, connector dash flow, and reduced-motion overrides.
+
+## `frontend/package.json`
+
+```json
+{
+  "name": "deploylane-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "DeployLane dashboard - deploy, monitor, debug, fix",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest --run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.9.0",
+    "@radix-ui/react-avatar": "^1.2.6",
+    "@radix-ui/react-dialog": "^1.1.23",
+    "@radix-ui/react-dropdown-menu": "^2.1.24",
+    "@radix-ui/react-label": "^2.1.15",
+    "@radix-ui/react-popover": "^1.1.23",
+    "@radix-ui/react-scroll-area": "^1.2.18",
+    "@radix-ui/react-select": "^2.3.7",
+    "@radix-ui/react-separator": "^1.1.15",
+    "@radix-ui/react-switch": "^1.3.7",
+    "@radix-ui/react-tabs": "^1.1.21",
+    "@radix-ui/react-tooltip": "^1.2.16",
+    "@tanstack/react-query": "^5.101.4",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.4.0",
+    "framer-motion": "^13.1.0",
+    "lucide-react": "^1.31.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-hook-form": "^7.85.0",
+    "react-router-dom": "^7.18.2",
+    "recharts": "^3.10.1",
+    "tailwind-merge": "^3.6.0",
+    "three": "^0.185.1",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.4",
+    "@types/node": "^26.3.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@types/three": "^0.185.4",
+    "@vitejs/plugin-react": "^6.0.5",
+    "jsdom": "^30.0.1",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.1",
+    "vitest": "^4.1.10"
+  }
+}
+```
+
+## `frontend/vite.config.ts`
+
+```ts
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+  server: {
+    port: 5173,
+    strictPort: true,
+    allowedHosts: true,
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        // Charting is only needed on the monitoring screen, so it should not sit in the
+        // bundle that gates first paint of the dashboard.
+        manualChunks: (id: string) => {
+          if (id.includes('node_modules/recharts') || id.includes('node_modules/d3')) {
+            return 'charts';
+          }
+
+          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react-router')) {
+            return 'vendor';
+          }
+          return undefined;
+        },
+      },
+    },
+  },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    // Absolute so it resolves regardless of how the project directory is reached.
+    setupFiles: [path.resolve(__dirname, './src/test/setup.ts')],
+    css: false,
+    // Parallel workers fail to hand-shake on constrained machines ("Timeout waiting for
+    // worker to respond"), which reads as a suite failure when nothing is actually broken.
+    // Two small suites gain nothing from parallelism, so run them sequentially.
+    fileParallelism: false,
+  },
+});
+```
+
+## `frontend/src/index.css`
+
+```css
 @import 'tailwindcss';
 
 /*
@@ -862,437 +997,5 @@
   opacity: 0;
   animation: pipeline-connections-reveal 0.6s ease-out forwards;
 }
+```
 
-@keyframes workflow-icon-float {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-2px) rotate(-3deg);
-  }
-}
-
-.workflow-stage-icon {
-  animation: workflow-icon-float 4.6s ease-in-out infinite;
-  filter: drop-shadow(0 0 5px rgba(168, 240, 0, 0.14));
-}
-
-@keyframes trusted-logo-marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-.trusted-logo-strip {
-  animation: trusted-logo-marquee 28s linear infinite;
-  will-change: transform;
-}
-
-.trusted-logo-viewport:hover .trusted-logo-strip,
-.trusted-logo-viewport:focus-within .trusted-logo-strip {
-  animation-play-state: paused;
-}
-
-/* Small independent motion keeps each mark alive while the duplicated strip scrolls. */
-@keyframes trusted-logo-float {
-  0%,
-  100% {
-    opacity: 0.42;
-    transform: translateY(0);
-  }
-  50% {
-    opacity: 0.72;
-    transform: translateY(-2px);
-  }
-}
-
-.trusted-logo-float {
-  animation: trusted-logo-float 4.8s ease-in-out var(--logo-delay, 0s) infinite;
-  transition:
-    color 220ms var(--ease-default),
-    filter 220ms var(--ease-default),
-    opacity 220ms var(--ease-default);
-  will-change: transform, opacity;
-}
-
-.trusted-logo-float:hover {
-  animation-play-state: paused;
-  filter: grayscale(0);
-  opacity: 1;
-}
-
-@keyframes ship-headline-color {
-  0%,
-  100% {
-    color: var(--dl-content-primary);
-    text-shadow: 0 0 0 rgba(168, 240, 0, 0);
-  }
-  45%,
-  60% {
-    color: var(--dl-accent);
-    text-shadow: 0 0 22px rgba(168, 240, 0, 0.18);
-  }
-}
-
-.ship-headline {
-  animation: ship-headline-color 6.5s ease-in-out infinite;
-}
-
-.hero-capabilities {
-  max-inline-size: 100%;
-}
-
-.hero-capability {
-  min-width: max-content;
-  transition:
-    color 220ms var(--ease-default),
-    opacity 220ms var(--ease-default);
-}
-
-.hero-capability:hover {
-  color: var(--dl-content-primary);
-}
-
-/* Keep Build & Test tied to the deployment language without adding another
-   foreground element; this low-contrast SVG sits behind the existing copy. */
-.workflow-build-card {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 190' fill='none'%3E%3Cpath d='M32 142 88 86l46 32 56-72 98 64' stroke='%23a8f000' stroke-opacity='.22' stroke-width='2'/%3E%3Cpath d='M36 158h246M74 48h96' stroke='%23a8f000' stroke-opacity='.12' stroke-width='1' stroke-dasharray='5 7'/%3E%3Crect x='188' y='38' width='76' height='54' rx='8' stroke='%23a8f000' stroke-opacity='.18'/%3E%3Ccircle cx='88' cy='86' r='5' fill='%23a8f000' fill-opacity='.34'/%3E%3Ccircle cx='190' cy='46' r='5' fill='%23a8f000' fill-opacity='.34'/%3E%3C/svg%3E");
-  background-position: 112% 112%;
-  background-repeat: no-repeat;
-  background-size: 175% auto;
-}
-
-.workflow-build-card:hover {
-  background-position: 106% 108%;
-}
-
-/* One shared timeline drives cards, wires, nodes, and server response. Each element's
-   positive delay makes its short active window land in the same 15.6s deployment loop. */
-@keyframes pipeline-card-sequence {
-  0%,
-  4%,
-  100% {
-    border-color: rgba(180, 200, 190, 0.26);
-    filter: brightness(0.96) drop-shadow(0 0 0 rgba(168, 240, 0, 0));
-    scale: 1;
-  }
-  6%,
-  20% {
-    border-color: rgba(168, 240, 0, 0.7);
-    filter: brightness(1.17) drop-shadow(0 0 13px rgba(168, 240, 0, 0.26));
-    scale: 1.015;
-  }
-  27%,
-  38% {
-    border-color: rgba(168, 240, 0, 0.38);
-    filter: brightness(1.04) drop-shadow(0 0 5px rgba(168, 240, 0, 0.1));
-    scale: 1;
-  }
-}
-
-.pipeline-stage-card,
-.pipeline-compact-card {
-  animation:
-    pipeline-card-float 6s ease-in-out var(--float-delay, 0s) infinite,
-    pipeline-card-sequence 15.6s ease-in-out var(--stage-activity-delay, 0s) infinite;
-}
-
-@keyframes pipeline-status-sequence {
-  0%,
-  4%,
-  100% {
-    filter: brightness(0.78) drop-shadow(0 0 0 rgba(168, 240, 0, 0));
-    opacity: 0.72;
-  }
-  7%,
-  22% {
-    filter: brightness(1.35) drop-shadow(0 0 8px rgba(168, 240, 0, 0.55));
-    opacity: 1;
-  }
-  30%,
-  42% {
-    filter: brightness(1.05) drop-shadow(0 0 3px rgba(168, 240, 0, 0.16));
-    opacity: 0.86;
-  }
-}
-
-.pipeline-card-icon,
-.pipeline-status-indicator {
-  animation: pipeline-status-sequence 15.6s ease-in-out var(--stage-activity-delay, 0s) infinite;
-}
-
-@keyframes pipeline-wire-sequence {
-  0%,
-  4%,
-  100% {
-    opacity: 0.28;
-  }
-  7%,
-  19% {
-    opacity: 0.95;
-  }
-  27%,
-  39% {
-    opacity: 0.48;
-  }
-}
-
-.pipeline-connection-group[data-stage] .connection-wire {
-  animation: pipeline-wire-sequence 15.6s ease-in-out var(--link-stage-delay, 0s) infinite;
-}
-
-@keyframes pipeline-signal-travel {
-  0%,
-  2% {
-    opacity: 0;
-    stroke-dashoffset: 0;
-  }
-  5%,
-  13% {
-    opacity: 1;
-  }
-  18%,
-  22% {
-    opacity: 0;
-    stroke-dashoffset: -1000;
-  }
-  100% {
-    opacity: 0;
-    stroke-dashoffset: -1000;
-  }
-}
-
-@keyframes pipeline-signal-travel-reverse {
-  0%,
-  2% {
-    opacity: 0;
-    stroke-dashoffset: -1000;
-  }
-  5%,
-  13% {
-    opacity: 1;
-  }
-  18%,
-  22% {
-    opacity: 0;
-    stroke-dashoffset: 0;
-  }
-  100% {
-    opacity: 0;
-    stroke-dashoffset: 0;
-  }
-}
-
-.pipeline-connection-group[data-stage] .connection-packet {
-  animation: pipeline-signal-travel 15.6s linear var(--signal-stage-delay, 0s) infinite;
-}
-
-.pipeline-connection-group[data-stage] .connection-packet-reverse {
-  animation-name: pipeline-signal-travel-reverse;
-}
-
-@keyframes pipeline-node-sequence {
-  0%,
-  3%,
-  100% {
-    opacity: 0.38;
-    transform: scale(0.82);
-  }
-  7%,
-  17% {
-    opacity: 1;
-    transform: scale(1.16);
-  }
-  24%,
-  38% {
-    opacity: 0.56;
-    transform: scale(0.94);
-  }
-}
-
-.pipeline-node-stage .connection-node-glow,
-.pipeline-node-stage .connection-node-core {
-  animation: pipeline-node-sequence 15.6s ease-in-out var(--node-stage-delay, 0s) infinite;
-}
-
-@keyframes server-processing-sequence {
-  0%,
-  8%,
-  100% {
-    opacity: 0.78;
-    filter: drop-shadow(0 0 0 rgba(168, 240, 0, 0));
-  }
-  12%,
-  16%,
-  30%,
-  34%,
-  48%,
-  52%,
-  66%,
-  70% {
-    opacity: 1;
-    filter: drop-shadow(0 0 5px rgba(168, 240, 0, 0.34));
-  }
-  84%,
-  94% {
-    opacity: 0.94;
-    filter: drop-shadow(0 0 4px rgba(168, 240, 0, 0.22));
-  }
-}
-
-.hero-server .server-seam-core,
-.hero-server .server-chevron,
-.hero-server .server-platform-rim,
-.hero-server .server-led,
-.hero-server .server-ground-glow {
-  animation: server-processing-sequence 15.6s ease-in-out infinite;
-}
-
-@keyframes build-log-sequence {
-  0%,
-  4%,
-  100% {
-    opacity: 0.24;
-    transform: translateX(0);
-  }
-  8%,
-  26% {
-    opacity: 1;
-    transform: translateX(1.5px);
-  }
-  34%,
-  46% {
-    opacity: 0.58;
-    transform: translateX(0);
-  }
-}
-
-.build-log-line {
-  animation: build-log-sequence 15.6s ease-in-out var(--log-stage-delay, 0s) infinite;
-}
-
-.motion-reduced .pipeline-card-icon,
-.motion-reduced .pipeline-status-indicator,
-.motion-reduced .build-log-line,
-.pipeline-connection-group.motion-reduced .connection-wire,
-.motion-reduced .pipeline-node-stage .connection-node-glow,
-.motion-reduced .pipeline-node-stage .connection-node-core,
-.pipeline-node-stage.motion-reduced .connection-node-glow,
-.pipeline-node-stage.motion-reduced .connection-node-core,
-.hero-server.motion-reduced .server-seam-core,
-.hero-server.motion-reduced .server-chevron,
-.hero-server.motion-reduced .server-platform-rim,
-.hero-server.motion-reduced .server-led,
-.hero-server.motion-reduced .server-ground-glow {
-  animation: none;
-}
-
-/* The generated triptych is clipped per card; only its emissive light breathes. */
-@keyframes pillar-visual-breathe {
-  0%,
-  100% {
-    filter: brightness(0.72) saturate(0.86);
-    opacity: 0.8;
-  }
-  50% {
-    filter: brightness(1.04) saturate(1.05);
-    opacity: 1;
-  }
-}
-
-.developer-pillar-visual {
-  box-shadow: inset 0 0 24px rgba(168, 240, 0, 0.035);
-}
-
-.developer-pillar-art {
-  animation: pillar-visual-breathe 5.8s ease-in-out var(--pillar-delay, 0s) infinite;
-  will-change: filter, opacity, transform;
-}
-
-/* Terminal output advances line by line and leaves the success line visually dominant. */
-@keyframes build-log-cycle {
-  0%,
-  16% {
-    opacity: 0.34;
-    transform: translateX(0);
-  }
-  24%,
-  45% {
-    opacity: 1;
-    transform: translateX(1.5px);
-  }
-  60%,
-  100% {
-    opacity: 0.52;
-    transform: translateX(0);
-  }
-}
-
-@keyframes build-log-cursor {
-  0%,
-  46% {
-    opacity: 0.15;
-  }
-  47%,
-  100% {
-    opacity: 0.75;
-  }
-}
-
-.build-log-line {
-  will-change: opacity, transform;
-}
-
-.build-log-cursor {
-  animation: build-log-cursor 0.9s steps(1, end) infinite;
-}
-
-/* Independent terminal pulses make the brighter connector packets feel electrically live. */
-@keyframes connection-node-pulse {
-  0%,
-  100% {
-    opacity: 0.55;
-    transform: scale(0.82);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.18);
-  }
-}
-
-.connection-node-glow,
-.connection-node-core {
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .trusted-logo-float,
-  .trusted-logo-strip,
-  .workflow-stage-icon,
-  .ship-headline,
-  .pipeline-stage-card,
-  .pipeline-compact-card,
-  .pipeline-card-icon,
-  .pipeline-status-indicator,
-  .pipeline-connection-group .connection-wire,
-  .pipeline-connection-group .connection-packet,
-  .pipeline-node-stage .connection-node-glow,
-  .pipeline-node-stage .connection-node-core,
-  .hero-server .server-seam-core,
-  .hero-server .server-chevron,
-  .hero-server .server-platform-rim,
-  .hero-server .server-led,
-  .hero-server .server-ground-glow,
-  .developer-pillar-art,
-  .build-log-line,
-  .build-log-cursor,
-  .connection-node-glow,
-  .connection-node-core {
-    animation: none;
-  }
-}

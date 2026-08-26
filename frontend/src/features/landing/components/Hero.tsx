@@ -32,7 +32,7 @@ export function Hero() {
       {/* At lg the scene column starts flush with the navbar, so the 29px offset from the
           reference lives on the copy column. That keeps the trusted row at its measured y. */}
       <div className="landing-container relative grid gap-8 pb-6 pt-7 lg:grid-cols-[36%_64%] lg:items-start lg:gap-0 lg:pb-0 lg:pt-0">
-        <div className="lg:pr-[2vw] lg:pt-[2.8vw]">
+        <div className="min-w-0 lg:pr-[2vw] lg:pt-[2.8vw]">
           <p className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(160,255,0,0.22)] bg-[rgba(8,12,10,0.7)] px-[1.1em] py-[0.55em] text-[length:var(--dl-hero-pill)]">
             <Zap className="h-[1em] w-[1em] shrink-0 text-accent" aria-hidden="true" />
             <span className="whitespace-nowrap font-medium tracking-[0.01em] text-content-secondary">
@@ -80,11 +80,9 @@ export function Hero() {
             </Link>
           </div>
 
-          {/* Runs wider than the copy column in the reference, so it overflows the grid cell
-              rather than wrapping onto a second line. */}
-          <ul className="mt-[2.6em] flex w-max max-w-full flex-wrap items-center gap-x-[1.9em] gap-y-[0.9em] text-[length:var(--dl-hero-feat)] lg:flex-nowrap">
+          <ul className="hero-capabilities mt-[2.6em] flex w-full max-w-full flex-wrap items-center gap-x-[1.9em] gap-y-[0.9em] text-[length:var(--dl-hero-feat)] lg:w-max lg:flex-nowrap">
             {CAPABILITIES.map((capability) => (
-              <li key={capability.label} className="flex shrink-0 items-center gap-[0.5em]">
+              <li key={capability.label} className="hero-capability flex shrink-0 items-center gap-[0.5em]">
                 <span className="flex h-[2.6em] w-[2.6em] shrink-0 items-center justify-center rounded-full border border-[rgba(160,255,0,0.45)]">
                   <capability.icon className="h-[1.15em] w-[1.15em] text-accent" aria-hidden="true" />
                 </span>
