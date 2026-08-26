@@ -13,9 +13,9 @@ const VANISH_X = 300;
 const VANISH_Y = 40;
 
 /** Eased spacing: rows compress toward the horizon. */
-const ROWS = Array.from({ length: 9 }, (_, i) => {
-  const t = (i + 1) / 9;
-  return VANISH_Y + t ** 2.3 * 400;
+const ROWS = Array.from({ length: 10 }, (_, i) => {
+  const t = (i + 1) / 10;
+  return VANISH_Y + t ** 2.3 * 430;
 });
 
 const COLUMNS = Array.from({ length: 13 }, (_, i) => -260 + i * 90);
@@ -51,19 +51,20 @@ export function NetworkBackground() {
   return (
     <svg
       className="pointer-events-none absolute inset-0 h-full w-full"
-      viewBox="0 0 614 412"
+      viewBox="0 0 614 440"
       preserveAspectRatio="none"
       aria-hidden="true"
       focusable="false"
     >
       <defs>
-        <radialGradient id={maskId} cx="0.5" cy="0.46" r="0.6">
-          <stop offset="0" stopColor="#fff" stopOpacity="1" />
-          <stop offset="0.55" stopColor="#fff" stopOpacity="0.45" />
+        {/* Strongest behind the appliance, gone before it reaches the hero copy. */}
+        <radialGradient id={maskId} cx="0.48" cy="0.47" r="0.62">
+          <stop offset="0.35" stopColor="#fff" stopOpacity="1" />
+          <stop offset="0.65" stopColor="#fff" stopOpacity="0.65" />
           <stop offset="1" stopColor="#fff" stopOpacity="0" />
         </radialGradient>
         <mask id={`${maskId}-m`}>
-          <rect width="614" height="412" fill={`url(#${maskId})`} />
+          <rect width="614" height="440" fill={`url(#${maskId})`} />
         </mask>
         <filter id={glowId} x="-300%" y="-300%" width="700%" height="700%">
           <feGaussianBlur stdDeviation="2" />
@@ -80,7 +81,7 @@ export function NetworkBackground() {
             x1={VANISH_X}
             y1={VANISH_Y}
             x2={x}
-            y2="470"
+            y2="500"
             stroke="#7fbf00"
             strokeWidth="0.7"
           />

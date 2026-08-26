@@ -2,282 +2,268 @@ import { useId } from 'react';
 import { cn } from '@/lib/utils';
 
 /**
- * The DeployLane deployment server: a rounded hardware cube on a lit circular platform.
+ * The DeployLane deployment appliance: a rounded hardware unit on a lit circular platform.
  *
- * Inline SVG rather than WebGL so it renders on first paint and its geometry can be measured
- * against the reference's bounding boxes.
- *
- * Corners are genuinely rounded rather than mitred: `roundedPath` walks each polygon and
- * replaces every vertex with a quadratic through pulled-back edge points. That is what stops
- * the body reading as a flat open-top box, which a plain `<polygon>` cannot avoid.
+ * Projection matters here. An isometric box reads as a flat open-top cube, which is not what
+ * the reference shows. This uses a shallow three-quarter perspective instead: a dominant front
+ * face, a narrow right face carrying the vents, and a compressed top lid. The depth vector is
+ * applied once and every face derives from it, so the solid stays geometrically consistent.
  */
 
 type Point = [number, number];
 
+/** Replaces each vertex with a quadratic through pulled-back edge points. */
 function roundedPath(points: Point[], radius: number): string {
   const count = points.length;
-  const segments: string[] = [];
+  const parts: string[] = [];
 
   for (let i = 0; i < count; i += 1) {
-    const previous = points[(i - 1 + count) % count];
     const current = points[i];
+    const previous = points[(i - 1 + count) % count];
     const next = points[(i + 1) % count];
-
-    // Clamp the pull-back so short edges cannot invert the curve.
     const back = pullBack(current, previous, radius);
     const forward = pullBack(current, next, radius);
 
-    segments.push(
-      i === 0 ? `M ${back[0]} ${back[1]}` : `L ${back[0]} ${back[1]}`,
-      `Q ${current[0]} ${current[1]} ${forward[0]} ${forward[1]}`,
+    parts.push(
+      i === 0 ? `M ${round(back)}` : `L ${round(back)}`,
+      `Q ${round(current)} ${round(forward)}`,
     );
   }
 
-  return `${segments.join(' ')} Z`;
+  return `${parts.join(' ')} Z`;
 }
 
 function pullBack(from: Point, toward: Point, radius: number): Point {
   const dx = toward[0] - from[0];
   const dy = toward[1] - from[1];
   const length = Math.hypot(dx, dy) || 1;
+  // Clamped so a short edge cannot invert the curve.
   const distance = Math.min(radius, length / 2);
-
   return [from[0] + (dx / length) * distance, from[1] + (dy / length) * distance];
 }
 
-/* Isometric cube. Top rhombus is 210 wide × 110 tall; the body drops 88. */
-const HALF_W = 105;
-const HALF_D = 55;
-const BODY = 88;
-const CX = 200;
-const TOP_Y = 150;
+function round([x, y]: Point): string {
+  return `${Math.round(x * 100) / 100} ${Math.round(y * 100) / 100}`;
+}
 
-const T: Point = [CX, TOP_Y - HALF_D];
-const R: Point = [CX + HALF_W, TOP_Y];
-const B: Point = [CX, TOP_Y + HALF_D];
-const L: Point = [CX - HALF_W, TOP_Y];
-const LB: Point = [L[0], L[1] + BODY];
-const BB: Point = [B[0], B[1] + BODY];
-const RB: Point = [R[0], R[1] + BODY];
+/* Front face, then a single depth vector back-and-up for the top and right faces. */
+const FTL: Point = [70, 108];
+const FTR: Point = [232, 100];
+const FBR: Point = [232, 218];
+const FBL: Point = [70, 226];
+const DEPTH: Point = [58, -26];
 
-const RADIUS = 15;
+const offset = (p: Point): Point => [p[0] + DEPTH[0], p[1] + DEPTH[1]];
+const BTL = offset(FTL);
+const BTR = offset(FTR);
+const BBR = offset(FBR);
 
-/** Unit-square mapping for each visible face, so decoration inherits the isometric shear. */
-const FACE_LEFT = `matrix(${HALF_W} ${HALF_D} 0 ${BODY} ${L[0]} ${L[1]})`;
-const FACE_RIGHT = `matrix(${HALF_W} ${-HALF_D} 0 ${BODY} ${B[0]} ${B[1]})`;
-const FACE_TOP = `matrix(${HALF_W} ${HALF_D} ${HALF_W} ${-HALF_D} ${L[0]} ${L[1]})`;
+const FRONT = [FTL, FTR, FBR, FBL];
+const TOP = [FTL, FTR, BTR, BTL];
+const RIGHT = [FTR, BTR, BBR, FBR];
 
-const CHEVRON = 'M 0.32 0.20 L 0.60 0.50 L 0.32 0.80 L 0.44 0.91 L 0.83 0.50 L 0.44 0.09 Z';
+/** Unit-square mapping per face, so decoration inherits the correct perspective. */
+const M_FRONT = `matrix(162 -8 0 118 ${FTL[0]} ${FTL[1]})`;
+const M_TOP = `matrix(162 -8 58 -26 ${FTL[0]} ${FTL[1]})`;
+const M_RIGHT = `matrix(58 -26 0 118 ${FTR[0]} ${FTR[1]})`;
 
-/* Platform. Flatter than the cube's top face, matching the reference's lower camera. */
-const BASE_CY = 276;
-const BASE_RX = 144;
-const BASE_RATIO = 0.27;
+const CHEVRON = 'M 0.30 0.16 L 0.62 0.50 L 0.30 0.84 L 0.44 0.97 L 0.88 0.50 L 0.44 0.03 Z';
+
+/* Platform, deliberately tight around the appliance rather than a wide orbital field. */
+const BASE: Point = [180, 212];
+const BASE_RX = 148;
+const BASE_RY = 46;
 
 export function ServerIllustration({ className }: { className?: string }) {
-  // Two instances of this component appear on the page, so paint-server ids must be scoped
-  // per instance or the second copy would reference the first one's defs.
+  // This component renders twice on the page, so paint-server ids are scoped per instance.
   const uid = useId().replace(/:/g, '');
   const ref = (name: string) => `${name}-${uid}`;
   const url = (name: string) => `url(#${ref(name)})`;
 
   return (
     <svg
-      viewBox="0 40 400 320"
+      viewBox="0 40 420 300"
       className={cn('h-auto w-full', className)}
       aria-hidden="true"
       focusable="false"
     >
       <defs>
-        <linearGradient id={ref('top')} x1="0.1" y1="0" x2="0.8" y2="1">
-          <stop offset="0" stopColor="#3d4548" />
-          <stop offset="0.5" stopColor="#242b2d" />
-          <stop offset="1" stopColor="#171d1e" />
+        <linearGradient id={ref('lid')} x1="0.1" y1="0" x2="0.75" y2="1">
+          <stop offset="0" stopColor="#41494c" />
+          <stop offset="0.45" stopColor="#2b3234" />
+          <stop offset="1" stopColor="#1b2122" />
         </linearGradient>
-        <linearGradient id={ref('left')} x1="0" y1="0" x2="0.4" y2="1">
-          <stop offset="0" stopColor="#20272a" />
-          <stop offset="0.55" stopColor="#14191b" />
-          <stop offset="1" stopColor="#0b0f10" />
+        <linearGradient id={ref('front')} x1="0" y1="0" x2="0.25" y2="1">
+          <stop offset="0" stopColor="#23292b" />
+          <stop offset="0.5" stopColor="#161b1d" />
+          <stop offset="1" stopColor="#0d1112" />
         </linearGradient>
-        <linearGradient id={ref('right')} x1="0" y1="0" x2="0.7" y2="1">
-          <stop offset="0" stopColor="#151b1c" />
+        <linearGradient id={ref('side')} x1="0" y1="0" x2="1" y2="0.6">
+          <stop offset="0" stopColor="#12181a" />
           <stop offset="1" stopColor="#080b0c" />
         </linearGradient>
-        <linearGradient id={ref('cyl')} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#0a0e0f" />
-          <stop offset="0.5" stopColor="#151a1b" />
-          <stop offset="1" stopColor="#080b0c" />
+        <linearGradient id={ref('wall')} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#080b0c" />
+          <stop offset="0.5" stopColor="#161b1c" />
+          <stop offset="1" stopColor="#070a0b" />
         </linearGradient>
-        <radialGradient id={ref('bloom')}>
-          <stop offset="0" stopColor="#a8f000" stopOpacity="0.42" />
-          <stop offset="0.5" stopColor="#a8f000" stopOpacity="0.11" />
-          <stop offset="1" stopColor="#a8f000" stopOpacity="0" />
+        <radialGradient id={ref('ground')}>
+          <stop offset="0" stopColor="#a0ff00" stopOpacity="0.25" />
+          <stop offset="0.35" stopColor="#6edc00" stopOpacity="0.09" />
+          <stop offset="0.7" stopColor="#6edc00" stopOpacity="0" />
         </radialGradient>
-        <filter id={ref('glow')} x="-80%" y="-80%" width="260%" height="260%">
-          <feGaussianBlur stdDeviation="2.6" result="b" />
+        <filter id={ref('neon')} x="-120%" y="-120%" width="340%" height="340%">
+          <feGaussianBlur stdDeviation="2.2" result="b" />
           <feMerge>
             <feMergeNode in="b" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
-        <filter id={ref('soft')} x="-90%" y="-90%" width="280%" height="280%">
+        <filter id={ref('bloom')} x="-140%" y="-140%" width="380%" height="380%">
           <feGaussianBlur stdDeviation="7" />
         </filter>
       </defs>
 
-      {/* Ground bloom, tight to the platform so the field stays black. */}
-      <ellipse cx={CX} cy={BASE_CY + 6} rx={190} ry={62} fill={url('bloom')} />
+      {/* Ground bloom, brightest immediately beneath the unit. */}
+      <ellipse cx={BASE[0]} cy={BASE[1] + 26} rx={196} ry={72} fill={url('ground')} />
 
-      {/* Wide, very faint outer rings. */}
-      {[196, 172].map((rx, index) => (
-        <ellipse
-          key={rx}
-          cx={CX}
-          cy={BASE_CY}
-          rx={rx}
-          ry={rx * BASE_RATIO}
-          fill="none"
-          stroke="#a8f000"
-          strokeOpacity={index === 0 ? 0.1 : 0.16}
-          strokeWidth="1"
-        />
-      ))}
-
-      {/* Platform: cylinder wall, lit top rim, concentric interface rings. */}
+      {/* Platform: cylinder wall, dark plate, neon outer rim, one inner ring. */}
       <path
-        d={`M ${CX - BASE_RX} ${BASE_CY} A ${BASE_RX} ${BASE_RX * BASE_RATIO} 0 0 0 ${CX + BASE_RX} ${BASE_CY} L ${CX + BASE_RX} ${BASE_CY + 15} A ${BASE_RX} ${BASE_RX * BASE_RATIO} 0 0 1 ${CX - BASE_RX} ${BASE_CY + 15} Z`}
-        fill={url('cyl')}
+        d={`M ${BASE[0] - BASE_RX} ${BASE[1]} A ${BASE_RX} ${BASE_RY} 0 0 0 ${BASE[0] + BASE_RX} ${BASE[1]} L ${BASE[0] + BASE_RX} ${BASE[1] + 19} A ${BASE_RX} ${BASE_RY} 0 0 1 ${BASE[0] - BASE_RX} ${BASE[1] + 19} Z`}
+        fill={url('wall')}
       />
-      <ellipse cx={CX} cy={BASE_CY} rx={BASE_RX} ry={BASE_RX * BASE_RATIO} fill="#0a0e0f" />
-      <g filter={url('glow')}>
+      <ellipse cx={BASE[0]} cy={BASE[1]} rx={BASE_RX} ry={BASE_RY} fill="#090d0e" />
+      <g filter={url('neon')}>
         <ellipse
-          cx={CX}
-          cy={BASE_CY}
+          cx={BASE[0]}
+          cy={BASE[1]}
           rx={BASE_RX}
-          ry={BASE_RX * BASE_RATIO}
+          ry={BASE_RY}
           fill="none"
-          stroke="#a8f000"
-          strokeOpacity="0.85"
-          strokeWidth="1.5"
+          stroke="#a6ff00"
+          strokeOpacity="0.9"
+          strokeWidth="1.6"
         />
       </g>
-      {[118, 92].map((rx) => (
-        <ellipse
-          key={rx}
-          cx={CX}
-          cy={BASE_CY}
-          rx={rx}
-          ry={rx * BASE_RATIO}
-          fill="none"
-          stroke="#a8f000"
-          strokeOpacity="0.34"
-          strokeWidth="1"
-        />
-      ))}
-
-      {/* Body faces. Left and right first, then the top so its rounding overlaps cleanly. */}
-      <path d={roundedPath([L, B, BB, LB], RADIUS)} fill={url('left')} />
-      <path d={roundedPath([B, R, RB, BB], RADIUS)} fill={url('right')} />
-      <path
-        d={roundedPath([L, B, BB, LB], RADIUS)}
+      <ellipse
+        cx={BASE[0]}
+        cy={BASE[1]}
+        rx={BASE_RX - 30}
+        ry={BASE_RY - 9}
         fill="none"
-        stroke="#394244"
-        strokeOpacity="0.75"
+        stroke="#a6ff00"
+        strokeOpacity="0.3"
         strokeWidth="1"
       />
+
+      {/* Contact shadow so the unit reads as resting on the plate, not floating. */}
+      <ellipse cx={BASE[0]} cy={BASE[1] + 2} rx={92} ry={26} fill="#000" fillOpacity="0.55" />
+
+      {/* Solid body. Right and front first, lid last so its rounding sits on top. */}
+      <path d={roundedPath(RIGHT, 12)} fill={url('side')} />
+      <path d={roundedPath(FRONT, 13)} fill={url('front')} />
       <path
-        d={roundedPath([B, R, RB, BB], RADIUS)}
+        d={roundedPath(FRONT, 13)}
         fill="none"
-        stroke="#2c3435"
-        strokeOpacity="0.7"
+        stroke="#3c4547"
+        strokeOpacity="0.8"
         strokeWidth="1"
       />
-      <path d={roundedPath([T, R, B, L], RADIUS)} fill={url('top')} />
+      <path d={roundedPath(TOP, 12)} fill={url('lid')} />
       <path
-        d={roundedPath([T, R, B, L], RADIUS)}
+        d={roundedPath(TOP, 12)}
         fill="none"
-        stroke="#535d60"
-        strokeOpacity="0.9"
-        strokeWidth="1.1"
+        stroke="#5b6568"
+        strokeOpacity="0.85"
+        strokeWidth="1"
       />
 
-      {/* Recessed lid panel with the small brand mark. */}
-      <g transform={FACE_TOP}>
-        <rect
-          x="0.13"
-          y="0.13"
-          width="0.74"
-          height="0.74"
-          rx="0.06"
-          fill="#161c1d"
-          stroke="#404a4c"
-          strokeWidth="0.009"
-        />
-      </g>
-      <g transform={FACE_TOP} filter={url('glow')}>
-        <path d={CHEVRON} transform="translate(0.3 0.3) scale(0.4)" fill="#b5ff00" />
-      </g>
-
-      {/* Neon rim under the top edge — the reference's defining highlight. */}
-      <g filter={url('glow')}>
-        <path
-          d={`M ${L[0] + 6} ${L[1] + 10} Q ${CX} ${B[1] + 12} ${R[0] - 6} ${R[1] + 10}`}
-          fill="none"
-          stroke="#a8f000"
-          strokeWidth="2.4"
-          strokeLinecap="round"
-        />
-      </g>
-
-      {/* Left face: illuminated logo, panel seam, fasteners. */}
-      <g transform={FACE_LEFT}>
-        <rect
-          x="0.09"
-          y="0.12"
-          width="0.82"
-          height="0.74"
-          rx="0.05"
-          fill="none"
-          stroke="#2f3739"
-          strokeWidth="0.011"
-        />
-        {[0.15, 0.85].map((fx) =>
-          [0.19, 0.81].map((fy) => (
-            <circle key={`${fx}-${fy}`} cx={fx} cy={fy} r="0.019" fill="#3d4749" />
-          )),
-        )}
-      </g>
-      <g transform={FACE_LEFT} filter={url('glow')}>
-        <path d={CHEVRON} transform="translate(0.27 0.24) scale(0.5)" fill="#b5ff00" />
-      </g>
-
-      {/* Right face: ventilation bank and status light. */}
-      <g transform={FACE_RIGHT}>
+      {/* Inset lid panel with the small brand accent. */}
+      <g transform={M_TOP}>
         <rect
           x="0.12"
           y="0.14"
-          width="0.52"
-          height="0.66"
-          rx="0.04"
-          fill="#0a0e0f"
-          stroke="#242b2c"
-          strokeWidth="0.01"
+          width="0.76"
+          height="0.72"
+          rx="0.07"
+          fill="#1a2021"
+          stroke="#464f52"
+          strokeOpacity="0.75"
+          strokeWidth="0.008"
         />
-        {[0.24, 0.37, 0.5, 0.63].map((vy) => (
-          <rect key={vy} x="0.18" y={vy} width="0.4" height="0.04" rx="0.02" fill="#2e3637" />
-        ))}
-        <circle cx="0.8" cy="0.7" r="0.038" fill="#43dd82" />
+        {[0.2, 0.8].map((sx) =>
+          [0.26, 0.74].map((sy) => (
+            <circle key={`${sx}-${sy}`} cx={sx} cy={sy} r="0.015" fill="#4d5658" />
+          )),
+        )}
+      </g>
+      <g transform={M_TOP} filter={url('neon')}>
+        <path d={CHEVRON} transform="translate(0.39 0.34) scale(0.26)" fill="#b2ff20" />
       </g>
 
-      {/* Contact bloom where the chassis meets the platform. */}
+      {/* The defining detail: a thin neon strip along the upper seam. */}
+      <g filter={url('neon')}>
+        <path
+          d={`M ${FTL[0] + 8} ${FTL[1] + 4} L ${FTR[0] - 8} ${FTR[1] + 4} L ${BTR[0] - 6} ${BTR[1] + 5}`}
+          fill="none"
+          stroke="#9dff00"
+          strokeWidth="1.9"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </g>
+
+      {/* Front face: seams, indicator lights, glowing mark. */}
+      <g transform={M_FRONT}>
+        <rect
+          x="0.07"
+          y="0.12"
+          width="0.86"
+          height="0.76"
+          rx="0.05"
+          fill="none"
+          stroke="#333b3d"
+          strokeOpacity="0.85"
+          strokeWidth="0.009"
+        />
+        <line x1="0.07" y1="0.25" x2="0.93" y2="0.25" stroke="#2a3133" strokeWidth="0.007" />
+        <circle cx="0.13" cy="0.55" r="0.022" fill="#9dff00" fillOpacity="0.75" />
+        {[0.68, 0.75, 0.82].map((dx) => (
+          <circle key={dx} cx={dx} cy="0.85" r="0.012" fill="#39413f" />
+        ))}
+      </g>
+      <g transform={M_FRONT} filter={url('neon')}>
+        <path d={CHEVRON} transform="translate(0.33 0.32) scale(0.4)" fill="#b2ff20" />
+      </g>
+
+      {/* Right face: ventilation bank and a small status indicator. */}
+      <g transform={M_RIGHT}>
+        <rect
+          x="0.14"
+          y="0.16"
+          width="0.7"
+          height="0.56"
+          rx="0.06"
+          fill="#0a0e0f"
+          stroke="#232a2b"
+          strokeOpacity="0.9"
+          strokeWidth="0.02"
+        />
+        {[0.24, 0.34, 0.44, 0.54, 0.64].map((vy) => (
+          <rect key={vy} x="0.22" y={vy} width="0.54" height="0.028" rx="0.014" fill="#333b3c" />
+        ))}
+        <circle cx="0.5" cy="0.84" r="0.03" fill="#43dd82" />
+      </g>
+
+      {/* Tight bloom where the chassis meets the plate. */}
       <ellipse
-        cx={CX}
-        cy={BB[1] - 6}
-        rx={62}
-        ry={16}
-        fill="#a8f000"
-        fillOpacity="0.5"
-        filter={url('soft')}
+        cx={BASE[0] - 8}
+        cy={FBL[1] - 4}
+        rx={70}
+        ry={15}
+        fill="#a6ff00"
+        fillOpacity="0.45"
+        filter={url('bloom')}
       />
     </svg>
   );
