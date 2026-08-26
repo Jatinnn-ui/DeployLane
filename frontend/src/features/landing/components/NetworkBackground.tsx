@@ -1,109 +1,117 @@
 import { useId } from 'react';
 
 /**
- * Perspective grid and particle field behind the deployment scene.
+ * Background plane for the hero scene: a fine technical mesh, not a set of perspective rays.
  *
- * Lines are generated rather than hand-authored: horizontals use an eased step so they
- * bunch toward the horizon, and verticals converge on a vanishing point. A radial mask keeps
- * the field strongest behind the server and fades it out before it reaches the hero copy,
- * which is what stops it competing with the foreground.
+ * Two crossing diagonal families at a close pitch read as a subtle 3D network plane, which is
+ * what sits behind the reference's chassis. It is deliberately quiet - the mesh supports the
+ * composition, and the bright wiring lives in the foreground connector layer instead.
+ *
+ * Authored in the scene's canonical 620x410 coordinate system.
  */
 
-const VANISH_X = 300;
-const VANISH_Y = 40;
+const SCENE_W = 620;
+const SCENE_H = 410;
 
-/** Eased spacing: rows compress toward the horizon. */
-const ROWS = Array.from({ length: 10 }, (_, i) => {
-  const t = (i + 1) / 10;
-  return VANISH_Y + t ** 2.3 * 430;
-});
+const PITCH = 26;
+const RUN = 300;
 
-const COLUMNS = Array.from({ length: 13 }, (_, i) => -260 + i * 90);
+/** Down-right family. */
+const DIAG_A = Array.from({ length: 38 }, (_, i) => -312 + i * PITCH);
+/** Down-left family. */
+const DIAG_B = Array.from({ length: 36 }, (_, i) => i * PITCH);
+/** A few horizontals to give the mesh a ground plane. */
+const ROWS = Array.from({ length: 12 }, (_, i) => 24 + i * 34);
 
-const PARTICLES = [
-  { x: 96, y: 128, r: 1.5, o: 0.5 },
-  { x: 168, y: 74, r: 1.1, o: 0.35 },
-  { x: 214, y: 196, r: 1.3, o: 0.4 },
-  { x: 322, y: 96, r: 1.6, o: 0.55 },
-  { x: 398, y: 156, r: 1.2, o: 0.4 },
-  { x: 452, y: 246, r: 1.5, o: 0.45 },
-  { x: 508, y: 112, r: 1.1, o: 0.3 },
-  { x: 556, y: 208, r: 1.4, o: 0.5 },
-  { x: 138, y: 286, r: 1.2, o: 0.35 },
-  { x: 268, y: 330, r: 1.3, o: 0.4 },
-  { x: 486, y: 348, r: 1.1, o: 0.3 },
-  { x: 588, y: 296, r: 1.5, o: 0.45 },
-];
-
-/** A few brighter intersections, so the field reads as a network and not just a grid. */
-const BRIGHT = [
-  { x: 240, y: 152 },
-  { x: 366, y: 214 },
-  { x: 148, y: 232 },
-  { x: 470, y: 178 },
+const DOTS = [
+  { x: 108, y: 96, r: 1.2, o: 0.45 },
+  { x: 176, y: 62, r: 0.9, o: 0.3 },
+  { x: 214, y: 176, r: 1.1, o: 0.38 },
+  { x: 268, y: 118, r: 1.4, o: 0.5 },
+  { x: 306, y: 62, r: 1, o: 0.32 },
+  { x: 342, y: 158, r: 1.2, o: 0.42 },
+  { x: 386, y: 108, r: 0.9, o: 0.3 },
+  { x: 428, y: 196, r: 1.3, o: 0.45 },
+  { x: 462, y: 128, r: 1, o: 0.34 },
+  { x: 508, y: 232, r: 1.2, o: 0.4 },
+  { x: 552, y: 168, r: 0.9, o: 0.3 },
+  { x: 148, y: 268, r: 1.1, o: 0.36 },
+  { x: 232, y: 322, r: 1.3, o: 0.42 },
+  { x: 328, y: 372, r: 1, o: 0.3 },
+  { x: 452, y: 344, r: 1.2, o: 0.38 },
+  { x: 566, y: 296, r: 0.9, o: 0.3 },
 ];
 
 export function NetworkBackground() {
   const uid = useId().replace(/:/g, '');
   const maskId = `net-mask-${uid}`;
-  const glowId = `net-glow-${uid}`;
 
   return (
     <svg
       className="pointer-events-none absolute inset-0 h-full w-full"
-      viewBox="0 0 614 440"
+      viewBox={`0 0 ${SCENE_W} ${SCENE_H}`}
       preserveAspectRatio="none"
       aria-hidden="true"
       focusable="false"
     >
       <defs>
-        {/* Strongest behind the appliance, gone before it reaches the hero copy. */}
-        <radialGradient id={maskId} cx="0.48" cy="0.47" r="0.62">
-          <stop offset="0.35" stopColor="#fff" stopOpacity="1" />
-          <stop offset="0.65" stopColor="#fff" stopOpacity="0.65" />
+        {/* Densest behind the chassis, gone well before it reaches the hero copy. */}
+        <radialGradient id={maskId} cx="0.5" cy="0.5" r="0.62">
+          <stop offset="0.3" stopColor="#fff" stopOpacity="1" />
+          <stop offset="0.68" stopColor="#fff" stopOpacity="0.55" />
           <stop offset="1" stopColor="#fff" stopOpacity="0" />
         </radialGradient>
         <mask id={`${maskId}-m`}>
-          <rect width="614" height="440" fill={`url(#${maskId})`} />
+          <rect width={SCENE_W} height={SCENE_H} fill={`url(#${maskId})`} />
         </mask>
-        <filter id={glowId} x="-300%" y="-300%" width="700%" height="700%">
-          <feGaussianBlur stdDeviation="2" />
-        </filter>
       </defs>
 
-      <g mask={`url(#${maskId}-m)`} opacity="0.16">
-        {ROWS.map((y) => (
-          <line key={`r${y}`} x1="-120" y1={y} x2="740" y2={y} stroke="#7fbf00" strokeWidth="0.7" />
-        ))}
-        {COLUMNS.map((x) => (
+      <g mask={`url(#${maskId}-m)`} opacity="0.13">
+        {DIAG_A.map((x) => (
           <line
-            key={`c${x}`}
-            x1={VANISH_X}
-            y1={VANISH_Y}
-            x2={x}
-            y2="500"
+            key={`a${x}`}
+            x1={x}
+            y1={-30}
+            x2={x + RUN}
+            y2={SCENE_H + 40}
             stroke="#7fbf00"
-            strokeWidth="0.7"
+            strokeWidth="0.6"
+          />
+        ))}
+        {DIAG_B.map((x) => (
+          <line
+            key={`b${x}`}
+            x1={x}
+            y1={-30}
+            x2={x - RUN}
+            y2={SCENE_H + 40}
+            stroke="#7fbf00"
+            strokeWidth="0.6"
+          />
+        ))}
+        {ROWS.map((y) => (
+          <line
+            key={`r${y}`}
+            x1={-40}
+            y1={y}
+            x2={SCENE_W + 40}
+            y2={y}
+            stroke="#7fbf00"
+            strokeWidth="0.5"
           />
         ))}
       </g>
 
       <g mask={`url(#${maskId}-m)`}>
-        {PARTICLES.map((particle) => (
+        {DOTS.map((dot) => (
           <circle
-            key={`${particle.x}:${particle.y}`}
-            cx={particle.x}
-            cy={particle.y}
-            r={particle.r}
+            key={`${dot.x}:${dot.y}`}
+            cx={dot.x}
+            cy={dot.y}
+            r={dot.r}
             fill="#a8f000"
-            fillOpacity={particle.o}
+            fillOpacity={dot.o}
           />
-        ))}
-        {BRIGHT.map((node) => (
-          <g key={`${node.x}:${node.y}`}>
-            <circle cx={node.x} cy={node.y} r="3.4" fill="#b6ff00" opacity="0.5" filter={`url(#${glowId})`} />
-            <circle cx={node.x} cy={node.y} r="1.5" fill="#d7ff7a" />
-          </g>
         ))}
       </g>
     </svg>

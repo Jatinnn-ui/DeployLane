@@ -1,19 +1,33 @@
-import { Box, CheckCircle2, Globe, Layers, Rocket, type LucideIcon } from 'lucide-react';
+import { Box, Check, Globe, Layers, Rocket, Shuffle, type LucideIcon } from 'lucide-react';
 import { useId } from 'react';
 import { GithubIcon } from '@/components/icons/GithubIcon';
 import { cn } from '@/lib/utils';
+import { HeroServer, HERO_SERVER_BOX } from './HeroServer';
 import type { IconComponent } from './icon-type';
 import { NetworkBackground } from './NetworkBackground';
-import { ServerIllustration } from './ServerIllustration';
 
 /**
  * Art-directed deployment scene.
  *
- * This is a composition rather than a layout, so every element is absolutely positioned as a
- * percentage of this container. The percentages come from measuring the reference at 1024×525,
- * where the scene occupies x 384–998 and y 58–498 — a 614×440 box. Sizes are percentages of
- * that same box and card internals use `cqw`, so the whole diagram scales as one unit.
+ * ONE canonical coordinate system: a 620x410 box whose units come from the reference render
+ * (1024x682, mapped at 0.6055). Chassis, pedestal, cards, wiring and mesh are all authored in
+ * those units, so their relationships are fixed. The scene then fills the hero's existing visual
+ * column, which keeps the artwork large without a global transform and without touching the
+ * hero's dimensions.
+ *
+ * Depth is real: the wiring sits behind everything, Repository and Build sit behind the chassis,
+ * and Container / Build Logs / Deploy / Live sit in front of it.
  */
+
+const SCENE_W = 620;
+const SCENE_H = 410;
+
+/** Canonical scene pixels -> container-query units of the scene itself. */
+const u = (n: number) => `${((n / SCENE_W) * 100).toFixed(3)}cqw`;
+
+/** Type/padding scale shared by the status cards, so their content reads as one system. */
+const CARD_SCALE = 0.9;
+const LOGS_SCALE = 0.9;
 
 interface Card {
   id: string;
@@ -21,14 +35,21 @@ interface Card {
   status: string;
   meta?: string;
   icon: IconComponent | LucideIcon;
-  /** Card centre, as a percentage of the scene. */
-  at: { x: number; y: number };
-  /** Width as a percentage of the scene: the reference's 135px of 614 becomes 22%. */
-  width: number;
+  /** Top-left corner and box size, in canonical scene units. */
+  x: number;
+  y: number;
+  w: number;
+  h: number;
   rotate: number;
+  /** Behind the chassis (1) or in front of it (10). */
+  z: number;
+  /** The URL on the Live card is monospaced in the reference. */
+  monoStatus?: boolean;
+  /** Kept in the simplified layout below lg. */
   essential?: boolean;
 }
 
+/* Boxes measured off the reference render, so each card is 48-69% of the chassis width. */
 const CARDS: Card[] = [
   {
     id: 'repository',
@@ -36,9 +57,12 @@ const CARDS: Card[] = [
     status: 'main',
     meta: 'a1b2c3d',
     icon: GithubIcon,
-    at: { x: 21.7, y: 13.4 },
-    width: 22,
+    x: 85,
+    y: 19,
+    w: 110,
+    h: 63,
     rotate: -4,
+    z: 1,
     essential: true,
   },
   {
@@ -47,9 +71,12 @@ const CARDS: Card[] = [
     status: 'Completed',
     meta: '32s',
     icon: Box,
-    at: { x: 80.5, y: 13.9 },
-    width: 21.2,
-    rotate: 4,
+    x: 422,
+    y: 8,
+    w: 136,
+    h: 76,
+    rotate: 5,
+    z: 1,
   },
   {
     id: 'container',
@@ -57,9 +84,12 @@ const CARDS: Card[] = [
     status: 'Ready',
     meta: 'alpine:3.19',
     icon: Layers,
-    at: { x: 86.9, y: 39.1 },
-    width: 23.6,
-    rotate: 6,
+    x: 446,
+    y: 109,
+    w: 144,
+    h: 86,
+    rotate: 7,
+    z: 10,
   },
   {
     id: 'deploy',
@@ -67,71 +97,137 @@ const CARDS: Card[] = [
     status: 'Success',
     meta: 'us-east-1',
     icon: Rocket,
-    at: { x: 83, y: 65.2 },
-    width: 26,
-    rotate: 5,
+    x: 414,
+    y: 230,
+    w: 172,
+    h: 86,
+    rotate: 6,
+    z: 10,
     essential: true,
   },
   {
     id: 'live',
     label: 'Live',
-    status: 'https://cheslearn.app',
+    status: 'https://go.deploylane.app',
     icon: Globe,
-    at: { x: 39.7, y: 76.6 },
-    width: 28.5,
+    x: 159,
+    y: 291,
+    w: 167,
+    h: 61,
     rotate: 2,
+    z: 10,
+    monoStatus: true,
     essential: true,
   },
 ];
 
-const LOGS = { x: 13.2, y: 55 };
+const LOGS = { x: 10, y: 170, w: 146, h: 131, rotate: -4 };
+
+const STAGE_TIMING = {
+  repository: 0.8,
+  build: 3.65,
+  container: 6.5,
+  deploy: 9.35,
+  live: 12.2,
+  logs: 3.85,
+} as const;
+type PipelineStage = keyof typeof STAGE_TIMING;
+
+const STAGE_ACTIVITY_DELAY: Record<PipelineStage, string> = Object.fromEntries(
+  Object.entries(STAGE_TIMING).map(([stage, seconds]) => [stage, `${seconds}s`]),
+) as Record<PipelineStage, string>;
+
+/** The chassis SVG carries scene coordinates, so it maps 1:1 into the scene. */
+const SERVER = HERO_SERVER_BOX;
 
 const LOG_LINES = ['Installing dependencies', 'Building project', 'Optimizing assets'];
 
-/** A couple of detached technical elements, kept deliberately unobtrusive. */
-const DETACHED = [
-  { x: 4, y: 26, size: 3.4, rotate: -12 },
-  { x: 95.5, y: 29, size: 2.9, rotate: 14 },
+/** Small dark geometry, distant and low contrast. */
+const CUBES = [
+  { x: 20, y: 120, size: 34, rotate: -12 },
+  { x: 588, y: 122, size: 30, rotate: 14 },
+  { x: 498, y: 378, size: 27, rotate: 8 },
 ];
 
 /**
- * Connectors in scene coordinates (614×440). Each ends on a card edge and bends around the
- * chassis, so the network reads as organic wiring rather than radial spokes.
+ * Foreground wiring. Long flowing curves rather than segmented right-angle runs, matching the
+ * reference's routing: every end lands on a card edge, the chassis silhouette or the pedestal,
+ * and the layer sits behind both the chassis and the cards so connections pass behind objects.
  */
-const LINKS = [
-  { d: 'M 200 66 Q 250 52 296 44 T 424 50', delay: 0 },
-  { d: 'M 352 40 Q 366 78 334 104', delay: 0.5 },
-  { d: 'M 492 108 Q 530 140 478 160', delay: 1 },
-  { d: 'M 530 200 Q 542 240 508 258', delay: 1.5 },
-  { d: 'M 424 300 Q 372 344 334 352', delay: 2 },
-  { d: 'M 156 352 Q 110 342 84 300', delay: 2.5 },
-  { d: 'M 150 236 Q 188 228 214 208', delay: 3 },
-  { d: 'M 386 232 Q 420 258 428 302', delay: 3.5 },
+const LINKS: Array<{
+  d: string;
+  stage?: PipelineStage;
+  reverse?: boolean;
+}> = [
+  { d: 'M 195 54 C 222 52 244 70 250 104', stage: 'repository' },
+  { d: 'M 158 82 C 172 106 182 128 190 150', stage: 'repository' },
+  { d: 'M 422 46 C 400 46 374 66 358 101', stage: 'build' },
+  { d: 'M 470 84 C 482 92 492 100 500 109' },
+  { d: 'M 415 146 C 428 145 438 148 446 152', stage: 'container', reverse: true },
+  { d: 'M 520 195 C 516 208 508 220 500 230' },
+  { d: 'M 392 216 C 408 226 416 238 414 252', stage: 'deploy', reverse: true },
+  { d: 'M 380 261 C 396 268 406 274 414 278', stage: 'deploy', reverse: true },
+  { d: 'M 414 300 C 392 316 356 330 326 330' },
+  { d: 'M 250 248 L 250 291', stage: 'live', reverse: true },
+  { d: 'M 200 237 C 184 244 168 252 156 258', stage: 'build' },
+  { d: 'M 156 198 C 170 196 182 190 190 184', stage: 'build' },
+  { d: 'M 80 301 C 90 318 122 331 159 329' },
 ];
 
-/** Nodes only where a route actually bends or terminates. */
+/**
+ * Three tiers at real terminals and bends, irregularly spaced: primary (pale core plus halo),
+ * secondary (solid lime, small glow) and tiny (bare point). Most are small - only the three
+ * primaries carry a noticeable halo, so the nodes read as energy in a pipeline.
+ */
 const NODES: Array<[number, number, number]> = [
-  [200, 66, 2.6],
-  [296, 44, 3.2],
-  [424, 50, 2.6],
-  [352, 40, 2.2],
-  [334, 104, 2.6],
-  [492, 108, 2.4],
-  [478, 160, 2.8],
-  [530, 200, 2.4],
-  [508, 258, 2.8],
-  [424, 300, 2.6],
-  [334, 352, 3],
-  [156, 352, 2.4],
-  [84, 300, 2.6],
-  [150, 236, 2.4],
-  [214, 208, 2.8],
-  [386, 232, 2.2],
+  [250, 104, 3],
+  [218, 57, 2],
+  [195, 54, 1.2],
+  [190, 150, 2],
+  [358, 101, 3],
+  [422, 46, 1.2],
+  [500, 109, 2],
+  [446, 152, 2],
+  [415, 146, 1.2],
+  [500, 230, 1.2],
+  [414, 252, 3],
+  [392, 216, 2],
+  [380, 261, 1.2],
+  [414, 278, 2],
+  [326, 330, 2],
+  [250, 248, 2],
+  [190, 184, 2],
+  [156, 198, 1.2],
+  [156, 258, 2],
+  [159, 329, 2],
 ];
 
-/** HUD panel: dark, translucent, and quieter than a normal product card. */
+const NODE_SEQUENCE: Array<{ stage: PipelineStage; cascade: number }> = [
+  { stage: 'repository', cascade: 0 },
+  { stage: 'repository', cascade: 0.16 },
+  { stage: 'repository', cascade: 0.32 },
+  { stage: 'repository', cascade: 0.48 },
+  { stage: 'build', cascade: 0 },
+  { stage: 'build', cascade: 0.18 },
+  { stage: 'container', cascade: 0 },
+  { stage: 'container', cascade: 0.18 },
+  { stage: 'deploy', cascade: 0 },
+  { stage: 'deploy', cascade: 0.18 },
+  { stage: 'live', cascade: 0 },
+  { stage: 'build', cascade: 0.36 },
+  { stage: 'build', cascade: 0.52 },
+  { stage: 'build', cascade: 0.68 },
+  { stage: 'live', cascade: 0.2 },
+  { stage: 'live', cascade: 0.36 },
+  { stage: 'live', cascade: 0.52 },
+  { stage: 'live', cascade: 0.68 },
+  { stage: 'live', cascade: 0.84 },
+  { stage: 'live', cascade: 1 },
+];
+
+/** Floating black glass panel: near-opaque, thin light edge, faint green bounce underneath. */
 const PANEL =
-  'rounded-[10px] border border-[rgba(255,255,255,0.16)] bg-[linear-gradient(135deg,rgba(20,24,22,0.96),rgba(7,10,9,0.96))] shadow-[0_12px_30px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.035)] backdrop-blur-[6px] lg:rounded-[1.6cqw]';
+  'border border-[rgba(180,200,190,0.26)] bg-[linear-gradient(145deg,rgba(23,27,24,0.96),rgba(7,10,9,0.98))] shadow-[0_14px_34px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.12),inset_0_-1px_0_rgba(183,255,0,0.18)] backdrop-blur-[6px]';
 
 function DetachedCube({ rotate }: { rotate: number }) {
   return (
@@ -142,100 +238,164 @@ function DetachedCube({ rotate }: { rotate: number }) {
       aria-hidden="true"
       focusable="false"
     >
-      <polygon points="20,2 38,12 20,22 2,12" fill="#22282a" />
-      <polygon points="2,12 20,22 20,42 2,32" fill="#0d1112" />
-      <polygon points="20,22 38,12 38,32 20,42" fill="#080b0c" />
-      <path d="M2,32 L20,42 L38,32" fill="none" stroke="#a6ff00" strokeOpacity="0.55" strokeWidth="1.4" />
+      <polygon points="20,2 38,12 20,22 2,12" fill="#1b201c" />
+      <polygon points="2,12 20,22 20,42 2,32" fill="#0b0e0c" />
+      <polygon points="20,22 38,12 38,32 20,42" fill="#070908" />
+      <path
+        d="M2,32 L20,42 L38,32"
+        fill="none"
+        stroke="#b7ff00"
+        strokeOpacity="0.4"
+        strokeWidth="1.4"
+      />
     </svg>
   );
 }
 
+/** Desktop card: fixed canonical box, art-directed position, no flex sizing anywhere. */
 function StatusCard({ card, reducedMotion }: { card: Card; reducedMotion: boolean }) {
   const Icon = card.icon;
+  const s = (n: number) => u(n * CARD_SCALE);
 
   return (
     <li
-      className={cn(
-        'pipeline-stage min-w-0 lg:absolute lg:-translate-x-1/2 lg:-translate-y-1/2',
-        !card.essential && 'hidden lg:block',
-      )}
+      className="pipeline-stage absolute"
       style={{
-        left: `${card.at.x}%`,
-        top: `${card.at.y}%`,
-        animationDelay: reducedMotion ? '0ms' : `${0.1 + card.at.y / 140}s`,
+        left: u(card.x),
+        top: u(card.y),
+        width: u(card.w),
+        height: u(card.h),
+        zIndex: card.z,
+        flex: 'none',
+        animationDelay: reducedMotion ? '0ms' : `${0.1 + card.y / 420}s`,
       }}
     >
       <div
         className={cn(
           PANEL,
-          'pipeline-card-float w-full px-2 py-1.5',
-          'lg:w-[var(--card-w)] lg:px-[1.5cqw] lg:py-[1.2cqw]',
+          'pipeline-card-float pipeline-stage-card relative flex h-full w-full flex-col justify-center',
+          reducedMotion && 'motion-reduced',
         )}
         style={
           {
+            padding: `${s(8)} ${s(9)}`,
+            borderRadius: s(10),
             '--card-tilt': `rotate(${card.rotate}deg)`,
-            '--float-delay': `${card.at.x / -26}s`,
-            '--card-w': `${card.width}%`,
+            '--float-delay': `${card.x / -140}s`,
+            '--stage-activity-delay': STAGE_ACTIVITY_DELAY[card.id as PipelineStage],
+            ...(reducedMotion ? { animation: 'none' } : null),
           } as React.CSSProperties
         }
       >
-        <div className="flex items-center gap-1.5 lg:gap-[1cqw]">
-          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[rgba(255,255,255,0.14)] bg-[#121617] text-white/80 lg:h-[3.1cqw] lg:w-[3.1cqw]">
-            <Icon className="h-2.5 w-2.5 lg:h-[1.7cqw] lg:w-[1.7cqw]" strokeWidth={2} aria-hidden="true" />
-          </span>
-          <p className="min-w-0 flex-1 truncate text-[10px] font-semibold leading-none text-white/90 lg:text-[1.79cqw]">
-            {card.label}
-          </p>
-          <CheckCircle2
-            className="h-3 w-3 shrink-0 text-[#a6ff00] lg:h-[2.1cqw] lg:w-[2.1cqw]"
+        {/* Icon on the left, copy indented beside it — the reference's card anatomy. */}
+        <div className="flex items-start" style={{ gap: s(7) }}>
+          <Icon
+            className="pipeline-card-icon shrink-0 text-white/85"
+            style={{ width: s(16), height: s(16), flex: 'none' }}
+            strokeWidth={1.6}
             aria-hidden="true"
           />
+          <div className="min-w-0">
+            <p
+              className="whitespace-nowrap font-semibold leading-none text-white/92"
+              style={{ fontSize: s(10) }}
+            >
+              {card.label}
+            </p>
+            <p
+              className={cn('whitespace-nowrap text-white/72', card.monoStatus && 'font-mono')}
+              style={{ fontSize: s(8), lineHeight: 1.6, marginTop: s(7), paddingRight: s(15) }}
+            >
+              {card.status}
+            </p>
+            {card.meta && (
+              <p
+                className="whitespace-nowrap font-mono text-white/60"
+                style={{ fontSize: s(8), lineHeight: 1.6, paddingRight: s(15) }}
+              >
+                {card.meta}
+              </p>
+            )}
+          </div>
         </div>
 
-        <p className="mt-1 truncate pl-6.5 text-[8px] leading-[1.4] text-white/50 lg:mt-[0.7cqw] lg:pl-[4.1cqw] lg:text-[1.3cqw]">
-          {card.status}
-        </p>
-        {card.meta && (
-          <p className="truncate pl-6.5 font-mono text-[7.5px] leading-[1.4] text-white/50 lg:pl-[4.1cqw] lg:text-[1.3cqw]">
-            {card.meta}
-          </p>
-        )}
+        <span
+          className="pipeline-status-indicator absolute flex -translate-y-1/2 items-center justify-center rounded-full bg-[#6fbf00]"
+          style={{ right: s(9), top: '62%', width: s(15), height: s(15) }}
+          aria-hidden="true"
+        >
+          <Check style={{ width: s(10), height: s(10) }} strokeWidth={4} className="text-white" />
+        </span>
       </div>
     </li>
   );
 }
 
 function BuildLogsCard({ reducedMotion }: { reducedMotion: boolean }) {
+  const s = (n: number) => u(n * LOGS_SCALE);
+  const lineStyle = { fontSize: s(7), lineHeight: 1.85 };
+
   return (
     <li
-      className="pipeline-stage absolute hidden -translate-x-1/2 -translate-y-1/2 lg:block"
+      className="pipeline-stage absolute"
       style={{
-        left: `${LOGS.x}%`,
-        top: `${LOGS.y}%`,
+        left: u(LOGS.x),
+        top: u(LOGS.y),
+        width: u(LOGS.w),
+        height: u(LOGS.h),
+        zIndex: 10,
+        flex: 'none',
         animationDelay: reducedMotion ? '0ms' : '0.1s',
       }}
     >
       <div
-        className={cn(PANEL, 'pipeline-card-float w-[23.6%] px-[1.5cqw] py-[1.2cqw]')}
+        className={cn(PANEL, 'pipeline-card-float pipeline-stage-card h-full w-full', reducedMotion && 'motion-reduced')}
         style={
           {
-            '--card-tilt': 'rotate(-4deg)',
+            padding: `${s(9)} ${s(10)}`,
+            borderRadius: s(10),
+            '--card-tilt': `rotate(${LOGS.rotate}deg)`,
             '--float-delay': '-2.4s',
+            '--stage-activity-delay': STAGE_ACTIVITY_DELAY.logs,
+            ...(reducedMotion ? { animation: 'none' } : null),
           } as React.CSSProperties
         }
       >
-        <p className="text-[1.7cqw] font-semibold leading-none text-white/90">Build Logs</p>
+        <div className="flex items-center justify-between">
+          <p className="font-semibold leading-none text-white/90" style={{ fontSize: s(9.5) }}>
+            Build Logs
+          </p>
+          <Shuffle
+            className="text-white/35"
+            style={{ width: s(9), height: s(9), flex: 'none' }}
+            aria-hidden="true"
+          />
+        </div>
 
-        <div className="mt-[1cqw] space-y-[0.3cqw] font-mono">
-          {LOG_LINES.map((line) => (
-            <p key={line} className="truncate text-[1.14cqw] leading-[1.5] text-white/50">
+        <div className="font-mono" style={{ marginTop: s(7) }}>
+          {LOG_LINES.map((line, index) => (
+            <p
+              key={line}
+              className="build-log-line whitespace-nowrap text-white/60"
+              style={
+                {
+                  ...lineStyle,
+                  '--log-stage-delay': `${STAGE_TIMING.build + 0.35 + index * 0.36}s`,
+                } as React.CSSProperties
+              }
+            >
               <span aria-hidden="true">›</span> {line}
             </p>
           ))}
-          <p className="truncate text-[1.14cqw] leading-[1.5] text-[#a6ff00]">
+          <p
+            className="build-log-line whitespace-nowrap text-[#b7ff00]"
+            style={
+              { ...lineStyle, '--log-stage-delay': `${STAGE_TIMING.build + 1.45}s` } as React.CSSProperties
+            }
+          >
             <span aria-hidden="true">›</span> Build completed
           </p>
-          <p className="text-[1.14cqw] leading-[1.5] text-white/40" aria-hidden="true">
+          <p className="build-log-cursor text-white/40" style={lineStyle} aria-hidden="true">
             _
           </p>
         </div>
@@ -244,91 +404,216 @@ function BuildLogsCard({ reducedMotion }: { reducedMotion: boolean }) {
   );
 }
 
-export function HeroVisual({ reducedMotion = false }: { reducedMotion?: boolean }) {
-  const uid = useId().replace(/:/g, '');
-  const glowId = `link-glow-${uid}`;
+/** Below lg the scene is not art-directed: the essential stages become a compact row. */
+function CompactCard({ card, reducedMotion }: { card: Card; reducedMotion: boolean }) {
+  const Icon = card.icon;
 
   return (
-    // `@container` makes cqw resolve against this box; the reference 614×440 aspect lets the
-    // composition scale without re-deriving a single coordinate.
-    <div className="@container relative h-[330px] sm:h-[380px] lg:h-auto lg:aspect-[614/440]">
-      <NetworkBackground />
+    <li
+      className={cn(PANEL, 'pipeline-compact-card min-w-0 overflow-hidden rounded-[10px] px-2 py-1.5')}
+      style={
+        {
+          '--stage-activity-delay': STAGE_ACTIVITY_DELAY[card.id as PipelineStage],
+          ...(reducedMotion ? { animation: 'none' } : null),
+        } as React.CSSProperties
+      }
+    >
+      <div className="flex items-center gap-1.5">
+        <Icon className="h-3.5 w-3.5 shrink-0 text-white/85" strokeWidth={1.6} aria-hidden="true" />
+        <p className="truncate text-[10px] font-semibold leading-none text-white/90">
+          {card.label}
+        </p>
+      </div>
+      <p className="mt-1 break-all text-[7px] leading-[1.35] text-white/55">{card.status}</p>
+    </li>
+  );
+}
 
-      {/* Detached technical elements sit behind the connectors. */}
-      {DETACHED.map((cube) => (
-        <div
-          key={`${cube.x}:${cube.y}`}
-          aria-hidden="true"
-          className="pointer-events-none absolute hidden -translate-x-1/2 -translate-y-1/2 opacity-90 lg:block"
-          style={{ left: `${cube.x}%`, top: `${cube.y}%`, width: `${cube.size}%` }}
-        >
-          <DetachedCube rotate={cube.rotate} />
+export function HeroVisual({ reducedMotion = false }: { reducedMotion?: boolean }) {
+  const uid = useId().replace(/:/g, '');
+  const glowId = `hero-node-glow-${uid}`;
+  const wireGlowId = `hero-wire-glow-${uid}`;
+
+  return (
+    // Outer box keeps the hero's existing dimensions; the scene is fitted inside it.
+    <div className="@container relative min-w-0 w-full h-[250px] sm:h-[300px] lg:h-auto lg:aspect-[614/440]">
+      {/* Simplified composition below lg. */}
+      <div className="lg:hidden min-w-0 w-full">
+        <NetworkBackground />
+        <div className="pointer-events-none absolute left-1/2 top-[2%] h-[74%] w-[88%] -translate-x-1/2">
+          <HeroServer className={reducedMotion ? 'motion-reduced' : undefined} />
         </div>
-      ))}
-
-      {/* Connectors and nodes, layered beneath the platform and cards. */}
-      <svg
-        className="pointer-events-none absolute inset-0 hidden h-full w-full lg:block"
-        viewBox="0 0 614 440"
-        preserveAspectRatio="none"
-        aria-hidden="true"
-        focusable="false"
-      >
-        <defs>
-          <filter id={glowId} x="-300%" y="-300%" width="700%" height="700%">
-            <feGaussianBlur stdDeviation="2" />
-          </filter>
-        </defs>
-
-        {LINKS.map((link) => (
-          <g key={link.d}>
-            <path
-              d={link.d}
-              fill="none"
-              stroke="rgba(174,255,0,0.65)"
-              strokeWidth="1"
-              vectorEffect="non-scaling-stroke"
-            />
-            <path
-              d={link.d}
-              fill="none"
-              stroke="#c5ff45"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeDasharray="10 990"
-              pathLength={1000}
-              vectorEffect="non-scaling-stroke"
-              style={
-                reducedMotion
-                  ? { opacity: 0 }
-                  : { animation: `dash-flow 5.4s linear ${link.delay}s infinite` }
-              }
-            />
-          </g>
-        ))}
-
-        {NODES.map(([x, y, r]) => (
-          <g key={`${x}:${y}`}>
-            <circle cx={x} cy={y} r={r * 1.9} fill="#c5ff45" opacity="0.45" filter={`url(#${glowId})`} />
-            <circle cx={x} cy={y} r={r} fill="#c5ff45" />
-          </g>
-        ))}
-      </svg>
-
-      {/* Appliance and platform. 67% of the scene puts the body near the reference's 215px. */}
-      <div className="pointer-events-none absolute left-[18.7%] top-[18%] w-[67%]">
-        <ServerIllustration />
+        <ul
+          aria-label="Deployment pipeline stages"
+          className="absolute inset-x-0 bottom-1 grid w-full min-w-0 list-none grid-cols-3 items-end gap-1 px-0.5"
+        >
+          {CARDS.filter((card) => card.essential).map((card) => (
+            <CompactCard key={card.id} card={card} reducedMotion={reducedMotion} />
+          ))}
+        </ul>
       </div>
 
-      <ul
-        aria-label="Deployment pipeline stages"
-        className="absolute inset-x-0 bottom-0 grid list-none grid-cols-3 items-end gap-1.5 lg:inset-0 lg:block lg:gap-0"
+      {/* The scene fills the visual column: one coordinate space, one uniform scale. */}
+      <div
+        className="@container absolute left-1/2 top-[49.5%] hidden -translate-x-1/2 -translate-y-1/2 lg:block"
+        style={{ width: '100%', aspectRatio: `${SCENE_W} / ${SCENE_H}` }}
       >
-        {CARDS.map((card) => (
-          <StatusCard key={card.id} card={card} reducedMotion={reducedMotion} />
+        <NetworkBackground />
+
+        {CUBES.map((cube) => (
+          <div
+            key={`${cube.x}:${cube.y}`}
+            aria-hidden="true"
+            className="pointer-events-none absolute"
+            style={{
+              left: u(cube.x),
+              top: u(cube.y),
+              width: u(cube.size),
+              zIndex: 0,
+              flex: 'none',
+            }}
+          >
+            <DetachedCube rotate={cube.rotate} />
+          </div>
         ))}
-        <BuildLogsCard reducedMotion={reducedMotion} />
-      </ul>
+
+        {/* Wiring: behind the chassis and behind every card. */}
+        <svg
+          className="pointer-events-none absolute inset-0 h-full w-full"
+          viewBox={`0 0 ${SCENE_W} ${SCENE_H}`}
+          preserveAspectRatio="none"
+          style={{ zIndex: 0 }}
+          aria-hidden="true"
+          focusable="false"
+        >
+          <defs>
+            <filter id={wireGlowId} x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="2.2" result="wireBlur" />
+              <feMerge>
+                <feMergeNode in="wireBlur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          {LINKS.map((link) => (
+              <g
+                key={link.d}
+                className={cn('pipeline-connection-group', reducedMotion && 'motion-reduced')}
+                data-stage={link.stage}
+                style={
+                  {
+                    '--link-stage-delay': link.stage ? `${STAGE_TIMING[link.stage]}s` : undefined,
+                  } as React.CSSProperties
+                }
+              >
+              <path
+                className="connection-wire"
+                d={link.d}
+                fill="none"
+                stroke="rgba(183,255,0,0.24)"
+                strokeWidth="1.05"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                vectorEffect="non-scaling-stroke"
+                filter={`url(#${wireGlowId})`}
+              />
+              <path
+                className={cn('connection-packet', link.reverse && 'connection-packet-reverse')}
+                d={link.d}
+                fill="none"
+                stroke="#edffc1"
+                strokeWidth="1.45"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeDasharray="7 25"
+                pathLength={1000}
+                vectorEffect="non-scaling-stroke"
+                filter={`url(#${wireGlowId})`}
+                style={
+                  (reducedMotion || !link.stage
+                    ? { opacity: 0, animation: 'none' }
+                    : {
+                        '--signal-stage-delay': `${STAGE_TIMING[link.stage]}s`,
+                      }) as React.CSSProperties
+                }
+              />
+            </g>
+          ))}
+        </svg>
+
+        {/* A neutral tilt lets the chassis reuse the shared float: ~3px over 6s, nothing more. */}
+        <div
+          className={cn('pointer-events-none absolute', !reducedMotion && 'pipeline-card-float')}
+          style={
+            {
+              left: u(SERVER.x),
+              top: u(SERVER.y),
+              width: u(SERVER.width),
+              height: u(SERVER.height),
+              zIndex: 5,
+              flex: 'none',
+              '--card-tilt': 'translate3d(0,0,0)',
+              '--float-delay': '-1s',
+            } as React.CSSProperties
+          }
+        >
+          <HeroServer className={reducedMotion ? 'motion-reduced' : undefined} />
+        </div>
+
+        <ul aria-label="Deployment pipeline stages" className="absolute inset-0 list-none">
+          {CARDS.map((card) => (
+            <StatusCard key={card.id} card={card} reducedMotion={reducedMotion} />
+          ))}
+          <BuildLogsCard reducedMotion={reducedMotion} />
+        </ul>
+
+        {/* Illuminated terminals read above the hardware they attach to. */}
+        <svg
+          className="pointer-events-none absolute inset-0 h-full w-full"
+          viewBox={`0 0 ${SCENE_W} ${SCENE_H}`}
+          preserveAspectRatio="none"
+          style={{ zIndex: 20 }}
+          aria-hidden="true"
+          focusable="false"
+        >
+          <defs>
+            <filter id={glowId} x="-300%" y="-300%" width="700%" height="700%">
+              <feGaussianBlur stdDeviation="1.1" />
+            </filter>
+          </defs>
+
+          {NODES.map(([x, y, r], index) => (
+            <g
+              key={`${x}:${y}`}
+              className={cn('pipeline-node-stage', reducedMotion && 'motion-reduced')}
+              style={
+                {
+                  '--node-stage-delay': `${STAGE_TIMING[NODE_SEQUENCE[index].stage] + NODE_SEQUENCE[index].cascade}s`,
+                } as React.CSSProperties
+              }
+            >
+              {r >= 1.8 && (
+                <circle
+                  className="connection-node-glow"
+                  cx={x}
+                  cy={y}
+                  r={r * (r >= 2.6 ? 2.1 : 1.6)}
+                  fill="#b7ff00"
+                  opacity={r >= 2.6 ? 0.32 : 0.16}
+                  filter={`url(#${glowId})`}
+                />
+              )}
+              <circle
+                className="connection-node-core"
+                cx={x}
+                cy={y}
+                r={r}
+                fill={r >= 2.6 ? '#f2ffc4' : '#b7ff00'}
+              />
+            </g>
+          ))}
+        </svg>
+      </div>
     </div>
   );
 }
