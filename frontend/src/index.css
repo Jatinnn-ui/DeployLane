@@ -888,8 +888,14 @@
 }
 
 .trusted-logo-strip {
-  animation: trusted-logo-marquee 28s linear infinite;
-  will-change: transform;
+  width: 100%;
+  justify-content: space-between;
+  animation: none;
+  will-change: auto;
+}
+
+.trusted-logo-copy {
+  display: none;
 }
 
 .trusted-logo-viewport:hover .trusted-logo-strip,
@@ -923,6 +929,26 @@
   animation-play-state: paused;
   filter: grayscale(0);
   opacity: 1;
+}
+
+/* Desktop has enough room for one clean, complete row. Smaller viewports use the duplicated
+   track as a true marquee, with a soft edge mask so no clipped word reads as broken content. */
+@media (max-width: 1023px) {
+  .trusted-logo-viewport {
+    mask-image: linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%);
+  }
+
+  .trusted-logo-strip {
+    width: max-content;
+    justify-content: initial;
+    animation: trusted-logo-marquee 28s linear infinite;
+    will-change: transform;
+  }
+
+  .trusted-logo-copy {
+    display: flex;
+  }
 }
 
 @keyframes ship-headline-color {
@@ -968,6 +994,26 @@
 
 .workflow-build-card:hover {
   background-position: 106% 108%;
+}
+
+/* Each workflow card carries a large, quiet version of its own existing icon language. The
+   art stays behind the copy, while the numbered circles remain the primary step markers. */
+.workflow-step-card {
+  background-position: 108% 118%;
+  background-repeat: no-repeat;
+  background-size: 78% auto;
+}
+
+.workflow-step-card-repository {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 180' fill='none'%3E%3Ccircle cx='160' cy='92' r='58' stroke='%23a8f000' stroke-opacity='.14' stroke-width='3'/%3E%3Cpath d='M130 98c0-24 19-43 43-43 24 0 43 19 43 43 0 19-12 35-30 41-2 .4-3-1-3-3v-8c-12 3-17-4-17-4-3-5-7-6-7-6-6-4 .5-4 .5-4 6 .5 9 6 9 6 5 9 13 6 16 5 0-4 2-7 3-8-10-1-21-5-21-23 0-5 2-9 5-12-1-1-2-5 .5-11 0 0 4-1 12 5 4-1 9-2 14-2 5 0 10 1 14 2 8-6 12-5 12-5 2.5 6 1.5 10 .5 11 3 3 5 7 5 12 0 18-11 22-21 23 2 2 3 5 3 10v13' stroke='%23a8f000' stroke-opacity='.22' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.workflow-step-card-deploy {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 180' fill='none'%3E%3Cpath d='M120 143c0-35 27-71 74-89-1 47-31 76-74 89Z' stroke='%23a8f000' stroke-opacity='.2' stroke-width='3'/%3E%3Cpath d='m95 111-24 7 17-22m32 47 7-25m-24 15 22-22' stroke='%23a8f000' stroke-opacity='.2' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='173' cy='63' r='6' fill='%23a8f000' fill-opacity='.24'/%3E%3C/svg%3E");
+}
+
+.workflow-step-card-live {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 180' fill='none'%3E%3Ccircle cx='160' cy='88' r='60' stroke='%23a8f000' stroke-opacity='.14' stroke-width='3'/%3E%3Cellipse cx='160' cy='88' rx='27' ry='60' stroke='%23a8f000' stroke-opacity='.19' stroke-width='2'/%3E%3Cpath d='M100 88h120M110 63h100M110 113h100' stroke='%23a8f000' stroke-opacity='.17' stroke-width='2'/%3E%3C/svg%3E");
 }
 
 /* One shared timeline drives cards, wires, nodes, and server response. Each element's
@@ -1294,5 +1340,69 @@
   .connection-node-glow,
   .connection-node-core {
     animation: none;
+  }
+}
+
+/* The circular infrastructure around the lower-section appliance runs continuously while the
+   appliance itself stays put. Three layers turn at close but unequal rates, two clockwise and one
+   against them, which reads as parallax depth rather than as a spinning mechanism.
+
+   The rotation is authored in the scene's floor space, so a plain `rotate()` here is a rotation
+   about the vertical axis. `transform-box: fill-box` is load-bearing: it makes `center` resolve in
+   the group's own coordinate system, and each group carries an invisible bounding circle so that
+   centre is the pedestal's axis rather than the middle of whichever arcs happen to be lit. */
+@keyframes infra-ring-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes infra-ring-spin-reverse {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.infra-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  will-change: transform;
+  animation: infra-ring-spin var(--infra-ring-duration, 24s) linear infinite;
+}
+
+.infra-ring-reverse {
+  animation-name: infra-ring-spin-reverse;
+}
+
+/* Pausing rather than stopping is the whole point: `animation-play-state` holds each layer at its
+   current angle and resumes from there, so nothing snaps back to zero on hover in or out. */
+.infra-scene:hover .infra-ring {
+  animation-play-state: paused;
+}
+
+/* Restrained hover feedback - the freeze is the message, so this is barely a lift. */
+.infra-ring-detail {
+  opacity: 0.86;
+  transition: opacity 460ms ease-out;
+}
+
+.infra-scene:hover .infra-ring-detail {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .infra-ring {
+    animation: none;
+  }
+
+  .infra-ring-detail {
+    opacity: 1;
+    transition: none;
   }
 }

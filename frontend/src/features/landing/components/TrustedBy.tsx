@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { Cloud, Container, Droplet, Layers, Triangle } from 'lucide-react';
 import { GithubIcon } from '@/components/icons/GithubIcon';
+import { cn } from '@/lib/utils';
 import type { IconComponent } from './icon-type';
 
 /**
@@ -39,7 +40,10 @@ export function TrustedBy() {
               PLATFORMS.map((platform, index) => (
                 <li
                   key={`${copy}-${platform.name}`}
-                  className="trusted-logo-float flex shrink-0 items-center gap-[0.5em] text-content-primary"
+                  className={cn(
+                    'trusted-logo-float flex shrink-0 items-center gap-[0.5em] text-content-primary',
+                    copy === 1 && 'trusted-logo-copy',
+                  )}
                   style={{ '--logo-delay': `${index * -0.55 - copy * 3.8}s` } as CSSProperties}
                 >
                   <platform.icon className="h-[1.1em] w-[1.1em]" strokeWidth={2} aria-hidden="true" />

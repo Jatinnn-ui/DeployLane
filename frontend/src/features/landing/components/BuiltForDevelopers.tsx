@@ -1,7 +1,7 @@
 import { ArrowRight, Globe, ShieldCheck, Zap, type LucideIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ServerIllustration } from './ServerIllustration';
+import { InfrastructureScene } from './InfrastructureScene';
 
 const PILLARS: Array<{
   title: string;
@@ -34,7 +34,7 @@ export function BuiltForDevelopers() {
     <section id="built-for-developers" className="pb-4" aria-labelledby="pillars-heading">
       <div className="landing-container">
         <div className="landing-panel grid gap-8 px-5 py-7 sm:px-7 sm:py-8 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:gap-9">
-          {/* Same illustration as the hero, framed a little wider for this panel. */}
+          {/* The hero's appliance, reused verbatim inside a smaller floor-level composition. */}
           <div className="relative flex items-center justify-center">
             <div
               aria-hidden="true"
@@ -43,7 +43,7 @@ export function BuiltForDevelopers() {
                 background: 'radial-gradient(circle, rgba(160,255,0,0.08), transparent 55%)',
               }}
             />
-            <ServerIllustration className="relative w-full max-w-[430px]" />
+            <InfrastructureScene className="relative max-w-[430px]" />
           </div>
 
           <div>

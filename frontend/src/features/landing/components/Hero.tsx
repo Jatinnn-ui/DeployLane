@@ -80,9 +80,9 @@ export function Hero() {
             </Link>
           </div>
 
-          <ul className="hero-capabilities mt-[2.6em] flex w-full max-w-full flex-wrap items-center gap-x-[1.9em] gap-y-[0.9em] text-[length:var(--dl-hero-feat)] lg:w-max lg:flex-nowrap">
+          <ul className="hero-capabilities mt-[2.6em] grid w-full max-w-full grid-cols-2 items-center gap-x-[0.9em] gap-y-[0.9em] text-[length:var(--dl-hero-feat)] sm:grid-cols-3 lg:flex lg:w-full lg:flex-nowrap lg:justify-between lg:gap-x-[1.2em]">
             {CAPABILITIES.map((capability) => (
-              <li key={capability.label} className="hero-capability flex shrink-0 items-center gap-[0.5em]">
+              <li key={capability.label} className="hero-capability flex min-w-0 items-center gap-[0.5em]">
                 <span className="flex h-[2.6em] w-[2.6em] shrink-0 items-center justify-center rounded-full border border-[rgba(160,255,0,0.45)]">
                   <capability.icon className="h-[1.15em] w-[1.15em] text-accent" aria-hidden="true" />
                 </span>

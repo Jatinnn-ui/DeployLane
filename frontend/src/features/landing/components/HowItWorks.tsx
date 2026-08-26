@@ -60,7 +60,10 @@ export function HowItWorks() {
                 <div
                   className={cn(
                     'group h-full rounded-2xl border p-4 transition-[background-color,border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-accent hover:bg-accent hover:shadow-[0_16px_35px_rgba(168,240,0,0.14)] sm:p-5',
-                    step.n === 2 && 'workflow-build-card',
+                    step.n === 1 && 'workflow-step-card workflow-step-card-repository',
+                    step.n === 2 && 'workflow-step-card workflow-build-card',
+                    step.n === 3 && 'workflow-step-card workflow-step-card-deploy',
+                    step.n === 4 && 'workflow-step-card workflow-step-card-live',
                     step.n === 1
                       ? 'border-accent-border bg-accent-soft'
                       : 'border-border-subtle bg-surface',
