@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardBody, CardHeader, MetaItem } from '@/components/ui/card';
 import { InlineNotice, SkeletonRows } from '@/components/ui/feedback';
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from '@/components/ui/overlay';
+import { PageHeader } from '@/components/ui/page';
 import { useToast } from '@/components/ui/toast';
 import { useAuthStore } from '@/stores/auth-store';
 import { absoluteTime } from '@/lib/utils';
@@ -22,12 +23,10 @@ export function AccountPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight text-content-primary">Account</h1>
-        <p className="mt-1 text-[13px] text-content-secondary">
-          Your GitHub identity and the grant DeployLane uses on your behalf.
-        </p>
-      </div>
+      <PageHeader
+        title="Account"
+        description="Your GitHub identity and the grant DeployLane uses on your behalf."
+      />
 
       <Card>
         <CardHeader title="Profile" />

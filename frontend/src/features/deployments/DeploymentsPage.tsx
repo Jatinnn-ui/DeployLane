@@ -2,10 +2,10 @@ import { Rocket } from 'lucide-react';
 import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { useDeployments } from '@/api/deployments';
-import { Button } from '@/components/ui/button';
 import { Card, CardBody, CardFooter, CardHeader } from '@/components/ui/card';
 import { EmptyState, ErrorState, SkeletonRows } from '@/components/ui/feedback';
 import { Select } from '@/components/ui/form';
+import { Pagination } from '@/components/ui/page';
 import { DeploymentRow } from '@/features/deployments/DeploymentRow';
 import type { Project } from '@/types/api';
 
@@ -71,28 +71,15 @@ export function DeploymentsPage() {
       </CardBody>
 
       {data && data.totalPages > 1 ? (
-        <CardFooter className="flex items-center justify-between">
-          <span>
-            Page {data.page + 1} of {data.totalPages}
-          </span>
-          <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              disabled={!data.hasPrevious}
-              onClick={() => setPage((current) => Math.max(0, current - 1))}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              disabled={!data.hasNext}
-              onClick={() => setPage((current) => current + 1)}
-            >
-              Next
-            </Button>
-          </div>
+        <CardFooter>
+          <Pagination
+            page={data.page}
+            totalPages={data.totalPages}
+            hasPrevious={data.hasPrevious}
+            hasNext={data.hasNext}
+            onPrevious={() => setPage((current) => Math.max(0, current - 1))}
+            onNext={() => setPage((current) => current + 1)}
+          />
         </CardFooter>
       ) : null}
     </Card>

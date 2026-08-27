@@ -16,7 +16,7 @@ export const Label = forwardRef<
 Label.displayName = 'Label';
 
 const fieldStyles =
-  'box-border flex w-full items-center rounded-control border border-border-subtle bg-surface-alt px-3.5 text-[14px] font-normal not-italic leading-none text-content-primary placeholder:text-content-muted transition-[border-color,box-shadow] duration-200 hover:border-border-strong focus:border-accent-deep focus:outline-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-45 aria-[invalid=true]:border-danger';
+  'box-border flex w-full items-center rounded-control border border-border-subtle bg-surface-alt px-3.5 text-[14px] font-normal not-italic leading-none text-content-primary placeholder:text-content-muted transition-[border-color,box-shadow] duration-200 hover:border-border-strong focus:border-accent-deep focus:outline-none focus:shadow-[var(--dl-focus-ring)] focus:ring-0 disabled:cursor-not-allowed disabled:opacity-45 aria-[invalid=true]:border-danger';
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
   ({ className, ...props }, ref) => (
@@ -116,7 +116,7 @@ export const Select = forwardRef<
   <select
     ref={ref}
     className={cn(
-      'box-border w-full appearance-none rounded-control border border-border-subtle bg-surface-alt px-3.5 py-0 text-[14px] font-normal not-italic leading-none text-content-primary transition-[border-color,box-shadow] duration-200 hover:border-border-strong focus:border-accent-deep focus:outline-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-45',
+      'box-border w-full appearance-none rounded-control border border-border-subtle bg-surface-alt px-3.5 py-0 text-[14px] font-normal not-italic leading-none text-content-primary transition-[border-color,box-shadow] duration-200 hover:border-border-strong focus:border-accent-deep focus:outline-none focus:shadow-[var(--dl-focus-ring)] focus:ring-0 disabled:cursor-not-allowed disabled:opacity-45',
       // Data-URI chevron cannot inherit currentColor, so this is a neutral mid-grey
       // chosen to read acceptably against both the light and dark field surfaces.
       'h-11 cursor-pointer bg-[url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 16 16\' fill=\'none\' stroke=\'%238a8d88\' stroke-width=\'1.75\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M4.5 6.5 8 10l3.5-3.5\'/%3E%3C/svg%3E")] bg-[length:16px] bg-[right_0.65rem_center] bg-no-repeat pr-9',

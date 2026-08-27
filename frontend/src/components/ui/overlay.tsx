@@ -30,7 +30,7 @@ export function DialogContent({
       <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-ink-deep/40 backdrop-blur-[2px] data-[state=open]:animate-in" />
       <DialogPrimitive.Content
         className={cn(
-          'fixed left-1/2 top-1/2 z-50 w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[18px] border border-border-subtle bg-surface-alt shadow-xl',
+          'fixed left-1/2 top-1/2 z-50 w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-card border border-border-subtle bg-surface-alt shadow-xl',
           className,
         )}
       >
@@ -46,7 +46,7 @@ export function DialogContent({
             ) : null}
           </div>
           <DialogPrimitive.Close
-            className="rounded-[8px] p-1.5 text-content-muted transition-colors hover:bg-surface-hover hover:text-content-primary"
+            className="rounded-sm p-1.5 text-content-muted transition-colors hover:bg-surface-hover hover:text-content-primary"
             aria-label="Close"
           >
             <X className="h-4 w-4" />
@@ -83,7 +83,7 @@ export function DropdownContent({
         align={align}
         sideOffset={6}
         className={cn(
-          'z-50 min-w-48 overflow-hidden rounded-[14px] border border-border-subtle bg-surface-alt p-1 shadow-lg',
+          'z-50 min-w-48 overflow-hidden rounded-lg border border-border-subtle bg-surface-alt p-1 shadow-lg',
           className,
         )}
       >
@@ -100,7 +100,7 @@ export const DropdownItem = forwardRef<
   <DropdownPrimitive.Item
     ref={ref}
     className={cn(
-      'flex cursor-pointer select-none items-center gap-2.5 rounded-[8px] px-3 py-2 text-[13px] outline-none transition-colors',
+      'flex cursor-pointer select-none items-center gap-2.5 rounded-sm px-3 py-2 text-[13px] outline-none transition-colors',
       destructive
         ? 'text-danger-foreground data-[highlighted]:bg-danger-soft'
         : 'text-content-secondary data-[highlighted]:bg-surface-hover data-[highlighted]:text-content-primary',
@@ -192,7 +192,7 @@ export function Tooltip({
         <TooltipPrimitive.Content
           side={side}
           sideOffset={6}
-          className="z-50 max-w-xs rounded-[8px] border border-border-subtle bg-surface-alt px-2.5 py-1.5 text-[12px] leading-relaxed text-content-primary shadow-md"
+          className="z-50 max-w-xs rounded-sm border border-border-subtle bg-surface-alt px-2.5 py-1.5 text-[12px] leading-relaxed text-content-primary shadow-md"
         >
           {content}
           <TooltipPrimitive.Arrow className="fill-surface-alt" />

@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardBody, CardHeader } from '@/components/ui/card';
 import { EmptyState, InlineNotice, Skeleton } from '@/components/ui/feedback';
 import { Select } from '@/components/ui/form';
+import { MetricCard } from '@/components/ui/page';
 import { HealthIndicator } from '@/components/DeploymentStatusBadge';
 import { useChartTheme } from '@/lib/chart-theme';
 import { clockTime, formatBytes, formatPercent, formatUptime } from '@/lib/utils';
@@ -109,33 +110,37 @@ export function MonitoringPage() {
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <StatTile
+        <MetricCard
           icon={Cpu}
           label="CPU"
           value={formatPercent(metrics?.cpuPercent, 1)}
           hint="of one allocated core"
           loading={metricsLoading}
+          valueClassName="text-lg"
         />
-        <StatTile
+        <MetricCard
           icon={HardDrive}
           label="Memory"
           value={formatBytes(metrics?.memoryBytes)}
           hint={memoryLimitMb ? `limit ${memoryLimitMb} MB` : undefined}
           loading={metricsLoading}
+          valueClassName="text-lg"
         />
-        <StatTile
+        <MetricCard
           icon={Timer}
           label="Uptime"
           value={formatUptime(metrics?.uptimeSeconds)}
           hint={metrics?.containerStatus ?? undefined}
           loading={metricsLoading}
+          valueClassName="text-lg"
         />
-        <StatTile
+        <MetricCard
           icon={RotateCcw}
           label="Restarts"
           value={String(metrics?.restartCount ?? 0)}
           hint={metrics?.restartCount ? 'container restarted' : 'stable'}
           loading={metricsLoading}
+          valueClassName="text-lg"
         />
       </div>
 
@@ -250,36 +255,5 @@ export function MonitoringPage() {
         </CardBody>
       </Card>
     </div>
-  );
-}
-
-function StatTile({
-  icon: Icon,
-  label,
-  value,
-  hint,
-  loading,
-}: {
-  icon: typeof Cpu;
-  label: string;
-  value: string;
-  hint?: string;
-  loading?: boolean;
-}) {
-  return (
-    <Card className="p-4">
-      <div className="flex items-center justify-between">
-        <p className="text-[11px] font-medium uppercase tracking-wider text-content-muted">{label}</p>
-        <Icon className="h-3.5 w-3.5 text-content-muted" aria-hidden="true" />
-      </div>
-      {loading ? (
-        <Skeleton className="mt-2 h-6 w-20" />
-      ) : (
-        <>
-          <p className="mt-1.5 text-lg font-semibold tabular-nums text-content-primary">{value}</p>
-          {hint ? <p className="mt-0.5 text-[11px] text-content-muted">{hint}</p> : null}
-        </>
-      )}
-    </Card>
   );
 }

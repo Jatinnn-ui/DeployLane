@@ -1,9 +1,9 @@
 import { Activity } from 'lucide-react';
 import { useState } from 'react';
 import { useActivityFeed } from '@/api/platform';
-import { Button } from '@/components/ui/button';
 import { Card, CardBody, CardFooter, CardHeader } from '@/components/ui/card';
 import { EmptyState, ErrorState, SkeletonRows } from '@/components/ui/feedback';
+import { PageHeader, Pagination } from '@/components/ui/page';
 import { ActivityList } from '@/features/activity/ActivityList';
 
 /** Workspace-wide audit trail. Append only on the backend, so this is a faithful history. */
@@ -13,12 +13,10 @@ export function ActivityPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight text-content-primary">Activity</h1>
-        <p className="mt-1 text-[13px] text-content-secondary">
-          Imports, deployments, rollbacks and configuration changes across your workspaces.
-        </p>
-      </div>
+      <PageHeader
+        title="Activity"
+        description="Imports, deployments, rollbacks and configuration changes across your workspaces."
+      />
 
       <Card>
         <CardHeader
@@ -44,28 +42,15 @@ export function ActivityPage() {
           )}
         </CardBody>
         {data && data.totalPages > 1 ? (
-          <CardFooter className="flex items-center justify-between">
-            <span>
-              Page {data.page + 1} of {data.totalPages}
-            </span>
-            <div className="flex gap-2">
-              <Button
-                variant="secondary"
-                size="sm"
-                disabled={!data.hasPrevious}
-                onClick={() => setPage((current) => Math.max(0, current - 1))}
-              >
-                Previous
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                disabled={!data.hasNext}
-                onClick={() => setPage((current) => current + 1)}
-              >
-                Next
-              </Button>
-            </div>
+          <CardFooter>
+            <Pagination
+              page={data.page}
+              totalPages={data.totalPages}
+              hasPrevious={data.hasPrevious}
+              hasNext={data.hasNext}
+              onPrevious={() => setPage((current) => Math.max(0, current - 1))}
+              onNext={() => setPage((current) => current + 1)}
+            />
           </CardFooter>
         ) : null}
       </Card>

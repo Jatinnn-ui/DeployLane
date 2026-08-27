@@ -36,6 +36,9 @@
   --dl-border-subtle: rgba(255, 255, 255, 0.1);
   --dl-border-strong: rgba(255, 255, 255, 0.16);
   --dl-border-accent: rgba(168, 240, 0, 0.35);
+  --dl-focus-ring: 0 0 0 3px rgba(168, 240, 0, 0.16);
+  --dl-glow-accent-low: 0 0 0 1px rgba(168, 240, 0, 0.1), 0 8px 24px rgba(168, 240, 0, 0.05);
+  --dl-glow-accent-medium: 0 0 0 1px rgba(168, 240, 0, 0.18), 0 10px 30px rgba(168, 240, 0, 0.1);
 
   /* ink */
   --dl-content-primary: #f1f3f2;
@@ -130,6 +133,9 @@
   --dl-border-subtle: rgba(33, 34, 33, 0.14);
   --dl-border-strong: rgba(33, 34, 33, 0.38);
   --dl-border-accent: rgba(108, 151, 0, 0.45);
+  --dl-focus-ring: 0 0 0 3px rgba(108, 151, 0, 0.18);
+  --dl-glow-accent-low: 0 0 0 1px rgba(108, 151, 0, 0.12), 0 8px 24px rgba(108, 151, 0, 0.07);
+  --dl-glow-accent-medium: 0 0 0 1px rgba(108, 151, 0, 0.2), 0 10px 30px rgba(108, 151, 0, 0.12);
 
   --dl-content-primary: #212221;
   --dl-content-secondary: #5d5f5c;
@@ -336,6 +342,11 @@
 
   --duration-fast: 140ms;
   --duration-normal: 220ms;
+  --duration-slow: 300ms;
+
+  --control-height-sm: 36px;
+  --control-height-md: 44px;
+  --control-height-lg: 48px;
 
   /* lime gradient is theme-independent: identical in both variants */
   --gradient-lime: linear-gradient(135deg, #c9ff5c 0%, #a8f000 42%, #6c9700 100%);
@@ -684,6 +695,57 @@
   line-height: 1.25;
   letter-spacing: 0.01em;
   text-transform: uppercase;
+}
+
+/* Application typography roles. These deliberately sit below the expressive
+   marketing hierarchy so product pages remain compact and scan-friendly. */
+@utility page-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  color: var(--dl-content-primary);
+}
+
+@utility page-description {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--dl-content-secondary);
+}
+
+@utility section-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--dl-content-primary);
+}
+
+@utility meta-label {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--dl-content-muted);
+}
+
+@utility body-small {
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+@utility caption {
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+@utility technical-copy {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.55;
+  font-variant-ligatures: none;
 }
 
 /* ─────────────────────────────────────────────────────────────

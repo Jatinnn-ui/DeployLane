@@ -193,12 +193,15 @@ function VariablesCard({
         ) : (
           <ul className="divide-y divide-border-subtle overflow-hidden rounded-lg border border-border-subtle">
             {variables.map((variable) => (
-              <li key={variable.id} className="flex items-center gap-3 px-3 py-2.5">
-                <span className="w-56 shrink-0 truncate font-mono text-[12px] text-content-primary">
+              <li
+                key={variable.id}
+                className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 px-3 py-3 sm:grid-cols-[14rem_minmax(0,1fr)_auto_auto]"
+              >
+                <span className="min-w-0 truncate font-mono text-[12px] text-content-primary">
                   {variable.key}
                 </span>
                 <Tooltip content="Values are never returned by the API - only replaced">
-                  <span className="flex min-w-0 flex-1 items-center gap-2 font-mono text-[13px] tracking-widest text-content-muted">
+                  <span className="col-span-2 row-start-2 flex min-w-0 items-center gap-2 font-mono text-[13px] tracking-widest text-content-muted sm:col-span-1 sm:col-start-2 sm:row-start-1">
                     ••••••••••••
                     <Eye className="h-3 w-3 opacity-40" aria-hidden="true" />
                   </span>
@@ -207,7 +210,7 @@ function VariablesCard({
                   updated {relativeTime(variable.updatedAt)}
                 </span>
                 {canManage ? (
-                  <div className="flex shrink-0 items-center gap-1">
+                  <div className="col-start-2 row-start-1 flex shrink-0 items-center gap-1 sm:col-auto sm:row-auto">
                     <Button
                       variant="ghost"
                       size="icon"

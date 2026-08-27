@@ -86,7 +86,7 @@ export function LoginPage() {
           {loginError ? (
             <div
               role="alert"
-              className="flex items-start gap-2.5 rounded-[14px] border border-danger-border bg-danger-soft px-3 py-2.5 text-[12px] leading-relaxed text-danger-foreground"
+              className="flex items-start gap-2.5 rounded-lg border border-danger-border bg-danger-soft px-3 py-2.5 text-[12px] leading-relaxed text-danger-foreground"
             >
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
               <span>{loginError}</span>
@@ -118,7 +118,7 @@ export function LoginPage() {
               </p>
             </div>
           ) : (
-            <div className="space-y-3 rounded-[14px] border border-warning-border bg-warning-soft px-4 py-3">
+            <div className="space-y-3 rounded-lg border border-warning-border bg-warning-soft px-4 py-3">
               <p className="text-[13px] font-medium text-warning-foreground">GitHub sign-in is not configured</p>
               <p className="text-[12px] leading-relaxed text-content-secondary">
                 Set <code className="font-mono">GITHUB_CLIENT_ID</code> and{' '}
@@ -160,7 +160,7 @@ export function LoginPage() {
             ))}
           </ul>
 
-          <div className="rounded-[18px] border border-border-subtle bg-surface-alt p-4 font-mono text-[11px] leading-relaxed text-content-secondary">
+          <div className="rounded-card border border-border-subtle bg-surface-alt p-4 font-mono text-[11px] leading-relaxed text-content-secondary">
             <p className="text-content-muted">12:43:21 SYSTEM Preparing deployment...</p>
             <p>12:43:26 GIT Repository cloned successfully.</p>
             <p>12:43:41 BUILD Running npm run build...</p>

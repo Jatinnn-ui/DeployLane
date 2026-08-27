@@ -36,11 +36,11 @@ export function CardHeader({
       <div className="flex min-w-0 items-start gap-3">
         {icon ? <div className="mt-0.5 text-content-muted">{icon}</div> : null}
         <div className="min-w-0">
-          <h4 className="truncate text-[15px] font-medium tracking-[-0.3px] text-content-primary">
+          <h4 className="section-title truncate">
             {title}
           </h4>
           {description ? (
-            <p className="mt-1 text-[13px] leading-relaxed text-content-secondary">{description}</p>
+            <p className="body-small mt-1 text-content-secondary">{description}</p>
           ) : null}
         </div>
       </div>
@@ -78,7 +78,7 @@ export function MetaItem({
 }) {
   return (
     <div className={cn('min-w-0', className)}>
-      <dt className="text-[11px] font-medium uppercase tracking-wider text-content-muted">{label}</dt>
+      <dt className="meta-label">{label}</dt>
       <dd
         className={cn(
           'mt-1 truncate text-[13px] text-content-primary',

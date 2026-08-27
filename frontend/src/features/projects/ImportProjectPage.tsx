@@ -20,7 +20,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardBody, CardHeader } from '@/components/ui/card';
 import { EmptyState, ErrorState, InlineNotice, Skeleton, Spinner } from '@/components/ui/feedback';
-import { Field, Input, Select, Switch } from '@/components/ui/form';
+import { Field, Input, Select, Switch, Textarea } from '@/components/ui/form';
+import { PageHeader } from '@/components/ui/page';
 import { useToast } from '@/components/ui/toast';
 import { cn, relativeTime } from '@/lib/utils';
 import type { DetectionResult, RepositorySummary } from '@/types/api';
@@ -98,21 +99,19 @@ export function ImportProjectPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div>
-        <Link
-          to="/dashboard"
-          className="inline-flex items-center gap-1.5 text-[12px] text-content-secondary transition-colors hover:text-content-primary"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-          Back to overview
-        </Link>
-        <h1 className="mt-3 text-xl font-semibold tracking-tight text-content-primary">
-          Import a GitHub repository
-        </h1>
-        <p className="mt-1 text-[13px] text-content-secondary">
-          DeployLane reads the repository to work out how to build it. Nothing is deployed yet.
-        </p>
-      </div>
+      <PageHeader
+        title="Import a GitHub repository"
+        description="DeployLane reads the repository to work out how to build it. Nothing is deployed yet."
+        eyebrow={
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center gap-1.5 text-[12px] text-content-secondary transition-colors hover:text-content-primary"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
+            Back to overview
+          </Link>
+        }
+      />
 
       <Card>
         <CardHeader
@@ -591,13 +590,13 @@ function ConfigureStep({
                 : 'KEY=value per line. Comments and quotes are handled.'
             }
           >
-            <textarea
+            <Textarea
               id="bulk"
               value={bulkText}
               onChange={(event) => setBulkText(event.target.value)}
               rows={4}
               spellCheck={false}
-              className="w-full rounded-lg border border-border-strong bg-canvas px-3 py-2 font-mono text-[12px] text-content-primary placeholder:text-content-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              className="min-h-24 bg-canvas"
               placeholder={'DATABASE_URL=postgres://...\nJWT_SECRET=...'}
             />
           </Field>

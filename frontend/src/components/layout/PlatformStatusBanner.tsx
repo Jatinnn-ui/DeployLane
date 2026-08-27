@@ -36,7 +36,7 @@ export function PlatformStatusBanner() {
       <button
         type="button"
         onClick={() => setDismissed(true)}
-        className="rounded-[8px] p-0.5 text-content-muted transition-colors hover:text-content-primary"
+        className="rounded-sm p-0.5 text-content-muted transition-colors hover:text-content-primary"
         aria-label="Dismiss"
       >
         <X className="h-3.5 w-3.5" />

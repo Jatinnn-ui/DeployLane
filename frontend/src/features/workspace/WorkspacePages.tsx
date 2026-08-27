@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardBody, CardHeader, MetaItem } from '@/components/ui/card';
 import { EmptyState, InlineNotice, SkeletonRows } from '@/components/ui/feedback';
 import { Input, Select } from '@/components/ui/form';
+import { PageHeader } from '@/components/ui/page';
 import { useToast } from '@/components/ui/toast';
 import { absoluteTime, humanizeEnum, relativeTime } from '@/lib/utils';
 import type { WorkspaceRole } from '@/types/api';
@@ -42,12 +43,10 @@ export function WorkspaceMembersPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight text-content-primary">Members</h1>
-        <p className="mt-1 text-[13px] text-content-secondary">
-          Roles are enforced on the server for every request. The UI only hides what your role cannot do.
-        </p>
-      </div>
+      <PageHeader
+        title="Members"
+        description="Roles are enforced on the server for every request. The UI only hides what your role cannot do."
+      />
 
       <Card>
         <CardHeader
@@ -236,12 +235,7 @@ export function WorkspaceSettingsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight text-content-primary">
-          Workspace settings
-        </h1>
-        <p className="mt-1 text-[13px] text-content-secondary">{workspace.name}</p>
-      </div>
+      <PageHeader title="Workspace settings" description={workspace.name} />
 
       <Card>
         <CardHeader title="Details" />

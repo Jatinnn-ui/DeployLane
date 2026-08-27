@@ -7,6 +7,7 @@ import { buttonVariants } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { EmptyState, ErrorState, Skeleton } from '@/components/ui/feedback';
 import { Input } from '@/components/ui/form';
+import { PageHeader } from '@/components/ui/page';
 import { ProjectCard } from '@/features/dashboard/ProjectCard';
 
 /** Every project the caller can see, with client side filtering over the loaded page. */
@@ -28,14 +29,13 @@ export function ProjectsListPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight text-content-primary">Projects</h1>
-          <p className="mt-1 text-[13px] text-content-secondary">
-            {data ? `${data.totalItems} imported ${data.totalItems === 1 ? 'repository' : 'repositories'}` : ' '}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PageHeader
+        title="Projects"
+        description={
+          data ? `${data.totalItems} imported ${data.totalItems === 1 ? 'repository' : 'repositories'}` : ' '
+        }
+        actions={
+          <div className="flex w-full items-center gap-2 sm:w-auto">
           <div className="relative">
             <Search
               className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-content-muted"
@@ -53,8 +53,9 @@ export function ProjectsListPage() {
             <Plus className="h-3.5 w-3.5" aria-hidden="true" />
             Import
           </Link>
-        </div>
-      </div>
+          </div>
+        }
+      />
 
       {isLoading ? (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">

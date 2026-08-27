@@ -47,7 +47,7 @@ const NAV_ITEMS = [
 
 function navLinkClass(isActive: boolean) {
   return cn(
-    'flex items-center gap-2.5 rounded-[12px] px-3 py-2.5 text-[14px] font-medium transition-colors',
+    'flex items-center gap-2.5 rounded-md px-3 py-2.5 text-[14px] font-medium transition-colors',
     isActive
       ? 'bg-accent-soft text-content-primary'
       : 'text-content-secondary hover:bg-surface-hover hover:text-content-primary',
@@ -199,7 +199,7 @@ function TopBar({ onToggleNav, navOpen }: { onToggleNav: () => void; navOpen: bo
           <DropdownTrigger asChild>
             <button
               type="button"
-              className="flex items-center gap-2 rounded-[12px] px-2 py-1.5 text-[13px] text-content-secondary transition-colors hover:bg-surface-hover hover:text-content-primary"
+              className="flex items-center gap-2 rounded-md px-2 py-1.5 text-[13px] text-content-secondary transition-colors hover:bg-surface-hover hover:text-content-primary"
             >
               {user?.avatarUrl ? (
                 <img
@@ -247,7 +247,7 @@ function NotificationMenu() {
       <DropdownTrigger asChild>
         <button
           type="button"
-          className="relative rounded-[12px] p-2 text-content-secondary transition-colors hover:bg-surface-hover hover:text-content-primary"
+          className="relative rounded-md p-2 text-content-secondary transition-colors hover:bg-surface-hover hover:text-content-primary"
           aria-label={count > 0 ? `${count} unread notifications` : 'Notifications'}
         >
           <Bell className="h-4 w-4" />

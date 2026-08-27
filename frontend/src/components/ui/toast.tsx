@@ -82,7 +82,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               exit={{ opacity: 0, y: 8, scale: 0.98 }}
               transition={{ duration: 0.3, ease: [0.075, 0.82, 0.165, 1] }}
               className={cn(
-                'pointer-events-auto flex items-start gap-3 rounded-[14px] border bg-surface-alt px-4 py-3.5 shadow-lg',
+                'pointer-events-auto flex items-start gap-3 rounded-lg border bg-surface-alt px-4 py-3.5 shadow-lg',
                 toast.tone === 'success' && 'border-success-border',
                 toast.tone === 'error' && 'border-danger-border',
                 toast.tone === 'info' && 'border-border-subtle',
@@ -102,7 +102,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               <button
                 type="button"
                 onClick={() => dismiss(toast.id)}
-                className="rounded-[8px] p-0.5 text-content-muted transition-colors hover:text-content-primary"
+                className="rounded-sm p-0.5 text-content-muted transition-colors hover:text-content-primary"
                 aria-label="Dismiss"
               >
                 <X className="h-3.5 w-3.5" />

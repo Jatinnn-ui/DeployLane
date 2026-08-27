@@ -4,6 +4,7 @@ import { useProjects } from '@/api/projects';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardBody, CardHeader } from '@/components/ui/card';
 import { EmptyState, ErrorState, SkeletonRows } from '@/components/ui/feedback';
+import { PageHeader } from '@/components/ui/page';
 import { DeploymentStatusIndicator } from '@/components/DeploymentStatusBadge';
 import { formatDuration, relativeTime, truncate } from '@/lib/utils';
 
@@ -24,12 +25,10 @@ export function AllDeploymentsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight text-content-primary">Deployments</h1>
-        <p className="mt-1 text-[13px] text-content-secondary">
-          The most recent deployment of every project.
-        </p>
-      </div>
+      <PageHeader
+        title="Deployments"
+        description="The most recent deployment of every project."
+      />
 
       <Card>
         <CardHeader title="Latest per project" icon={<Rocket className="h-4 w-4" />} />
