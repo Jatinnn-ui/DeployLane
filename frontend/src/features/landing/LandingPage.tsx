@@ -1,48 +1,95 @@
-import { useEffect } from 'react';
-import { BuiltForDevelopers } from './components/BuiltForDevelopers';
-import { DashboardShowcase } from './components/DashboardShowcase';
-import { Hero } from './components/Hero';
-import { HowItWorks } from './components/HowItWorks';
-import { LandingFooter } from './components/LandingFooter';
-import { LandingNav } from './components/LandingNav';
-import { TrustedBy } from './components/TrustedBy';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Activity, ArrowDown, ArrowRight, ArrowUpRight, Box, Check, CheckCircle2, ChevronDown, Code2, Copy, GitBranch, GitCommitHorizontal, Layers, LockKeyhole, Menu, Play, Rocket, Server, ShieldCheck, Sparkles, Terminal, X, Zap } from 'lucide-react';
+import { GithubIcon } from '@/components/icons/GithubIcon';
 
-/**
- * Public marketing page.
- *
- * `.landing-root` pins the dark palette: the dashboard is themeable, but this page is
- * designed dark-only, and inheriting a light theme here would break both the 3D scene's
- * lighting and the contrast of the lime accent.
- */
-export function LandingPage() {
-  useEffect(() => {
-    const previous = document.title;
-    document.title = 'DeployLane — deploy your code anywhere, in seconds';
-    return () => {
-      document.title = previous;
-    };
-  }, []);
+const REPO = 'https://github.com/Jatinnn-ui/DeployLane';
+const DOCS = `${REPO}/blob/master/docs`;
 
+export function LaneMark() {
+  return <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M5 7h9v6H5zM18 7h9v6h-9zM5 17h9v8H5z" fill="currentColor" /><path d="m18 17 9-4v8l-9 4z" fill="currentColor" /></svg>;
+}
+
+function PipelineVisual() {
   return (
-    <div className="landing-root min-h-screen">
-      <a
-        href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-accent focus:px-4 focus:py-2 focus:text-[13px] focus:font-semibold focus:text-on-accent"
-      >
-        Skip to content
-      </a>
-
-      <LandingNav />
-
-      <main id="main">
-        <Hero />
-        <TrustedBy />
-        <HowItWorks />
-        <DashboardShowcase />
-        <BuiltForDevelopers />
-      </main>
-
-      <LandingFooter />
+    <div className="lane-visual" role="img" aria-label="Illustrated deployment pipeline: code is pushed from GitHub, built into a container, and deployed successfully.">
+      <div className="lane-visual-label"><span /> FROM LOCAL TO LIVE</div>
+      <svg className="lane-infrastructure" viewBox="0 0 620 490" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="lane-top" x1="180" y1="110" x2="450" y2="300" gradientUnits="userSpaceOnUse"><stop stopColor="#e0f0d9" /><stop offset="1" stopColor="#c0ddba" /></linearGradient>
+          <linearGradient id="lane-front" x1="140" y1="280" x2="430" y2="360" gradientUnits="userSpaceOnUse"><stop stopColor="#1e6645" /><stop offset="1" stopColor="#103f2d" /></linearGradient>
+          <filter id="lane-shadow" x="-30%" y="-40%" width="170%" height="200%"><feDropShadow dx="0" dy="20" stdDeviation="13" floodColor="#164b34" floodOpacity=".13" /></filter>
+        </defs>
+        <g stroke="#cbd8ca" strokeWidth="1" strokeDasharray="4 5"><path d="M80 257 310 124 556 266 323 402Z" /><path d="M43 278 310 123 589 286 322 441Z" /><path d="M310 66v370M80 257v79M556 266v53" /></g>
+        <g filter="url(#lane-shadow)">
+          <path d="m145 308 169-97 172 98-171 99z" fill="#e3e8dc" stroke="#a9b8a7" /><path d="M145 308v17l170 99v-16z" fill="#c8d3c2" stroke="#a9b8a7" /><path d="m315 408 171-99v17l-171 98z" fill="#b1c3ab" stroke="#a9b8a7" />
+          <path d="m145 265 169-97 172 98-171 99z" fill="#f3f5ec" stroke="#94ad91" /><path d="M145 265v23l170 99v-23z" fill="#dce8d4" stroke="#94ad91" /><path d="m315 364 171-98v23l-171 98z" fill="#bfceb7" stroke="#94ad91" />
+          <path d="m145 215 169-97 172 98-171 99z" fill="url(#lane-top)" stroke="#6e986b" /><path d="M145 215v40l170 99v-40z" fill="url(#lane-front)" stroke="#22583d" /><path d="m315 314 171-98v40l-171 98z" fill="#154b33" stroke="#22583d" />
+          <path d="m166 215 148-85 150 86-149 86z" stroke="#89b081" strokeDasharray="3 4" />
+          <path d="m221 214 93-53 95 54-94 54z" fill="#b9d8ac" stroke="#709767" />
+          <g stroke="#ecf9dc" strokeWidth="7" strokeLinejoin="round"><path d="m275 203-20 12 20 12M351 203l20 12-20 12M327 194l-27 41" /></g>
+          <path d="m167 240 69 40M167 247l39 23" stroke="#78a17e" strokeWidth="2" />
+          <ellipse cx="447" cy="256" rx="3" ry="4" fill="#bcf49c" /><ellipse cx="459" cy="249" rx="3" ry="4" fill="#bcf49c" /><ellipse cx="471" cy="242" rx="3" ry="4" fill="#bcf49c" />
+          <path d="m334 366 50-28M334 373l30-17" stroke="#7e9879" strokeWidth="2" />
+        </g>
+        <g stroke="#74a16d" strokeWidth="1.5"><path d="M190 115v31l59 34" strokeDasharray="4 4" /><path d="m413 179 65-38h65" /><path d="m411 355 70 41h51" strokeDasharray="4 4" /></g>
+        <circle cx="413" cy="179" r="4" fill="#2f774b" /><circle cx="411" cy="355" r="4" fill="#2f774b" /><circle cx="249" cy="180" r="4" fill="#2f774b" />
+      </svg>
+      <div className="lane-float lane-commit"><span className="lane-github-tile"><GithubIcon /></span><div><strong>acme / next-big-thing</strong><span><GitBranch size={12} /> main <i /> a8f92c1</span></div><CheckCircle2 className="lane-green" size={17} /></div>
+      <div className="lane-float lane-live"><span className="lane-success-icon"><Check size={18} /></span><div><strong>And… you're live.</strong><span>Deployed successfully</span></div><span className="lane-live-tag">READY</span></div>
+      <div className="lane-code-tag"><Box size={14} /> Containerized. Optimized. Yours.</div>
+      <div className="lane-float lane-build"><div className="lane-build-title"><Terminal size={14} /><span>Deployment pipeline</span><span className="lane-build-time">38s</span></div><div className="lane-build-steps">{['Clone', 'Build', 'Deploy'].map(step => <span key={step}><CheckCircle2 size={13} />{step}</span>)}</div><div className="lane-build-track"><i /><i /><i /></div></div>
+      <span className="lane-diagram-note">YOUR CODE. YOUR INFRASTRUCTURE.</span>
     </div>
   );
+}
+
+const previewProjects = [
+  { name: 'next-big-thing', framework: 'Next.js', message: 'feat: ship something great', commit: 'a8f92c1', time: '2 min ago', icon: 'N' },
+  { name: 'api-service', framework: 'Node.js', message: 'fix: improve response handling', commit: 'b2e81d4', time: '18 min ago', icon: 'JS' },
+  { name: 'documentation', framework: 'Astro', message: 'docs: update getting started', commit: 'c4a79e2', time: '1 hour ago', icon: 'A' },
+];
+
+function ProductPreview() {
+  const [tab, setTab] = useState('Deployments');
+  return <div className="lane-product">
+    <aside className="lane-product-sidebar"><div className="lane-product-brand"><LaneMark /> DeployLane</div><div className="lane-demo-workspace"><span>A</span> Acme workspace <ChevronDown size={12} /></div><div className="lane-product-nav"><span><Layers size={15} /> Overview</span><span className="selected"><Box size={15} /> Projects <small>3</small></span><span><Rocket size={15} /> Deployments</span><span><Activity size={15} /> Activity</span></div><div className="lane-demo-bottom"><span className="lane-status-dot" /> All systems operational</div></aside>
+    <div className="lane-product-main"><div className="lane-product-topbar"><span>Workspace <span>/</span> Overview</span><span className="lane-sample-label">INTERACTIVE PREVIEW</span></div><div className="lane-product-body"><div className="lane-product-heading"><div><h3>Your next big thing starts here.</h3><p>Everything you ship. One place to keep it running.</p></div><Link to="/projects/import"><PlusIcon /> New project</Link></div><div className="lane-demo-metrics">{[['Total projects', '3'], ['Healthy deployments', '3'], ['Builds in progress', '0'], ['Deployment success', '100%']].map(([label, value]) => <div key={label}><span>{label}</span><strong>{value}<Activity size={20} /></strong></div>)}</div><div className="lane-preview-tabs" role="tablist" aria-label="Product preview">{['Deployments', 'Build logs', 'Monitoring'].map(item => <button key={item} id={`preview-tab-${item.replaceAll(' ', '-')}`} role="tab" aria-selected={tab === item} aria-controls="preview-panel" onClick={() => setTab(item)}>{item === 'Deployments' ? <Layers size={14} /> : item === 'Build logs' ? <Terminal size={14} /> : <Activity size={14} />}{item}</button>)}<span><span className="lane-status-dot" /> Sample data</span></div><div id="preview-panel" role="tabpanel" aria-labelledby={`preview-tab-${tab.replaceAll(' ', '-')}`} className="lane-preview-panel">{tab === 'Deployments' ? previewProjects.map(project => <div className="lane-preview-row" key={project.name}><span className={`lane-framework-icon lane-framework-${project.icon}`}>{project.icon}</span><div className="lane-preview-project"><strong>{project.name}</strong><span>{project.framework} <i /> {project.message}</span></div><span className="lane-ready"><span /> Ready</span><span className="lane-preview-commit"><GitBranch size={12} /> main <code>{project.commit}</code></span><span className="lane-preview-time">{project.time}</span><ArrowUpRight size={14} /></div>) : tab === 'Build logs' ? <div className="lane-preview-log"><p><span>12:43:21</span> <b>GIT</b> Cloning acme/next-big-thing...</p><p><span>12:43:24</span> <b>BUILD</b> Detected Next.js · installing dependencies</p><p><span>12:43:38</span> <b>BUILD</b> Compiled successfully</p><p><span>12:43:56</span> <b>DOCKER</b> Container started. Checking health...</p><p className="lane-log-success"><span>12:43:59</span> <Check size={12} /> Deployment ready. Your next big thing is live.</p></div> : <div className="lane-preview-monitoring"><div><span>CPU usage <strong>12.4%</strong></span><svg viewBox="0 0 320 80" aria-label="Sample CPU usage chart"><path d="M0 65 18 61 31 64 46 36 59 53 75 42 92 56 110 29 128 41 145 35 160 52 178 31 195 41 210 20 225 36 241 25 259 40 278 27 300 32 320 19" /></svg></div><div><span>Memory <strong>128 MB / 512 MB</strong></span><svg viewBox="0 0 320 80" aria-label="Sample memory usage chart"><path d="M0 68 22 64 42 65 65 55 82 57 107 53 130 46 151 48 174 38 198 39 216 34 240 34 264 31 288 28 320 29" /></svg></div></div>}</div></div></div>
+  </div>;
+}
+
+function PlusIcon() { return <span aria-hidden="true" className="lane-plus">+</span>; }
+
+const faqs = [
+  ['What can I deploy with DeployLane?', 'DeployLane detects Next.js, React, Vue, Astro, SvelteKit, Node.js, Python, and Spring Boot applications. You can also bring your own Dockerfile for a custom stack.'],
+  ['Where does my application run?', 'On your own infrastructure. DeployLane is self-hosted and runs your applications as resource-limited Docker containers on your server. You stay in control of your code and data.'],
+  ['Do I need an AI API key?', 'No. A built-in rule-based analyzer works without a key. You can optionally connect Gemini or OpenAI for model-powered failure analysis and DevOps chat.'],
+  ['What happens if a deployment fails?', 'Your previous healthy deployment keeps serving traffic. DeployLane captures the failed build logs and provides analysis with a root cause, evidence, and suggested fixes.'],
+];
+
+export function LandingPage() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState(false);
+  useEffect(() => { const previous = document.title; document.title = 'DeployLane — Your code. A clear path to production.'; return () => { document.title = previous; }; }, []);
+  useEffect(() => { if (!copied) return; const timer = window.setTimeout(() => setCopied(false), 2200); return () => window.clearTimeout(timer); }, [copied]);
+  useEffect(() => { if (!menuOpen) return; const close = (event: KeyboardEvent) => { if (event.key === 'Escape') setMenuOpen(false); }; window.addEventListener('keydown', close); return () => window.removeEventListener('keydown', close); }, [menuOpen]);
+  const copyCommand = async () => { try { await navigator.clipboard.writeText(`git clone ${REPO}.git`); setCopied(true); setCopyError(false); } catch { setCopyError(true); } };
+
+  return <div className="lane-site">
+    <a href="#main" className="lane-skip">Skip to content</a>
+    <div className="lane-announcement"><span className="lane-announcement-tag">BUILT TO SHIP</span><span>Less infrastructure. More of your next big idea.</span><a href="#how-it-works">Meet DeployLane <ArrowRight size={13} /></a></div>
+    <header className="lane-header"><div className="lane-container lane-header-inner"><Link to="/" className="lane-wordmark" aria-label="DeployLane home"><LaneMark />DeployLane<span className="lane-wordmark-dot">.</span></Link><nav className={menuOpen ? 'lane-nav is-open' : 'lane-nav'} aria-label="Main navigation"><a href="#features" onClick={() => setMenuOpen(false)}>Platform <ChevronDown size={12} /></a><a href="#how-it-works" onClick={() => setMenuOpen(false)}>How it works</a><a href={`${DOCS}/local-development.md`} target="_blank" rel="noreferrer">Documentation <ArrowUpRight size={12} /></a><a href={REPO} target="_blank" rel="noreferrer" className="lane-nav-github"><GithubIcon /> GitHub</a></nav><div className="lane-nav-actions"><Link className="lane-login" to="/login">Log in</Link><Link className="lane-button lane-button-small" to="/login">Start deploying <ArrowUpRight size={15} /></Link><button className="lane-mobile-toggle" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button></div></div></header>
+    <main id="main">
+      <section className="lane-hero lane-container" aria-labelledby="lane-hero-title"><div className="lane-hero-copy"><a className="lane-eyebrow-pill" href="#features"><span className="lane-status-dot" /> YOUR IDEAS, IN PRODUCTION <ArrowRight size={12} /></a><h1 id="lane-hero-title">You write the code.<br />We clear the<br /><span>way to live.</span><span className="lane-heading-spark" aria-hidden="true">✳</span></h1><p>A clear path from your first commit to your next big thing.<br className="lane-desktop-break" /> Build, deploy, and monitor your apps — without the<br className="lane-desktop-break" /> infrastructure headache.</p><div className="lane-hero-actions"><Link to="/login" className="lane-button">Deploy your first project <ArrowUpRight size={17} /></Link><a href="#platform-preview" className="lane-watch"><span><Play size={12} fill="currentColor" /></span>See it in action</a></div><div className="lane-hero-benefits"><span><Check size={13} /> Self-hosted. Full control.</span><span><Check size={13} /> Built for your stack.</span></div></div><PipelineVisual /></section>
+      <section className="lane-stack lane-container" aria-label="Supported frameworks"><p>YOUR FAVORITE STACK.<br /><strong>ALREADY SUPPORTED.</strong></p><div className="lane-stack-logos"><span className="lane-next"><b>N</b>Next.js</span><span><svg viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="currentColor" strokeWidth="1.5"><ellipse cx="16" cy="16" rx="15" ry="6" /><ellipse cx="16" cy="16" rx="15" ry="6" transform="rotate(60 16 16)" /><ellipse cx="16" cy="16" rx="15" ry="6" transform="rotate(120 16 16)" /></g><circle cx="16" cy="16" r="2.5" fill="currentColor" /></svg>React</span><span className="lane-vue"><svg viewBox="0 0 30 28" aria-hidden="true"><path d="M0 2h7l8 14L23 2h7L15 28Z" fill="currentColor" /><path d="M9 2h5l1 2 1-2h5l-6 11Z" fill="currentColor" /></svg>Vue.js</span><span className="lane-node">node<span>js</span></span><span><span className="lane-python-mark"><Code2 size={28} /></span>Python</span><span className="lane-docker"><svg viewBox="0 0 38 30" aria-hidden="true"><path d="M2 14h26c4 0 6-2 7-5 3 7-2 14-9 16H15C7 25 3 21 2 14Z" fill="currentColor" /><path d="M7 8h5v4H7zM14 8h5v4h-5zM21 8h5v4h-5zM14 2h5v4h-5zM21 2h5v4h-5z" fill="currentColor" /></svg>docker</span><span className="lane-more-stacks">+ more</span></div></section>
+      <section id="features" className="lane-features lane-container"><div className="lane-section-heading"><div><span className="lane-kicker"><span /> LESS FRICTION. MORE SHIPPING.</span><h2>From “it works locally”<br />to <span>“it’s live.”</span></h2></div><p>Everything between your code and your users.<br />Connected, automated, and out of your way.</p></div><div className="lane-feature-grid"><article className="lane-feature-card"><div className="lane-feature-icon"><GitBranch size={21} /></div><h3>Push. Build. It’s that simple.</h3><p>Connect your GitHub repository. We detect your framework and take care of the build.</p><div className="lane-mini-git"><div><GithubIcon /><span>your-repo <span>/ main</span></span><CheckCircle2 size={15} /></div><div className="lane-mini-connection"><span /><ArrowDown size={14} /><span /></div><div><Box size={18} /><span>Production-ready container</span><span className="lane-mini-auto">AUTO</span></div></div><a href={`${DOCS}/deployment-pipeline.md`} target="_blank" rel="noreferrer">Explore deployments <ArrowUpRight size={15} /></a></article><article className="lane-feature-card"><div className="lane-feature-icon"><Activity size={21} /></div><h3>Clarity, not another dashboard.</h3><p>Live build logs, container health, and resource metrics. Know what’s happening as it happens.</p><div className="lane-mini-chart"><div><span><span className="lane-status-dot" /> Container health</span><strong>Healthy <Check size={12} /></strong></div><svg viewBox="0 0 300 65" preserveAspectRatio="none" aria-label="Illustrative resource monitoring chart"><defs><linearGradient id="mini-fill" x1="0" y1="0" x2="0" y2="1"><stop stopColor="#cee6c6" /><stop offset="1" stopColor="#cee6c6" stopOpacity="0" /></linearGradient></defs><path d="M0 52 15 50 27 54 42 37 54 45 69 35 84 38 98 20 110 32 125 27 137 31 152 21 166 24 183 14 194 21 210 17 225 22 239 10 254 16 270 7 286 13 300 5V65H0Z" fill="url(#mini-fill)" /><path d="M0 52 15 50 27 54 42 37 54 45 69 35 84 38 98 20 110 32 125 27 137 31 152 21 166 24 183 14 194 21 210 17 225 22 239 10 254 16 270 7 286 13 300 5" fill="none" stroke="#4d8658" strokeWidth="1.8" /></svg><span className="lane-chart-caption">ILLUSTRATIVE METRICS</span></div><a href="#platform-preview">Meet your control center <ArrowUpRight size={15} /></a></article><article className="lane-feature-card lane-feature-ai"><div className="lane-feature-icon"><Sparkles size={21} /></div><h3>A failed build. A clear answer.</h3><p>Go from a wall of errors to a root cause, the evidence, and a fix. With AI on your side.</p><div className="lane-mini-ai"><span><Sparkles size={13} /> BUILD ANALYSIS</span><strong>Missing environment variable</strong><p>Add <code>DATABASE_URL</code> to your environment<br />and redeploy. Let’s get you back on track.</p><div><CheckCircle2 size={12} /> Root cause identified</div></div><a href={`${DOCS}/ai-analysis.md`} target="_blank" rel="noreferrer">See AI-powered debugging <ArrowUpRight size={15} /></a></article></div></section>
+      <section id="platform-preview" className="lane-showcase"><div className="lane-container"><div className="lane-section-heading"><div><span className="lane-kicker"><span /> THE BIG PICTURE. EVERY LITTLE DETAIL.</span><h2>One workspace.<br /><span>Everything under control.</span></h2></div><p>Less tab-hopping. More forward progress.<br />Your projects, deployments, and insights, together.</p></div><ProductPreview /><div className="lane-showcase-bottom"><span><ShieldCheck size={16} /> Your secrets stay secret. Encrypted at rest. Redacted from logs.</span><Link to="/login">Make yourself at home <ArrowRight size={15} /></Link></div></div></section>
+      <section id="how-it-works" className="lane-how lane-container"><div className="lane-centered-heading"><span className="lane-kicker"><span /> A SHORTER PATH TO PRODUCTION</span><h2>Three steps. <span>Then you’re shipping.</span></h2><p>No complex pipelines to babysit. No infrastructure rabbit holes.</p></div><div className="lane-steps">{[{ number: '01', icon: GithubIcon, title: 'Bring your repository', text: 'Sign in with GitHub and pick your project. Your code stays right where it belongs.' }, { number: '02', icon: Terminal, title: 'Make it your own', text: 'Review your detected framework, choose a branch, and add your environment variables.' }, { number: '03', icon: Rocket, title: 'Give it the green light', text: 'Hit deploy. Watch the build live. Get a URL when your application is healthy and ready.' }].map(step => <article key={step.number}><div className="lane-step-top"><span>{step.number}</span><step.icon size={23} /><ArrowRight size={19} /></div><h3>{step.title}</h3><p>{step.text}</p></article>)}</div></section>
+      <section className="lane-ownership lane-container"><div className="lane-ownership-symbol"><Server size={42} /><LockKeyhole size={20} /></div><div><span className="lane-kicker">POWERFUL PLATFORM. NO BLACK BOX.</span><h2>Your infrastructure.<br />Your rules.</h2><p>Self-host DeployLane on your own server. Keep your code, your secrets, and your deployment decisions in your hands.</p></div><div className="lane-ownership-details"><span><CheckCircle2 size={17} /> Built on Docker, not vendor lock-in</span><span><CheckCircle2 size={17} /> Resource limits for every container</span><span><CheckCircle2 size={17} /> Zero-downtime deployment promotion</span><a href={`${DOCS}/local-development.md`} target="_blank" rel="noreferrer">Read the self-hosting guide <ArrowUpRight size={15} /></a></div></section>
+      <section className="lane-faq lane-container"><div><span className="lane-kicker"><span /> GOOD QUESTIONS. CLEAR ANSWERS.</span><h2>A little more<br /><span>before you launch.</span></h2><a href={`${DOCS}/local-development.md`} target="_blank" rel="noreferrer">Dig into the documentation <ArrowUpRight size={15} /></a></div><div className="lane-faq-items">{faqs.map(([question, answer]) => <details key={question}><summary>{question}<PlusIcon /></summary><p>{answer}</p></details>)}</div></section>
+      <section className="lane-final-cta lane-container"><span className="lane-kicker"><span /> LESS SETUP. MORE POSSIBILITY.</span><h2>Your next big thing<br />is one deploy away.</h2><p>You’ve got the code. Let’s give it a place in the world.</p><Link className="lane-button" to="/login">Let’s ship something <ArrowUpRight size={17} /></Link><div className="lane-clone-command"><Terminal size={13} /><code>git clone github.com/Jatinnn-ui/DeployLane.git</code><button onClick={() => void copyCommand()} aria-label={copied ? 'Repository command copied' : 'Copy repository clone command'}>{copied ? <Check size={14} /> : <Copy size={14} />}</button></div><span className="lane-copy-message" role="status">{copied ? 'Clone command copied.' : copyError ? 'Copy unavailable. Select the command above to copy it.' : 'Self-hosted. Developer-first. Ready when you are.'}</span></section>
+    </main>
+    <footer className="lane-footer"><div className="lane-container"><div className="lane-footer-main"><Link to="/" className="lane-wordmark"><LaneMark />DeployLane<span className="lane-wordmark-dot">.</span></Link><span>A clear lane from code to production.</span><a href={REPO} target="_blank" rel="noreferrer" aria-label="DeployLane on GitHub"><GithubIcon /></a></div><div className="lane-footer-bottom"><span>© {new Date().getFullYear()} DeployLane. Built for the builders.</span><nav aria-label="Footer navigation"><a href="#features">Platform</a><a href={`${DOCS}/local-development.md`} target="_blank" rel="noreferrer">Documentation</a><a href={`${DOCS}/security.md`} target="_blank" rel="noreferrer">Security</a><span><span className="lane-status-dot" /> Made to keep you moving</span></nav></div></div></footer>
+  </div>;
 }
