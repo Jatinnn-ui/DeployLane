@@ -7,7 +7,7 @@ export type Theme = 'dark' | 'light';
  * pre-paint theme and the React theme disagree and the page flashes.
  */
 export const THEME_STORAGE_KEY = 'deploylane.theme';
-const DEFAULT_THEME: Theme = 'dark';
+const DEFAULT_THEME: Theme = 'light';
 
 interface ThemeState {
   theme: Theme;

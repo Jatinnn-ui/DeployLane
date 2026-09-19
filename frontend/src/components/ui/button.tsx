@@ -4,14 +4,14 @@ import { forwardRef, type ButtonHTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
 /**
- * Pill silhouette in every variant, per the design system.
+ * Compact, softly rounded controls shared by the deployment workspace.
  *
  * `primary` is the only lime fill on a screen: lime directs attention rather than
  * decorating, so the secondary action is a thin outline instead of a second solid fill.
  * Text on lime is always `on-accent` (dark ink) because lime stays bright in both themes.
  */
 const buttonVariants = cva(
-  'inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-full text-[14px] font-semibold leading-none transition-[background-color,border-color,color,box-shadow,opacity,transform] duration-200 disabled:pointer-events-none disabled:opacity-45 active:translate-y-px',
+  'inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-lg text-[14px] font-semibold leading-none transition-[background-color,border-color,color,box-shadow,opacity,transform] duration-200 disabled:pointer-events-none disabled:opacity-45 active:translate-y-px',
   {
     variants: {
       variant: {
