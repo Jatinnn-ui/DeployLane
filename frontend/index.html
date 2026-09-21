@@ -4,12 +4,65 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark" />
+
+    <!-- ─── Primary SEO ─────────────────────────────────────────────── -->
+    <title>DeployLane — Deploy your code anywhere, in seconds</title>
     <meta
       name="description"
-      content="DeployLane — modern deployment and project management platform for developers."
+      content="DeployLane is a developer deployment platform. Connect a GitHub repo, and it builds a Docker image, runs your container, streams live logs, health-checks it, and gives you a live URL — with AI failure analysis when a build breaks."
     />
-    <title>DeployLane</title>
+    <meta
+      name="keywords"
+      content="deployment platform, deploy from GitHub, CI/CD, Docker deployment, continuous deployment, PaaS, host web apps, git push deploy, AI build failure analysis, DeployLane"
+    />
+    <meta name="author" content="DeployLane" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="theme-color" content="#a8f000" />
+    <link rel="canonical" href="https://deploylane.online/" />
+
+    <!-- ─── Open Graph (Facebook, LinkedIn, WhatsApp, Slack, Discord) ── -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="DeployLane" />
+    <meta property="og:title" content="DeployLane — Deploy your code anywhere, in seconds" />
+    <meta
+      property="og:description"
+      content="Push to GitHub, get a live URL. DeployLane builds, containerizes, health-checks and deploys your app — and explains failures with AI when something breaks."
+    />
+    <meta property="og:url" content="https://deploylane.online/" />
+    <meta property="og:image" content="https://deploylane.online/brand/deploylane-logo.png" />
+    <meta property="og:image:alt" content="DeployLane — developer deployment platform" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- ─── Twitter / X card ──────────────────────────────────────────── -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="DeployLane — Deploy your code anywhere, in seconds" />
+    <meta
+      name="twitter:description"
+      content="Push to GitHub, get a live URL. DeployLane builds, containerizes, health-checks and deploys your app, with AI failure analysis when a build breaks."
+    />
+    <meta name="twitter:image" content="https://deploylane.online/brand/deploylane-logo.png" />
+
     <link rel="icon" href="/brand/deploylane-icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/brand/deploylane-logo.png" />
+
+    <!-- ─── Structured data — helps Google render richer results ──────── -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "DeployLane",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Web",
+        "url": "https://deploylane.online/",
+        "description": "DeployLane is a developer deployment platform. Connect a GitHub repository and it builds a Docker image, runs your container, streams live logs, health-checks it and publishes a live URL, with AI failure analysis when a build breaks.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      }
+    </script>
+
     <script>
       // Commit the stored theme before first paint. Without this the page renders
       // in the default theme and then snaps to the stored one once React mounts.
@@ -29,7 +82,20 @@
   </head>
   <body>
     <div id="root"></div>
-    <noscript>DeployLane requires JavaScript to run.</noscript>
+    <noscript>
+      <div style="max-width: 640px; margin: 80px auto; padding: 0 24px; font-family: system-ui, sans-serif; color: #e6e6e6; text-align: center;">
+        <h1 style="font-size: 28px; margin-bottom: 12px;">DeployLane</h1>
+        <p style="font-size: 16px; line-height: 1.6; color: #b0b0b0;">
+          Deploy your code anywhere, in seconds. DeployLane connects to your GitHub
+          repository, builds a Docker image, runs your container, streams the build
+          logs, health-checks the deployment and gives you a live URL — with AI-powered
+          failure analysis when something breaks.
+        </p>
+        <p style="font-size: 14px; margin-top: 20px; color: #808080;">
+          This app is interactive and needs JavaScript enabled to continue.
+        </p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

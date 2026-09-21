@@ -23,14 +23,14 @@
 :root {
   color-scheme: dark;
 
-  /* canvas & surfaces */
-  --dl-canvas: #0d0f10;
-  --dl-canvas-secondary: #101314;
-  --dl-surface: #15191a;
-  --dl-surface-alt: #191d1e;
-  --dl-surface-raised: #1e2324;
-  --dl-surface-hover: #1e2324;
-  --dl-surface-glass: rgba(21, 25, 26, 0.88);
+  /* canvas & surfaces — matched to landing page's deeper blacks */
+  --dl-canvas: #050708;
+  --dl-canvas-secondary: #080b0c;
+  --dl-surface: #0b0e0f;
+  --dl-surface-alt: #101314;
+  --dl-surface-raised: #131718;
+  --dl-surface-hover: #131718;
+  --dl-surface-glass: rgba(11, 14, 15, 0.9);
 
   /* borders */
   --dl-border-subtle: rgba(255, 255, 255, 0.1);
@@ -40,12 +40,12 @@
   --dl-glow-accent-low: 0 0 0 1px rgba(168, 240, 0, 0.1), 0 8px 24px rgba(168, 240, 0, 0.05);
   --dl-glow-accent-medium: 0 0 0 1px rgba(168, 240, 0, 0.18), 0 10px 30px rgba(168, 240, 0, 0.1);
 
-  /* ink */
-  --dl-content-primary: #f1f3f2;
-  --dl-content-secondary: #9ca3a1;
-  --dl-content-muted: #666d6b;
-  --dl-content-inverse: #0d0f10;
-  --dl-ink-deep: #f1f3f2;
+  /* ink — matched to landing page */
+  --dl-content-primary: #f5f5f5;
+  --dl-content-secondary: #9a9ea3;
+  --dl-content-muted: #686d72;
+  --dl-content-inverse: #050708;
+  --dl-ink-deep: #f5f5f5;
 
   /* acid lime accent family */
   --dl-accent: #a8f000;
@@ -90,17 +90,17 @@
   --dl-terminal-ai: #a78bfa;
 
   /* charts — read by Recharts through the useChartTheme hook */
-  --dl-chart-primary: #f1f3f2;
+  --dl-chart-primary: #f5f5f5;
   --dl-chart-accent: #a8f000;
   --dl-chart-grid: rgba(255, 255, 255, 0.1);
-  --dl-chart-tick: #666d6b;
-  --dl-chart-tooltip-bg: #191d1e;
+  --dl-chart-tick: #686d72;
+  --dl-chart-tooltip-bg: #101314;
   --dl-chart-tooltip-border: rgba(255, 255, 255, 0.16);
-  --dl-chart-label: #9ca3a1;
+  --dl-chart-label: #9a9ea3;
 
   /* native <option> — one of the few properties browsers honour */
-  --dl-option-bg: #191d1e;
-  --dl-option-fg: #f1f3f2;
+  --dl-option-bg: #101314;
+  --dl-option-fg: #f5f5f5;
 
   /* elevation — deeper on dark so panels separate from the canvas */
   --dl-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
@@ -108,12 +108,12 @@
   --dl-shadow-lg: 0 18px 45px rgba(0, 0, 0, 0.5);
   --dl-shadow-xl: 0 24px 60px rgba(0, 0, 0, 0.6);
   --dl-shadow-2xl: 0 32px 80px rgba(0, 0, 0, 0.7);
-  --dl-shadow-inset-card: rgba(230, 232, 235, 0.06) 0 0 0 1px inset;
+  --dl-shadow-inset-card: rgba(245, 245, 245, 0.06) 0 0 0 1px inset;
 
   /* decorative */
   --dl-ring: rgba(168, 240, 0, 0.28);
   --dl-glyph: rgba(241, 243, 242, 0.04);
-  --dl-gradient-panel: linear-gradient(145deg, #1e2324 0%, #101314 100%);
+  --dl-gradient-panel: linear-gradient(145deg, #131718 0%, #080b0c 100%);
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -754,60 +754,21 @@
    regardless of the dashboard's theme preference.
    ───────────────────────────────────────────────────────────── */
 .landing-root {
-  color-scheme: dark;
+  /* Removed the dark-only color-scheme pin — the landing page now respects the
+     user's theme exactly like the rest of the app. The hero scene uses SVG geometry
+     and semantic tokens, so it adapts correctly; the only thing that was truly
+     dark-only was this pin overriding the user's preference. */
 
-  /* Sampled from the reference: the page is near-black, and elevated surfaces are only
-     a few values lighter. Raising these even slightly makes every panel read as grey. */
-  --dl-canvas: #050708;
-  --dl-canvas-secondary: #080b0c;
-  --dl-surface: #0b0e0f;
-  --dl-surface-alt: #101314;
-  --dl-surface-raised: #131718;
-  --dl-surface-hover: #131718;
-  --dl-surface-glass: rgba(11, 14, 15, 0.9);
-
-  --dl-border-subtle: rgba(255, 255, 255, 0.1);
-  --dl-border-strong: rgba(255, 255, 255, 0.16);
-  --dl-border-accent: rgba(168, 240, 0, 0.35);
-
-  --dl-content-primary: #f5f5f5;
-  --dl-content-secondary: #9a9ea3;
-  --dl-content-muted: #686d72;
-  --dl-content-inverse: #050708;
-  --dl-ink-deep: #f5f5f5;
-
-  --dl-accent: #a8f000;
-  --dl-accent-hover: #b7ff19;
-  --dl-accent-deep: #6c9700;
-  --dl-accent-soft: rgba(168, 240, 0, 0.12);
-  --dl-accent-border: rgba(168, 240, 0, 0.35);
-  --dl-link: #a8f000;
-
-  --dl-success: #43dd82;
-  --dl-success-soft: rgba(67, 221, 130, 0.1);
-  --dl-success-border: rgba(67, 221, 130, 0.28);
-  --dl-success-foreground: #7ceaa8;
-  --dl-danger: #f16d70;
-  --dl-danger-soft: rgba(241, 109, 112, 0.1);
-  --dl-danger-border: rgba(241, 109, 112, 0.26);
-  --dl-danger-foreground: #f8a3a5;
-
-  --dl-ring: rgba(168, 240, 0, 0.28);
-  --dl-option-bg: #101314;
-  --dl-option-fg: #f5f5f5;
-
-  /* Hero type scale, derived from the reference at 1024px wide and expressed in vw so the
-     composition grows with the window instead of staying tiny on a large display.
-     Each lower bound is the reference pixel value; each vw figure is that value / 1024. */
-  --dl-hero-h1: clamp(30px, 3.81vw, 62px);
-  --dl-hero-lead: clamp(12px, 1.17vw, 19px);
-  --dl-hero-pill: clamp(8px, 0.78vw, 13px);
-  --dl-hero-cta: clamp(10px, 0.98vw, 16px);
-  --dl-hero-feat: clamp(7px, 0.68vw, 11px);
-  --dl-nav-link: clamp(10px, 0.98vw, 15px);
-  --dl-nav-logo: clamp(17px, 1.76vw, 28px);
-  --dl-trust-label: clamp(7px, 0.68vw, 11px);
-  --dl-trust-logo: clamp(11px, 1.17vw, 19px);
+  /* Hero type scale */
+  --dl-hero-h1: clamp(32px, 3.81vw, 62px);
+  --dl-hero-lead: clamp(14px, 1.17vw, 19px);
+  --dl-hero-pill: clamp(11px, 0.78vw, 13px);
+  --dl-hero-cta: clamp(13px, 0.98vw, 16px);
+  --dl-hero-feat: clamp(10px, 0.68vw, 11px);
+  --dl-nav-link: clamp(12px, 0.98vw, 15px);
+  --dl-nav-logo: clamp(19px, 1.76vw, 28px);
+  --dl-trust-label: clamp(9px, 0.68vw, 11px);
+  --dl-trust-logo: clamp(13px, 1.17vw, 19px);
 
   background: var(--dl-canvas);
   color: var(--dl-content-primary);
@@ -831,15 +792,15 @@
    rather than as full-bleed bands. */
 @utility landing-panel {
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid var(--dl-border-subtle);
   background: var(--dl-canvas-secondary);
 }
 
 /* faint technical perspective grid behind the hero */
 @utility hero-grid {
   background-image:
-    linear-gradient(to right, rgba(241, 243, 242, 0.055) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(241, 243, 242, 0.055) 1px, transparent 1px);
+    linear-gradient(to right, var(--dl-border-subtle) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--dl-border-subtle) 1px, transparent 1px);
   background-size: 64px 64px;
 }
 
@@ -847,15 +808,30 @@
   background: var(--gradient-hero-glow);
 }
 
-/* dotted lime connector between workflow steps */
+/* Wiring connector between workflow steps: a glowing dashed lime line whose dashes flow left to
+   right like data travelling down the pipeline, plus a soft glow so it reads as a live wire. */
 @utility step-connector {
   background-image: linear-gradient(
     to right,
-    var(--dl-accent-border) 0 6px,
-    transparent 6px 12px
+    rgba(168, 240, 0, 0.85) 0 5px,
+    transparent 5px 11px
   );
-  background-size: 12px 1px;
+  background-size: 11px 100%;
   background-repeat: repeat-x;
+  filter: drop-shadow(0 0 2px rgba(168, 240, 0, 0.6));
+  animation: step-wire-flow 0.9s linear infinite;
+}
+
+@keyframes step-wire-flow {
+  to {
+    background-position: 11px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step-connector {
+    animation: none;
+  }
 }
 
 @keyframes dash-flow {
@@ -941,23 +917,20 @@
 }
 
 @keyframes trusted-logo-marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
+  from { transform: translateX(0); }
+  to   { transform: translateX(-33.333%); }
 }
 
 .trusted-logo-strip {
-  width: 100%;
-  justify-content: space-between;
-  animation: none;
-  will-change: auto;
+  width: max-content;
+  justify-content: initial;
+  animation: trusted-logo-marquee 36s linear infinite;
+  will-change: transform;
 }
 
-.trusted-logo-copy {
-  display: none;
+.trusted-logo-viewport {
+  mask-image: linear-gradient(to right, transparent 0, #000 5%, #000 95%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 5%, #000 95%, transparent 100%);
 }
 
 .trusted-logo-viewport:hover .trusted-logo-strip,
@@ -993,25 +966,7 @@
   opacity: 1;
 }
 
-/* Desktop has enough room for one clean, complete row. Smaller viewports use the duplicated
-   track as a true marquee, with a soft edge mask so no clipped word reads as broken content. */
-@media (max-width: 1023px) {
-  .trusted-logo-viewport {
-    mask-image: linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%);
-  }
-
-  .trusted-logo-strip {
-    width: max-content;
-    justify-content: initial;
-    animation: trusted-logo-marquee 28s linear infinite;
-    will-change: transform;
-  }
-
-  .trusted-logo-copy {
-    display: flex;
-  }
-}
+/* Desktop and mobile both use the marquee — the media block above handles both. */
 
 @keyframes ship-headline-color {
   0%,
@@ -1227,6 +1182,35 @@
   animation: pipeline-node-sequence 15.6s ease-in-out var(--node-stage-delay, 0s) infinite;
 }
 
+.pipeline-node-stage .connection-node-glow,
+.pipeline-node-stage .connection-node-core {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* The hub emitter breathes gently — the server always looks "powered on". */
+@keyframes connection-hub-pulse {
+  0%,
+  100% {
+    opacity: 0.12;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 0.24;
+    transform: scale(1.12);
+  }
+}
+
+.connection-hub-glow {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: connection-hub-pulse 4.5s ease-in-out infinite;
+}
+
+.connection-hub-glow.motion-reduced {
+  animation: none;
+}
+
 @keyframes server-processing-sequence {
   0%,
   8%,
@@ -1389,6 +1373,7 @@
   .pipeline-status-indicator,
   .pipeline-connection-group .connection-wire,
   .pipeline-connection-group .connection-packet,
+  .connection-hub-glow,
   .pipeline-node-stage .connection-node-glow,
   .pipeline-node-stage .connection-node-core,
   .hero-server .server-seam-core,
@@ -1405,15 +1390,11 @@
   }
 }
 
-/* The circular infrastructure around the lower-section appliance runs continuously while the
-   appliance itself stays put. Three layers turn at close but unequal rates, two clockwise and one
-   against them, which reads as parallax depth rather than as a spinning mechanism.
-
-   The rotation is authored in the scene's floor space, so a plain `rotate()` here is a rotation
-   about the vertical axis. `transform-box: fill-box` is load-bearing: it makes `center` resolve in
-   the group's own coordinate system, and each group carries an invisible bounding circle so that
-   centre is the pedestal's axis rather than the middle of whichever arcs happen to be lit. */
-@keyframes infra-ring-spin {
+/* Saturn-style orbits: the ring tracks are static, and only the light nodes glide around them.
+   Each node group is already translated to the pedestal centre and squashed into the ground plane,
+   so `rotate()` here — with transform-origin at that group's own origin (0,0 = the centre) — moves
+   the node cleanly around the true ellipse. Two rings turn one way, one the other, for parallax. */
+@keyframes infra-orbit-spin {
   from {
     transform: rotate(0deg);
   }
@@ -1422,7 +1403,7 @@
   }
 }
 
-@keyframes infra-ring-spin-reverse {
+@keyframes infra-orbit-spin-reverse {
   from {
     transform: rotate(0deg);
   }
@@ -1431,40 +1412,186 @@
   }
 }
 
-.infra-ring {
-  transform-box: fill-box;
-  transform-origin: center;
+.infra-orbit-spin {
+  transform-origin: 0 0;
   will-change: transform;
-  animation: infra-ring-spin var(--infra-ring-duration, 24s) linear infinite;
+  animation: infra-orbit-spin var(--infra-orbit-duration, 32s) linear infinite;
 }
 
-.infra-ring-reverse {
-  animation-name: infra-ring-spin-reverse;
-}
-
-/* Pausing rather than stopping is the whole point: `animation-play-state` holds each layer at its
-   current angle and resumes from there, so nothing snaps back to zero on hover in or out. */
-.infra-scene:hover .infra-ring {
-  animation-play-state: paused;
-}
-
-/* Restrained hover feedback - the freeze is the message, so this is barely a lift. */
-.infra-ring-detail {
-  opacity: 0.86;
-  transition: opacity 460ms ease-out;
-}
-
-.infra-scene:hover .infra-ring-detail {
-  opacity: 1;
+.infra-orbit-reverse .infra-orbit-spin {
+  animation-name: infra-orbit-spin-reverse;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .infra-ring {
+  .infra-orbit-spin {
     animation: none;
   }
+}
 
-  .infra-ring-detail {
-    opacity: 1;
+/* =========================================================================
+   Workflow cards — watermark + lime-green styling
+   =========================================================================
+
+   .workflow-card      — the card container (overflow:hidden crops the watermark)
+   .workflow-watermark — absolutely positioned decorative SVG behind content
+   ========================================================================= */
+
+/* Lime-green bordered card, dark background */
+.workflow-card {
+  border: 1px solid rgba(168, 240, 0, 0.38);
+  background: linear-gradient(145deg, rgba(168, 240, 0, 0.07) 0%, rgba(168, 240, 0, 0.02) 100%);
+  box-shadow: 0 0 0 1px rgba(168, 240, 0, 0.06) inset,
+              0 4px 16px rgba(0, 0, 0, 0.24);
+  transition: transform 280ms ease, box-shadow 280ms ease, border-color 280ms ease;
+}
+
+.workflow-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(168, 240, 0, 0.65);
+  box-shadow: 0 0 0 1px rgba(168, 240, 0, 0.12) inset,
+              0 8px 28px rgba(0, 0, 0, 0.32),
+              0 0 24px rgba(168, 240, 0, 0.08);
+}
+
+/* Watermark: large, upper-right, partially clipped by the card */
+.workflow-watermark {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 148px;
+  height: 148px;
+  pointer-events: none;
+  color: #a8f000;
+  opacity: 0.12;
+  display: block;
+  transition: opacity 350ms ease, transform 350ms ease;
+}
+
+.workflow-watermark svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.workflow-card:hover .workflow-watermark {
+  opacity: 0.20;
+  transform: scale(1.06) translate(-3px, 3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workflow-card,
+  .workflow-watermark {
     transition: none;
+  }
+}
+
+/* ── BuiltForDevelopers live metric chips ── */
+@keyframes bfd-chip-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.bfd-chip {
+  animation: bfd-chip-in 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) both;
+}
+
+.bfd-chip:nth-child(1) { animation-delay: 0.2s; }
+.bfd-chip:nth-child(2) { animation-delay: 0.38s; }
+.bfd-chip:nth-child(3) { animation-delay: 0.54s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bfd-chip {
+    animation: none;
+  }
+}
+
+/* ── Login page — theme-adaptive layout & animations ──────────────────────
+
+   .login-root       — outer wrapper (bg comes from semantic token bg-canvas)
+   .login-panel      — right column, adapts surface per theme
+   .login-grid       — subtle dot/line grid overlay
+   .login-glow       — ambient accent glow blob
+   .login-terminal   — terminal card background
+   .login-cta-shadow — lime shadow on the CTA button (dark only)
+   .login-tag-*      — coloured log-line tag labels
+
+   All colours pull from design tokens so both themes work without overrides.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Right panel background */
+.login-panel {
+  background: var(--dl-canvas-secondary);
+}
+
+/* Subtle perspective grid — dark mode: very faint lime, light mode: very faint ink */
+.login-grid {
+  background-image:
+    linear-gradient(to right, var(--dl-border-subtle) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--dl-border-subtle) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: radial-gradient(ellipse 80% 70% at 60% 44%, #000 25%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 60% 44%, #000 25%, transparent 100%);
+  opacity: 0.55;
+}
+
+/* Glow blob — uses accent-soft which is theme-resolved */
+.login-glow {
+  background: radial-gradient(circle, var(--dl-accent-soft) 0%, transparent 66%);
+}
+
+/* Terminal card — one step lighter than the panel */
+.login-terminal {
+  background: var(--dl-surface-alt);
+}
+
+/* CTA button glow — only meaningful in dark mode, invisible in light */
+.login-cta-shadow {
+  box-shadow: 0 0 0 0 transparent;
+}
+
+:root .login-cta-shadow,
+[data-theme='dark'] .login-cta-shadow {
+  box-shadow: 0 0 28px rgba(168, 240, 0, 0.18);
+}
+
+/* ── Terminal tag colours — semantic per theme ────────────────────────────── */
+.login-tag-system { color: var(--dl-content-muted);    }
+.login-tag-git    { color: var(--dl-terminal-git,    #60a5fa); }
+.login-tag-build  { color: var(--dl-terminal-build,  #f59e0b); }
+.login-tag-docker { color: var(--dl-terminal-docker, #818cf8); }
+.login-tag-health { color: var(--dl-success-foreground); }
+.login-tag-ready  { color: var(--dl-accent); }
+
+/* Dark-mode terminal-specific overrides for git/build/docker (they have
+   CSS vars in the dark palette only; fall back to the defaults above in light) */
+[data-theme='dark'] .login-tag-git    { color: #60a5fa; }
+[data-theme='dark'] .login-tag-build  { color: #f59e0b; }
+[data-theme='dark'] .login-tag-docker { color: #818cf8; }
+
+/* Light-mode: use the semantic terminal tokens defined in the light palette */
+[data-theme='light'] .login-tag-git    { color: var(--dl-terminal-git);    }
+[data-theme='light'] .login-tag-build  { color: var(--dl-terminal-build);  }
+[data-theme='light'] .login-tag-docker { color: var(--dl-terminal-docker); }
+
+/* ── Log-line entrance animation ──────────────────────────────────────────── */
+@keyframes login-log-fadein {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0);    }
+}
+
+.login-log-line {
+  animation: login-log-fadein 0.38s cubic-bezier(0.165, 0.84, 0.44, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-log-line {
+    animation: none;
+    opacity: 1;
   }
 }

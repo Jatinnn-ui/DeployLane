@@ -149,81 +149,54 @@ const CUBES = [
   { x: 498, y: 378, size: 27, rotate: 8 },
 ];
 
+/* ═══════════════════════════════════════════════════════════════════════
+   HUB-AND-SPOKE CONNECTION SYSTEM
+
+   The server is the hub. Every card connects to it with a single smooth
+   curve that starts on the card's inner edge and ends at the hub. A pulse
+   of light flows from the hub outward to each card in deploy order, so the
+   relationship "server powers every stage" is instantly readable and no two
+   lines ever cross. This is far clearer than an abstract orbital ring.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/** The hub: the top-centre of the pedestal, where every connector converges. */
+const HUB: [number, number] = [304, 210];
+
 /**
- * Foreground wiring. Long flowing curves rather than segmented right-angle runs, matching the
- * reference's routing: every end lands on a card edge, the chassis silhouette or the pedestal,
- * and the layer sits behind both the chassis and the cards so connections pass behind objects.
+ * One connector per stage. `anchor` sits on the card edge nearest the hub. Each connector is a
+ * smooth cubic whose control points lean out horizontally from both ends, giving a calm S-free
+ * arc that clearly links card ↔ hub without crossing its neighbours.
  */
-const LINKS: Array<{
-  d: string;
-  stage?: PipelineStage;
-  reverse?: boolean;
-}> = [
-  { d: 'M 195 54 C 222 52 244 70 250 104', stage: 'repository' },
-  { d: 'M 158 82 C 172 106 182 128 190 150', stage: 'repository' },
-  { d: 'M 422 46 C 400 46 374 66 358 101', stage: 'build' },
-  { d: 'M 470 84 C 482 92 492 100 500 109' },
-  { d: 'M 415 146 C 428 145 438 148 446 152', stage: 'container', reverse: true },
-  { d: 'M 520 195 C 516 208 508 220 500 230' },
-  { d: 'M 392 216 C 408 226 416 238 414 252', stage: 'deploy', reverse: true },
-  { d: 'M 380 261 C 396 268 406 274 414 278', stage: 'deploy', reverse: true },
-  { d: 'M 414 300 C 392 316 356 330 326 330' },
-  { d: 'M 250 248 L 250 291', stage: 'live', reverse: true },
-  { d: 'M 200 237 C 184 244 168 252 156 258', stage: 'build' },
-  { d: 'M 156 198 C 170 196 182 190 190 184', stage: 'build' },
-  { d: 'M 80 301 C 90 318 122 331 159 329' },
+const PIPELINE: Array<{ stage: PipelineStage; anchor: [number, number] }> = [
+  { stage: 'repository', anchor: [190, 74] },  // top-left card, bottom edge
+  { stage: 'build', anchor: [438, 78] },       // top-right card, bottom edge
+  { stage: 'container', anchor: [446, 150] },  // right card, left edge
+  { stage: 'deploy', anchor: [414, 262] },     // lower-right card, left edge
+  { stage: 'live', anchor: [268, 300] },       // bottom card, top edge
 ];
 
 /**
- * Three tiers at real terminals and bends, irregularly spaced: primary (pale core plus halo),
- * secondary (solid lime, small glow) and tiny (bare point). Most are small - only the three
- * primaries carry a noticeable halo, so the nodes read as energy in a pipeline.
+ * A connector from a card anchor to the hub. The control points pull horizontally toward the hub's
+ * x, so lines approach the hub fanned out like spokes and leave each card cleanly — no crossings,
+ * no wobble. Vertical distance sets how much the curve bows, so near and far cards both look calm.
  */
-const NODES: Array<[number, number, number]> = [
-  [250, 104, 3],
-  [218, 57, 2],
-  [195, 54, 1.2],
-  [190, 150, 2],
-  [358, 101, 3],
-  [422, 46, 1.2],
-  [500, 109, 2],
-  [446, 152, 2],
-  [415, 146, 1.2],
-  [500, 230, 1.2],
-  [414, 252, 3],
-  [392, 216, 2],
-  [380, 261, 1.2],
-  [414, 278, 2],
-  [326, 330, 2],
-  [250, 248, 2],
-  [190, 184, 2],
-  [156, 198, 1.2],
-  [156, 258, 2],
-  [159, 329, 2],
-];
+function connectorPath(anchor: [number, number]): string {
+  const [ax, ay] = anchor;
+  const [hx, hy] = HUB;
+  const midX = (ax + hx) / 2;
+  return `M ${ax} ${ay} C ${midX} ${ay}, ${midX} ${hy}, ${hx} ${hy}`;
+}
 
-const NODE_SEQUENCE: Array<{ stage: PipelineStage; cascade: number }> = [
-  { stage: 'repository', cascade: 0 },
-  { stage: 'repository', cascade: 0.16 },
-  { stage: 'repository', cascade: 0.32 },
-  { stage: 'repository', cascade: 0.48 },
-  { stage: 'build', cascade: 0 },
-  { stage: 'build', cascade: 0.18 },
-  { stage: 'container', cascade: 0 },
-  { stage: 'container', cascade: 0.18 },
-  { stage: 'deploy', cascade: 0 },
-  { stage: 'deploy', cascade: 0.18 },
-  { stage: 'live', cascade: 0 },
-  { stage: 'build', cascade: 0.36 },
-  { stage: 'build', cascade: 0.52 },
-  { stage: 'build', cascade: 0.68 },
-  { stage: 'live', cascade: 0.2 },
-  { stage: 'live', cascade: 0.36 },
-  { stage: 'live', cascade: 0.52 },
-  { stage: 'live', cascade: 0.68 },
-  { stage: 'live', cascade: 0.84 },
-  { stage: 'live', cascade: 1 },
-];
+/** Connectors, in deploy order, tagged with their stage + 1-based step number for the badge. */
+const LINKS: Array<{ d: string; stage: PipelineStage; step: number; anchor: [number, number] }> =
+  PIPELINE.map((p, i) => ({
+    d: connectorPath(p.anchor),
+    stage: p.stage,
+    step: i + 1,
+    anchor: p.anchor,
+  }));
+
+
 
 /** Floating black glass panel: near-opaque, thin light edge, faint green bounce underneath. */
 const PANEL =
@@ -404,58 +377,18 @@ function BuildLogsCard({ reducedMotion }: { reducedMotion: boolean }) {
   );
 }
 
-/** Below lg the scene is not art-directed: the essential stages become a compact row. */
-function CompactCard({ card, reducedMotion }: { card: Card; reducedMotion: boolean }) {
-  const Icon = card.icon;
-
-  return (
-    <li
-      className={cn(PANEL, 'pipeline-compact-card min-w-0 overflow-hidden rounded-[10px] px-2 py-1.5')}
-      style={
-        {
-          '--stage-activity-delay': STAGE_ACTIVITY_DELAY[card.id as PipelineStage],
-          ...(reducedMotion ? { animation: 'none' } : null),
-        } as React.CSSProperties
-      }
-    >
-      <div className="flex items-center gap-1.5">
-        <Icon className="h-3.5 w-3.5 shrink-0 text-white/85" strokeWidth={1.6} aria-hidden="true" />
-        <p className="truncate text-[10px] font-semibold leading-none text-white/90">
-          {card.label}
-        </p>
-      </div>
-      <p className="mt-1 break-all text-[7px] leading-[1.35] text-white/55">{card.status}</p>
-    </li>
-  );
-}
-
 export function HeroVisual({ reducedMotion = false }: { reducedMotion?: boolean }) {
   const uid = useId().replace(/:/g, '');
   const glowId = `hero-node-glow-${uid}`;
   const wireGlowId = `hero-wire-glow-${uid}`;
 
   return (
-    // Outer box keeps the hero's existing dimensions; the scene is fitted inside it.
-    <div className="@container relative min-w-0 w-full h-[250px] sm:h-[300px] lg:h-auto lg:aspect-[614/440]">
-      {/* Simplified composition below lg. */}
-      <div className="lg:hidden min-w-0 w-full">
-        <NetworkBackground />
-        <div className="pointer-events-none absolute left-1/2 top-[2%] h-[74%] w-[88%] -translate-x-1/2">
-          <HeroServer className={reducedMotion ? 'motion-reduced' : undefined} />
-        </div>
-        <ul
-          aria-label="Deployment pipeline stages"
-          className="absolute inset-x-0 bottom-1 grid w-full min-w-0 list-none grid-cols-3 items-end gap-1 px-0.5"
-        >
-          {CARDS.filter((card) => card.essential).map((card) => (
-            <CompactCard key={card.id} card={card} reducedMotion={reducedMotion} />
-          ))}
-        </ul>
-      </div>
-
-      {/* The scene fills the visual column: one coordinate space, one uniform scale. */}
+    // Outer box holds the scene at a fixed aspect ratio; the composition inside is authored in
+    // container-query units, so it scales as one unit from the widest desktop down to a 320px phone.
+    <div className="@container relative min-w-0 w-full aspect-[614/440]">
+      {/* The full art-directed scene — identical at every breakpoint. */}
       <div
-        className="@container absolute left-1/2 top-[49.5%] hidden -translate-x-1/2 -translate-y-1/2 lg:block"
+        className="@container absolute left-1/2 top-[49.5%] block -translate-x-1/2 -translate-y-1/2"
         style={{ width: '100%', aspectRatio: `${SCENE_W} / ${SCENE_H}` }}
       >
         <NetworkBackground />
@@ -477,7 +410,7 @@ export function HeroVisual({ reducedMotion = false }: { reducedMotion?: boolean 
           </div>
         ))}
 
-        {/* Wiring: behind the chassis and behind every card. */}
+        {/* Hub-and-spoke wiring: one clean connector per stage, converging on the server hub. */}
         <svg
           className="pointer-events-none absolute inset-0 h-full w-full"
           viewBox={`0 0 ${SCENE_W} ${SCENE_H}`}
@@ -487,50 +420,90 @@ export function HeroVisual({ reducedMotion = false }: { reducedMotion?: boolean 
           focusable="false"
         >
           <defs>
-            <filter id={wireGlowId} x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="2.2" result="wireBlur" />
+            <filter id={wireGlowId} x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="2.4" result="wireBlur" />
               <feMerge>
                 <feMergeNode in="wireBlur" />
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
+            {/* Line gradient: brightest at the hub, fading toward the card, so the eye reads the
+                server as the source of energy. Applied per-connector via userSpaceOnUse. */}
+            <radialGradient
+              id={`${wireGlowId}-grad`}
+              gradientUnits="userSpaceOnUse"
+              cx={HUB[0]}
+              cy={HUB[1]}
+              r="300"
+            >
+              <stop offset="0" stopColor="#c9ff5c" stopOpacity="0.6" />
+              <stop offset="0.55" stopColor="#a8f000" stopOpacity="0.34" />
+              <stop offset="1" stopColor="#5d8500" stopOpacity="0.14" />
+            </radialGradient>
+            <filter id={`${wireGlowId}-hub`} x="-300%" y="-300%" width="700%" height="700%">
+              <feGaussianBlur stdDeviation="6" />
+            </filter>
           </defs>
+
+          {/* Soft emitter glow at the hub — reads as the server dispatching energy. */}
+          <circle
+            className={cn('connection-hub-glow', reducedMotion && 'motion-reduced')}
+            cx={HUB[0]}
+            cy={HUB[1]}
+            r="26"
+            fill="#a8f000"
+            opacity="0.14"
+            filter={`url(#${wireGlowId}-hub)`}
+          />
+
           {LINKS.map((link) => (
-              <g
-                key={link.d}
-                className={cn('pipeline-connection-group', reducedMotion && 'motion-reduced')}
-                data-stage={link.stage}
-                style={
-                  {
-                    '--link-stage-delay': link.stage ? `${STAGE_TIMING[link.stage]}s` : undefined,
-                  } as React.CSSProperties
-                }
-              >
+            <g
+              key={link.d}
+              className={cn('pipeline-connection-group', reducedMotion && 'motion-reduced')}
+              data-stage={link.stage}
+              style={
+                {
+                  '--link-stage-delay': `${STAGE_TIMING[link.stage]}s`,
+                } as React.CSSProperties
+              }
+            >
+              {/* Conduit: a faint dashed rail underneath, giving the line a technical texture. */}
+              <path
+                d={link.d}
+                fill="none"
+                stroke="rgba(183,255,0,0.1)"
+                strokeWidth="3.2"
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+              />
+              {/* Calm base line — gradient from bright hub to dim card, always visible. */}
               <path
                 className="connection-wire"
                 d={link.d}
                 fill="none"
-                stroke="rgba(183,255,0,0.24)"
-                strokeWidth="1.05"
+                stroke={`url(#${wireGlowId}-grad)`}
+                strokeWidth="1.3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 vectorEffect="non-scaling-stroke"
                 filter={`url(#${wireGlowId})`}
               />
+              {/* Bright pulse travelling hub → card (outward), in deploy order. The path is drawn
+                  card → hub, so the -reverse keyframe makes the dash flow outward from the server. */}
               <path
-                className={cn('connection-packet', link.reverse && 'connection-packet-reverse')}
+                className="connection-packet connection-packet-reverse"
                 d={link.d}
                 fill="none"
-                stroke="#edffc1"
-                strokeWidth="1.45"
+                stroke="#eaffbe"
+                strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeDasharray="7 25"
+                strokeDasharray="12 74"
                 pathLength={1000}
                 vectorEffect="non-scaling-stroke"
                 filter={`url(#${wireGlowId})`}
                 style={
-                  (reducedMotion || !link.stage
+                  (reducedMotion
                     ? { opacity: 0, animation: 'none' }
                     : {
                         '--signal-stage-delay': `${STAGE_TIMING[link.stage]}s`,
@@ -582,36 +555,46 @@ export function HeroVisual({ reducedMotion = false }: { reducedMotion?: boolean 
             </filter>
           </defs>
 
-          {NODES.map(([x, y, r], index) => (
-            <g
-              key={`${x}:${y}`}
-              className={cn('pipeline-node-stage', reducedMotion && 'motion-reduced')}
-              style={
-                {
-                  '--node-stage-delay': `${STAGE_TIMING[NODE_SEQUENCE[index].stage] + NODE_SEQUENCE[index].cascade}s`,
-                } as React.CSSProperties
-              }
-            >
-              {r >= 1.8 && (
+          {/* A clean glowing dot where each connector meets its card, pulsing in deploy order. */}
+          {LINKS.map((link) => {
+            const [x, y] = link.anchor;
+            return (
+              <g
+                key={`dot-${link.step}`}
+                className={cn('pipeline-node-stage', reducedMotion && 'motion-reduced')}
+                style={
+                  {
+                    '--node-stage-delay': `${STAGE_TIMING[link.stage]}s`,
+                  } as React.CSSProperties
+                }
+              >
                 <circle
                   className="connection-node-glow"
                   cx={x}
                   cy={y}
-                  r={r * (r >= 2.6 ? 2.1 : 1.6)}
+                  r="5"
                   fill="#b7ff00"
-                  opacity={r >= 2.6 ? 0.32 : 0.16}
+                  opacity="0.22"
                   filter={`url(#${glowId})`}
                 />
-              )}
-              <circle
-                className="connection-node-core"
-                cx={x}
-                cy={y}
-                r={r}
-                fill={r >= 2.6 ? '#f2ffc4' : '#b7ff00'}
-              />
-            </g>
-          ))}
+                <circle className="connection-node-core" cx={x} cy={y} r="2.4" fill="#eaffbe" />
+              </g>
+            );
+          })}
+
+          {/* Hub node — the brightest point, where every connector converges. */}
+          <g className={cn('pipeline-node-stage', reducedMotion && 'motion-reduced')}>
+            <circle
+              className="connection-node-glow"
+              cx={HUB[0]}
+              cy={HUB[1]}
+              r="7"
+              fill="#b7ff00"
+              opacity="0.4"
+              filter={`url(#${glowId})`}
+            />
+            <circle className="connection-node-core" cx={HUB[0]} cy={HUB[1]} r="3" fill="#f2ffc4" />
+          </g>
         </svg>
       </div>
     </div>

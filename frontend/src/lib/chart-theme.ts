@@ -13,13 +13,13 @@ export interface ChartTheme {
 
 /** Dark-theme values, also used when custom properties are unreadable (e.g. jsdom). */
 const FALLBACK: ChartTheme = {
-  primary: '#e6e8eb',
-  accent: '#ade722',
-  grid: 'rgba(230, 232, 235, 0.1)',
-  tick: '#6b7270',
-  tooltipBg: '#1a1e20',
-  tooltipBorder: 'rgba(230, 232, 235, 0.14)',
-  label: '#9ca3a1',
+  primary: '#f5f5f5',
+  accent: '#a8f000',
+  grid: 'rgba(255, 255, 255, 0.1)',
+  tick: '#686d72',
+  tooltipBg: '#101314',
+  tooltipBorder: 'rgba(255, 255, 255, 0.16)',
+  label: '#9a9ea3',
 };
 
 function readChartTheme(): ChartTheme {

@@ -106,6 +106,8 @@ deployforge:
     oauth-state-ttl: 10m
     cookie-secure: ${COOKIE_SECURE:false}
     cookie-same-site: Lax
+    # Comma-separated GitHub usernames allowed to deploy/import. Empty = everyone who logs in can deploy.
+    deploy-allowlist: ${DEPLOY_ALLOWLIST:}
 
   github:
     client-id: ${GITHUB_CLIENT_ID:}

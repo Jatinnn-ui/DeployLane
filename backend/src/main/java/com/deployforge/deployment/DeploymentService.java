@@ -67,6 +67,7 @@ public class DeploymentService {
     private final ActivityService activityService;
     private final RateLimitService rateLimitService;
     private final DeployForgeProperties properties;
+    private final com.deployforge.auth.DeployAllowlistGuard deployAllowlistGuard;
 
     public DeploymentService(
             DeploymentRepository deploymentRepository,
@@ -80,7 +81,8 @@ public class DeploymentService {
             UserRepository userRepository,
             ActivityService activityService,
             RateLimitService rateLimitService,
-            DeployForgeProperties properties) {
+            DeployForgeProperties properties,
+            com.deployforge.auth.DeployAllowlistGuard deployAllowlistGuard) {
         this.deploymentRepository = deploymentRepository;
         this.stepRepository = stepRepository;
         this.environmentRepository = environmentRepository;
@@ -93,12 +95,14 @@ public class DeploymentService {
         this.activityService = activityService;
         this.rateLimitService = rateLimitService;
         this.properties = properties;
+        this.deployAllowlistGuard = deployAllowlistGuard;
     }
 
     // ------------------------------------------------------------------ create
 
     public DeploymentResponse create(UUID projectId, UUID userId, CreateDeploymentRequest request) {
         Project project = accessGuard.require(projectId, userId, Permission.DEPLOY);
+        deployAllowlistGuard.requireCanDeploy(userId);
         rateLimitService.checkPerMinute(
                 "deployment", userId.toString(), properties.rateLimit().deploymentPerMinute());
 
@@ -153,6 +157,7 @@ public class DeploymentService {
     public DeploymentResponse redeploy(UUID deploymentId, UUID userId) {
         Deployment source = require(deploymentId);
         Project project = accessGuard.require(source.getProjectId(), userId, Permission.DEPLOY);
+        deployAllowlistGuard.requireCanDeploy(userId);
         rateLimitService.checkPerMinute(
                 "deployment", userId.toString(), properties.rateLimit().deploymentPerMinute());
         requireDeployable(project);
@@ -182,6 +187,7 @@ public class DeploymentService {
     public DeploymentResponse rollback(UUID targetDeploymentId, UUID userId) {
         Deployment target = require(targetDeploymentId);
         Project project = accessGuard.require(target.getProjectId(), userId, Permission.ROLLBACK);
+        deployAllowlistGuard.requireCanDeploy(userId);
         rateLimitService.checkPerMinute(
                 "deployment", userId.toString(), properties.rateLimit().deploymentPerMinute());
         requireDeployable(project);

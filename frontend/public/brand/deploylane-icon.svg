@@ -1,5 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <rect width="32" height="32" rx="7" fill="#15191A"/>
-  <path d="M8 22 C11 19, 15 15, 19 11 L19 16 C22 13, 24 11, 27 9" stroke="#A8F000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M7 25 C12 20, 16 16, 22 12" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" opacity="0.9"/>
+  <rect width="32" height="32" rx="7" fill="#080b0c"/>
+  <!-- Back arrow -->
+  <path d="M5 11 L12 16 L5 21" stroke="#4d7500" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Middle arrow -->
+  <path d="M9 9.5 L17.5 16 L9 22.5" stroke="#7ab800" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Front arrow -->
+  <path d="M13 8 L23 16 L13 24" stroke="#a8f000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Motion lines -->
+  <line x1="2" y1="13.5" x2="6" y2="13.5" stroke="rgba(168,240,0,0.45)" stroke-width="1.2" stroke-linecap="round"/>
+  <line x1="2.5" y1="16" x2="7.5" y2="16" stroke="rgba(168,240,0,0.5)" stroke-width="1.2" stroke-linecap="round"/>
+  <line x1="2" y1="18.5" x2="6" y2="18.5" stroke="rgba(168,240,0,0.45)" stroke-width="1.2" stroke-linecap="round"/>
 </svg>

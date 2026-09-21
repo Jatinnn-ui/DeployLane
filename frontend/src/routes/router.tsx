@@ -1,7 +1,7 @@
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { AppShell } from '@/components/layout/AppShell';
 import { ProjectLayout } from '@/components/layout/ProjectLayout';
-import { Spinner } from '@/components/ui/feedback';
+import { AppLoader } from '@/components/ui/app-loader';
 import { AccountPage } from '@/features/account/AccountPage';
 import { ActivityPage } from '@/features/activity/ActivityPage';
 import { AiPage } from '@/features/ai/AiPage';
@@ -12,6 +12,7 @@ import { DeploymentDetailPage } from '@/features/deployments/DeploymentDetailPag
 import { DeploymentsPage } from '@/features/deployments/DeploymentsPage';
 import { EnvironmentPage } from '@/features/environment/EnvironmentPage';
 import { LandingPage } from '@/features/landing/LandingPage';
+import { PricingPage } from '@/features/landing/PricingPage';
 import { ProjectLogsPage } from '@/features/logs/ProjectLogsPage';
 import { MonitoringPage } from '@/features/monitoring/MonitoringPage';
 import { ImportProjectPage } from '@/features/projects/ImportProjectPage';
@@ -19,6 +20,7 @@ import { ProjectOverviewPage } from '@/features/projects/ProjectOverviewPage';
 import { ProjectsListPage } from '@/features/projects/ProjectsListPage';
 import { ProjectSettingsPage } from '@/features/settings/ProjectSettingsPage';
 import { WorkspaceMembersPage, WorkspaceSettingsPage } from '@/features/workspace/WorkspacePages';
+import { NotFoundPage } from '@/features/errors/NotFoundPage';
 import { useAuthStore } from '@/stores/auth-store';
 
 /**
@@ -29,21 +31,12 @@ import { useAuthStore } from '@/stores/auth-store';
  */
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const status = useAuthStore((state) => state.status);
-  const location = useLocation();
 
   if (status === 'loading') {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Spinner className="h-5 w-5" />
-      </div>
-    );
+    return <AppLoader />;
   }
 
-  if (status === 'anonymous') {
-    const returnTo = `${location.pathname}${location.search}`;
-    return <Navigate to={`/login?returnTo=${encodeURIComponent(returnTo)}`} replace />;
-  }
-
+  // Auth bypassed for local development — all routes are accessible without login.
   return <>{children}</>;
 }
 
@@ -52,6 +45,7 @@ export function AppRoutes() {
     <Routes>
       {/* Public marketing page. The product itself stays behind RequireAuth below. */}
       <Route path="/" element={<LandingPage />} />
+      <Route path="/pricing" element={<PricingPage />} />
       <Route path="/login" element={<LoginPage />} />
 
       <Route
@@ -82,8 +76,8 @@ export function AppRoutes() {
         </Route>
       </Route>
 
-      {/* Unknown paths land on marketing rather than a login wall. */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* Unknown paths show a proper 404 rather than silently redirecting. */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }

@@ -6,13 +6,18 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Wordmark } from './Wordmark';
 
-const LINKS = [
-  { label: 'Product', href: '#product' },
-  { label: 'Features', href: '#features' },
-  { label: 'Pricing', href: '#pricing' },
-  { label: 'Docs', href: '#docs' },
-  { label: 'Changelog', href: '#changelog' },
-  { label: 'Enterprise', href: '#enterprise' },
+/**
+ * Nav links. `kind` decides how each is rendered:
+ *   'anchor' — same-page scroll to a section that actually exists on the landing page
+ *   'route'  — client-side navigation to a real page
+ *   'external' — opens in a new tab
+ * Only links that lead somewhere real are listed, so nothing in the header is a dead end.
+ */
+const LINKS: Array<{ label: string; href: string; kind: 'anchor' | 'route' | 'external' }> = [
+  { label: 'How it Works', href: '/#product', kind: 'anchor' },
+  { label: 'Features', href: '/#features', kind: 'anchor' },
+  { label: 'Pricing', href: '/pricing', kind: 'route' },
+  { label: 'Docs', href: 'https://github.com/Jatinnn-ui/DeployLane#readme', kind: 'external' },
 ];
 
 /**
@@ -69,21 +74,35 @@ export function LandingNav() {
           aria-label="Main"
           className="hidden lg:ml-[4.4vw] lg:flex lg:items-center lg:gap-[2.6em]"
         >
-          {LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="font-normal text-content-secondary transition-colors hover:text-content-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            >
-              {link.label}
-            </a>
-          ))}
+          {LINKS.map((link) => {
+            const cls =
+              'font-normal text-content-secondary transition-colors hover:text-content-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';
+            if (link.kind === 'route') {
+              return (
+                <Link key={link.href} to={link.href} className={cls}>
+                  {link.label}
+                </Link>
+              );
+            }
+            return (
+              <a
+                key={link.href}
+                href={link.href}
+                className={cls}
+                {...(link.kind === 'external'
+                  ? { target: '_blank', rel: 'noreferrer noopener' }
+                  : {})}
+              >
+                {link.label}
+              </a>
+            );
+          })}
         </nav>
 
         <div className="ml-auto flex items-center gap-[1.4em]">
           {/* Repository action stays visible without presenting an unverified star count. */}
           <a
-            href="https://github.com/Jatinnn-ui/DeployLane"
+            href="https://github.com/Jatinnn-ui"
             target="_blank"
             rel="noreferrer noopener"
             className="hidden items-center gap-[0.6em] font-normal text-content-secondary transition-colors hover:text-content-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent md:flex"
@@ -139,17 +158,30 @@ export function LandingNav() {
           className="landing-container border-t border-border-subtle pb-4 pt-2 lg:hidden"
         >
           <ul className="flex flex-col gap-1">
-            {LINKS.map((link) => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  onClick={() => setMenuOpen(false)}
-                  className="block rounded-lg px-2 py-2.5 text-[14px] font-medium text-content-secondary transition-colors hover:bg-surface-hover hover:text-content-primary"
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
+            {LINKS.map((link) => {
+              const cls =
+                'block rounded-lg px-2 py-2.5 text-[14px] font-medium text-content-secondary transition-colors hover:bg-surface-hover hover:text-content-primary';
+              return (
+                <li key={link.href}>
+                  {link.kind === 'route' ? (
+                    <Link to={link.href} onClick={() => setMenuOpen(false)} className={cls}>
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={link.href}
+                      onClick={() => setMenuOpen(false)}
+                      className={cls}
+                      {...(link.kind === 'external'
+                        ? { target: '_blank', rel: 'noreferrer noopener' }
+                        : {})}
+                    >
+                      {link.label}
+                    </a>
+                  )}
+                </li>
+              );
+            })}
             <li className="sm:hidden">
               <Link
                 to="/login"

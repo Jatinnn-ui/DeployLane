@@ -1,0 +1,14 @@
+# DeployLane — allow all crawlers on the marketing site.
+User-agent: *
+Allow: /
+
+# Keep authenticated product routes out of the index.
+Disallow: /dashboard
+Disallow: /projects
+Disallow: /deployments
+Disallow: /activity
+Disallow: /account
+Disallow: /workspaces
+Disallow: /login
+
+Sitemap: https://deploylane.online/sitemap.xml

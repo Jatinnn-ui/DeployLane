@@ -47,6 +47,7 @@ public class ProjectImportService {
     private final AuthorizationService authorization;
     private final WorkspaceRepository workspaceRepository;
     private final ActivityService activityService;
+    private final com.deployforge.auth.DeployAllowlistGuard deployAllowlistGuard;
 
     public ProjectImportService(
             ProjectService projectService,
@@ -55,7 +56,8 @@ public class ProjectImportService {
             FrameworkDetectionService detectionService,
             AuthorizationService authorization,
             WorkspaceRepository workspaceRepository,
-            ActivityService activityService) {
+            ActivityService activityService,
+            com.deployforge.auth.DeployAllowlistGuard deployAllowlistGuard) {
         this.projectService = projectService;
         this.projectRepository = projectRepository;
         this.githubService = githubService;
@@ -63,11 +65,13 @@ public class ProjectImportService {
         this.authorization = authorization;
         this.workspaceRepository = workspaceRepository;
         this.activityService = activityService;
+        this.deployAllowlistGuard = deployAllowlistGuard;
     }
 
     public ProjectResponse importProject(UUID userId, ImportProjectRequest request) {
         UUID workspaceId = resolveWorkspace(userId, request.workspaceId());
         authorization.require(workspaceId, userId, Permission.MANAGE_PROJECT);
+        deployAllowlistGuard.requireCanDeploy(userId);
 
         String owner = Validators.requireGithubName(request.repositoryOwner(), "Repository owner");
         String repo = Validators.requireGithubName(request.repositoryName(), "Repository name");

@@ -35,7 +35,32 @@ public record DeployForgeProperties(
             @NotNull Duration refreshTokenTtl,
             @NotNull Duration oauthStateTtl,
             boolean cookieSecure,
-            @NotBlank String cookieSameSite) {}
+            @NotBlank String cookieSameSite,
+            java.util.List<String> deployAllowlist) {
+
+        /**
+         * GitHub usernames permitted to deploy and import. When empty, deploying is open to every
+         * signed-in user (the original behaviour). When non-empty, only these handles may deploy or
+         * import; everyone else can still log in and browse.
+         */
+        public Security {
+            deployAllowlist = deployAllowlist == null ? java.util.List.of() : java.util.List.copyOf(deployAllowlist);
+        }
+
+        public boolean deployRestricted() {
+            return !deployAllowlist.isEmpty();
+        }
+
+        public boolean isDeployAllowed(String githubUsername) {
+            if (deployAllowlist.isEmpty()) {
+                return true;
+            }
+            if (githubUsername == null) {
+                return false;
+            }
+            return deployAllowlist.stream().anyMatch(allowed -> allowed.equalsIgnoreCase(githubUsername.trim()));
+        }
+    }
 
     public record Github(
             String clientId,

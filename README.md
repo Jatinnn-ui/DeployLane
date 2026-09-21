@@ -286,3 +286,11 @@ also what lets the pipeline request AI analysis without depending on the AI modu
 ## License
 
 MIT
+
+
+
+
+<!-- ssh -i "D:\downloads\ssh-key-2026-08-24.key" opc@137.23.60.90 -->
+
+<!-- cd ~/DeployLane && git pull && docker compose --env-file .env -f infra/traefik/docker-compose.production.yml up -d --build frontend -->
+

@@ -60,9 +60,41 @@ const M_TOP = `matrix(${P[0]} ${P[1]} ${Q[0]} ${Q[1]} ${A[0]} ${A[1]})`;
 const M_F = `matrix(${P[0]} ${P[1]} 0 ${DROP} ${A[0]} ${A[1]})`;
 const M_R = `matrix(${Q[0]} ${Q[1]} 0 ${DROP} ${B[0]} ${B[1]})`;
 
-/** Stroked so surface shear cannot distort the mark's thickness. */
-const CHEVRON_F = 'M 0.455 0.45 L 0.585 0.60 L 0.455 0.75';
-const CHEVRON_TOP = 'M 0.44 0.37 L 0.575 0.5 L 0.44 0.63';
+/**
+/**
+ * The real DeployLane icon mark, transcribed verbatim from public/brand/deploylane-icon.svg:
+ * three graded chevrons (dark → bright green) plus the three motion lines. It is authored in that
+ * file's own 32x32 grid, then `brandMark()` maps it into the face's unit-square (0..1) space and
+ * scales it, so it inherits each face's perspective shear exactly like the rest of the decoration.
+ */
+type MarkStroke = { d: string; stroke: string; width: number };
+
+/** Icon geometry on its native 32-unit grid — kept identical to the shipped SVG. */
+const ICON_GRID = 32;
+const ICON_STROKES: MarkStroke[] = [
+  { d: 'M5 11 L12 16 L5 21',      stroke: '#4d7500', width: 2.2 }, // back arrow
+  { d: 'M9 9.5 L17.5 16 L9 22.5', stroke: '#7ab800', width: 2.6 }, // middle arrow
+  { d: 'M13 8 L23 16 L13 24',     stroke: '#a8f000', width: 3.0 }, // front arrow
+  { d: 'M2 13.5 L6 13.5',         stroke: 'rgba(168,240,0,0.45)', width: 1.2 }, // motion
+  { d: 'M2.5 16 L7.5 16',         stroke: 'rgba(168,240,0,0.5)',  width: 1.2 },
+  { d: 'M2 18.5 L6 18.5',         stroke: 'rgba(168,240,0,0.45)', width: 1.2 },
+];
+
+/**
+ * Maps the 32-grid icon into unit-square space. `cx`/`cy` is where the icon's own centre (16,16)
+ * lands, `s` is the on-face size in unit-square units. The mark's own strokes stay proportional
+ * because they are drawn inside a nested group transform.
+ */
+function brandMark(cx: number, cy: number, s: number) {
+  const scale = s / ICON_GRID;
+  // translate icon centre (16,16) to (cx,cy), then scale the whole 32-grid down.
+  return `translate(${cx} ${cy}) scale(${scale}) translate(${-ICON_GRID / 2} ${-ICON_GRID / 2})`;
+}
+
+/* Front face: mark sits in the recessed panel. */
+const MARK_F_TRANSFORM = brandMark(0.5, 0.6, 0.62);
+/* Top face: mark centred on the inset plate, a touch smaller. */
+const MARK_TOP_TRANSFORM = brandMark(0.5, 0.5, 0.52);
 
 /* Body bands, as fractions of the body height. The lid's visible edge thickness comes first,
    which is what pushes the seam far enough down to read as embedded rather than as an outline. */
@@ -196,10 +228,15 @@ export function HeroServer({ className }: { className?: string }) {
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
-        <filter id={ref('mark')} x="-150%" y="-150%" width="400%" height="400%">
-          <feGaussianBlur stdDeviation="1.6" result="b" />
+        {/* Logo mark: a tight, dimmed halo so the crisp chevrons stay clearly readable rather
+            than washing out. The blurred copy is faded to ~35% before the sharp source sits on top. */}
+        <filter id={ref('mark')} x="-120%" y="-120%" width="340%" height="340%">
+          <feGaussianBlur stdDeviation="0.8" result="b" />
+          <feComponentTransfer in="b" result="bDim">
+            <feFuncA type="linear" slope="0.35" intercept="0" />
+          </feComponentTransfer>
           <feMerge>
-            <feMergeNode in="b" />
+            <feMergeNode in="bDim" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
@@ -364,16 +401,19 @@ export function HeroServer({ className }: { className?: string }) {
       </g>
       <g clipPath={url('cf')} filter={url('mark')}>
         <g transform={M_F}>
-          <path
-            className="server-chevron"
-            d={CHEVRON_F}
-            fill="none"
-            stroke="#b7ff00"
-            strokeWidth="4.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            vectorEffect="non-scaling-stroke"
-          />
+          <g className="server-chevron" transform={MARK_F_TRANSFORM}>
+            {ICON_STROKES.map((stroke, i) => (
+              <path
+                key={i}
+                d={stroke.d}
+                fill="none"
+                stroke={stroke.stroke}
+                strokeWidth={stroke.width}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            ))}
+          </g>
         </g>
       </g>
 
@@ -534,16 +574,19 @@ export function HeroServer({ className }: { className?: string }) {
       </g>
       <g clipPath={url('ct')} filter={url('mark')}>
         <g transform={M_TOP}>
-          <path
-            className="server-chevron"
-            d={CHEVRON_TOP}
-            fill="none"
-            stroke="#b7ff00"
-            strokeWidth="4.4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            vectorEffect="non-scaling-stroke"
-          />
+          <g className="server-chevron" transform={MARK_TOP_TRANSFORM}>
+            {ICON_STROKES.map((stroke, i) => (
+              <path
+                key={i}
+                d={stroke.d}
+                fill="none"
+                stroke={stroke.stroke}
+                strokeWidth={stroke.width}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            ))}
+          </g>
         </g>
       </g>
 
