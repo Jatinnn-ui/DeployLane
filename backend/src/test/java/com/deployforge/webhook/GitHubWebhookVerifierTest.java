@@ -96,7 +96,8 @@ class GitHubWebhookVerifierTest {
                         Duration.ofDays(30),
                         Duration.ofMinutes(10),
                         false,
-                        "Lax"),
+                        "Lax",
+                        java.util.List.of()),
                 new DeployForgeProperties.Github(
                         "client",
                         "secret",
