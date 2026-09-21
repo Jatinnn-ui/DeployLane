@@ -76,12 +76,12 @@ export function DashboardPage() {
 
       <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
         <section className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-content-primary">Projects</h2>
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="min-w-0 truncate text-sm font-semibold text-content-primary">Projects</h2>
             {items.length > 0 ? (
               <Link
                 to="/projects"
-                className="text-[12px] text-content-secondary transition-colors hover:text-content-primary"
+                className="shrink-0 whitespace-nowrap text-[12px] text-content-secondary transition-colors hover:text-content-primary"
               >
                 View all
               </Link>

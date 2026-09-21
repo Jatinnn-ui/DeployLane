@@ -11,7 +11,7 @@ export function DeploymentRow({ deployment }: { deployment: DeploymentSummary })
     <li>
       <Link
         to={`/deployments/${deployment.id}`}
-        className="flex items-center gap-4 px-4 py-3 transition-colors hover:bg-surface-hover"
+        className="flex items-center gap-2.5 px-3 py-3 transition-colors hover:bg-surface-hover sm:gap-4 sm:px-4"
       >
         <div className="w-12 shrink-0">
           <span className="font-mono text-[13px] tabular-nums text-content-primary">
@@ -19,7 +19,7 @@ export function DeploymentRow({ deployment }: { deployment: DeploymentSummary })
           </span>
         </div>
 
-        <div className="w-36 shrink-0">
+        <div className="w-auto shrink-0 sm:w-36">
           <DeploymentStatusIndicator status={deployment.status} />
         </div>
 

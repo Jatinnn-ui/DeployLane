@@ -82,7 +82,7 @@ export function AppShell() {
         <div className="flex min-w-0 flex-1 flex-col">
           <TopBar onToggleNav={() => setMobileNavOpen((open) => !open)} navOpen={mobileNavOpen} />
           <PlatformStatusBanner />
-          <main className="min-w-0 flex-1 px-6 py-8 md:px-12">
+          <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 sm:py-8 md:px-12">
             <div className="workspace-view">
               <Outlet />
             </div>
@@ -172,7 +172,7 @@ function TopBar({ onToggleNav, navOpen }: { onToggleNav: () => void; navOpen: bo
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-[59px] items-center gap-3 border-b border-border-subtle bg-surface-glass px-6 backdrop-blur-sm md:px-12">
+    <header className="sticky top-0 z-30 flex h-[59px] items-center gap-3 border-b border-border-subtle bg-surface-glass px-4 backdrop-blur-sm sm:px-6 md:px-12">
       <Button
         variant="ghost"
         size="icon"

@@ -62,19 +62,19 @@ export function WorkspaceMembersPage() {
           ) : (
             <ul className="divide-y divide-border-subtle overflow-hidden rounded-lg border border-border-subtle">
               {members.map((member) => (
-                <li key={member.id} className="flex items-center gap-3 px-3 py-2.5">
+                <li key={member.id} className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2.5">
                   {member.user.avatarUrl ? (
                     <img
                       src={member.user.avatarUrl}
                       alt=""
-                      className="h-7 w-7 rounded-full border border-border-subtle"
+                      className="h-7 w-7 shrink-0 rounded-full border border-border-subtle"
                     />
                   ) : (
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent-soft text-[11px] font-semibold">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[11px] font-semibold">
                       {member.user.name.charAt(0).toUpperCase()}
                     </span>
                   )}
-                  <div className="min-w-0 flex-1">
+                  <div className="min-w-[8rem] flex-1">
                     <p className="truncate text-[13px] text-content-primary">{member.user.name}</p>
                     <p className="truncate text-[11px] text-content-muted">
                       @{member.user.githubUsername} · joined {relativeTime(member.joinedAt)}

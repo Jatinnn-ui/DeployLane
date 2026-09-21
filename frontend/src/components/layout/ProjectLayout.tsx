@@ -108,7 +108,7 @@ export function ProjectLayout() {
         </div>
       </div>
 
-      <nav className="-mx-1 flex items-center gap-0.5 overflow-x-auto border-b border-border-subtle pb-px">
+      <nav className="scrollbar-hide -mx-1 flex items-center gap-0.5 overflow-x-auto border-b border-border-subtle pb-px">
         {PROJECT_NAV.map((item) => (
           <NavLink
             key={item.segment || 'overview'}

@@ -608,6 +608,16 @@
   animation: fadein 0.4s var(--ease-transform) both;
 }
 
+/* Hides the scrollbar on horizontally-scrolling strips (e.g. the project tab bar
+   on mobile) while keeping them scrollable by touch/trackpad. */
+@utility scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 @utility panel {
   border: 1px solid var(--dl-border-subtle);
   border-radius: var(--radius-card);
