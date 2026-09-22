@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { memo } from 'react';
 import { cn } from '@/lib/utils';
 import { HERO_SERVER_BOX, HeroServer } from './HeroServer';
 
@@ -172,12 +173,16 @@ function OrbitRing({ orbit, glow }: { orbit: Orbit; glow: string }) {
             {/* ground-plane frame: centre + squash. The animated rotate() is applied by CSS. */}
             <g transform={`translate(${CENTER.cx} ${CENTER.cy}) scale(1 ${SQUASH})`}>
               <g className="infra-orbit-spin">
-                {/* Counter-squash the node itself so it stays a round dot, not a flat sliver. */}
+                {/* Counter-squash the node itself so it stays a round dot, not a flat sliver.
+                    No blur filter here: these nodes are continuously rotated by CSS, and a
+                    filtered subtree re-rasterizes every frame. A soft halo circle gives the
+                    glow look on the GPU compositor instead. */}
                 <g transform={`translate(${px} ${py}) scale(1 ${round(1 / SQUASH)})`}>
+                  <circle r={size * 3} fill="#b7ff00" opacity="0.12" />
                   {node.tier === 'primary' && (
-                    <circle r={size * 2.4} fill="#b7ff00" opacity="0.2" filter={glow} />
+                    <circle r={size * 2} fill="#b7ff00" opacity="0.22" />
                   )}
-                  <circle r={size} fill={node.tier === 'primary' ? '#f2ffc4' : '#b7ff00'} filter={glow} />
+                  <circle r={size} fill={node.tier === 'primary' ? '#f2ffc4' : '#b7ff00'} />
                 </g>
               </g>
             </g>
@@ -275,7 +280,17 @@ function SceneLayer({ far }: { far: boolean }) {
   );
 }
 
-export function InfrastructureScene({ className }: { className?: string }) {
+/**
+ * Memoized: this scene is a large, purely-decorative SVG tree with continuous CSS
+ * animations. Its only prop is `className`, so it never needs to re-render when the
+ * parent (BuiltForDevelopers) re-renders on its 250ms deployment ticker. Memoizing
+ * stops the whole SVG subtree from reconciling 4× per second.
+ */
+export const InfrastructureScene = memo(function InfrastructureScene({
+  className,
+}: {
+  className?: string;
+}) {
   return (
     <div
       data-scene="infra"
@@ -293,4 +308,4 @@ export function InfrastructureScene({ className }: { className?: string }) {
       <SceneLayer far={false} />
     </div>
   );
-}
+});

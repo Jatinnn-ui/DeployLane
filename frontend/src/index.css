@@ -627,6 +627,15 @@
   contain-intrinsic-size: auto 600px;
 }
 
+/* The 3D infrastructure scene animates continuously (spinning orbits + server glow).
+   `contain: layout paint style` isolates its repaints so the compositor doesn't have to
+   re-evaluate the rest of the page when the scene animates; `will-change: transform`
+   promotes it to its own GPU layer. This is the single busiest animated box on the page. */
+.infra-scene {
+  contain: layout paint style;
+  will-change: transform;
+}
+
 @utility panel {
   border: 1px solid var(--dl-border-subtle);
   border-radius: var(--radius-card);
