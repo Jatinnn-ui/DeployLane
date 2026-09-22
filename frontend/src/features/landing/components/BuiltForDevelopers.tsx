@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom';
 import { GithubIcon } from '@/components/icons/GithubIcon';
 import { Button } from '@/components/ui/button';
 import { usePrefersReducedMotion } from '@/lib/use-media-query';
+import { useInView } from '@/lib/use-in-view';
 import type { IconComponent } from './icon-type';
 import { InfrastructureScene } from './InfrastructureScene';
 import { Wordmark } from './Wordmark';
@@ -191,8 +192,10 @@ function SceneChip({
 
 export function BuiltForDevelopers() {
   const reducedMotion = usePrefersReducedMotion();
+  // Only run the (expensive) scene + ticker while the section is on screen.
+  const { ref: sceneRef, inView } = useInView<HTMLDivElement>();
   const { stageStateFor, complete, progress, elapsed, deployCount, lastDeploy } =
-    useDeploymentLoop(!reducedMotion);
+    useDeploymentLoop(!reducedMotion && inView);
 
   const elapsedLabel = complete ? '3.4s' : `${(elapsed / 1000).toFixed(1)}s`;
 
@@ -243,8 +246,12 @@ export function BuiltForDevelopers() {
               </span>
             </div>
 
-            {/* Scene with floating chips */}
-            <div className="relative min-h-[190px] flex-1">
+            {/* Scene with floating chips. When scrolled off screen, `infra-paused` freezes
+                every animation inside so the browser does zero work for it. */}
+            <div
+              ref={sceneRef}
+              className={`relative min-h-[190px] flex-1${inView ? '' : ' infra-paused'}`}
+            >
               <InfrastructureScene className="h-full w-full" />
 
               <SceneChip value={String(deployCount.toLocaleString())} label="deploys today" className="left-3 top-3" />

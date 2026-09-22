@@ -636,6 +636,13 @@
   will-change: transform;
 }
 
+/* When the section is scrolled off screen, freeze every animation inside it so the
+   browser does zero compositing/painting work for the scene. Applied to the wrapper. */
+.infra-paused,
+.infra-paused * {
+  animation-play-state: paused !important;
+}
+
 @utility panel {
   border: 1px solid var(--dl-border-subtle);
   border-radius: var(--radius-card);
