@@ -53,7 +53,7 @@ export function AllDeploymentsPage() {
                   <li key={project.id}>
                     <Link
                       to={`/deployments/${deployment.deploymentId}`}
-                      className="flex items-center gap-4 px-4 py-3 transition-colors hover:bg-surface-hover"
+                      className="flex items-center gap-2.5 px-3 py-3 transition-colors hover:bg-surface-hover sm:gap-4 sm:px-4"
                     >
                       <div className="min-w-0 flex-1">
                         <p className="flex items-center gap-2 truncate text-[13px] font-medium text-content-primary">
@@ -67,7 +67,7 @@ export function AllDeploymentsPage() {
                           {deployment.branch} · {truncate(deployment.commitMessage, 70) || 'no commit message'}
                         </p>
                       </div>
-                      <div className="w-36 shrink-0">
+                      <div className="w-auto shrink-0 sm:w-36">
                         <DeploymentStatusIndicator status={deployment.status} />
                       </div>
                       <div className="hidden w-24 shrink-0 text-right sm:block">

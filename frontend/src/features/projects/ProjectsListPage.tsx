@@ -9,6 +9,7 @@ import { EmptyState, ErrorState, Skeleton } from '@/components/ui/feedback';
 import { Input } from '@/components/ui/form';
 import { PageHeader } from '@/components/ui/page';
 import { ProjectCard } from '@/features/dashboard/ProjectCard';
+import { cn } from '@/lib/utils';
 
 /** Every project the caller can see, with client side filtering over the loaded page. */
 export function ProjectsListPage() {
@@ -36,23 +37,26 @@ export function ProjectsListPage() {
         }
         actions={
           <div className="flex w-full items-center gap-2 sm:w-auto">
-          <div className="relative">
-            <Search
-              className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-content-muted"
-              aria-hidden="true"
-            />
-            <Input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Filter projects"
-              className="w-full pl-9 sm:w-56"
-              aria-label="Filter projects"
-            />
-          </div>
-          <Link to="/projects/import" className={buttonVariants({ variant: 'primary' })}>
-            <Plus className="h-3.5 w-3.5" aria-hidden="true" />
-            Import
-          </Link>
+            <div className="relative min-w-0 flex-1 sm:flex-none">
+              <Search
+                className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-content-muted"
+                aria-hidden="true"
+              />
+              <Input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Filter projects"
+                className="w-full pl-9 sm:w-56"
+                aria-label="Filter projects"
+              />
+            </div>
+            <Link
+              to="/projects/import"
+              className={cn(buttonVariants({ variant: 'primary' }), 'shrink-0 whitespace-nowrap')}
+            >
+              <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+              Import
+            </Link>
           </div>
         }
       />

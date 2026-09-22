@@ -23,13 +23,26 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       output: {
-        // Charting is only needed on the monitoring screen, so it should not sit in the
-        // bundle that gates first paint of the dashboard.
+        // Split heavy third-party libraries into their own chunks so they load only when
+        // the code that needs them does, and so the bundle that gates first paint stays small.
         manualChunks: (id: string) => {
+          // Charting is only needed on the monitoring screen.
           if (id.includes('node_modules/recharts') || id.includes('node_modules/d3')) {
             return 'charts';
           }
-
+          // Animation library — heavy, mostly used by the landing page hero.
+          if (id.includes('node_modules/framer-motion') || id.includes('node_modules/motion')) {
+            return 'motion';
+          }
+          // Radix UI primitives — dialogs, dropdowns, tabs, tooltips, etc.
+          if (id.includes('node_modules/@radix-ui')) {
+            return 'radix';
+          }
+          // Data layer used across the app.
+          if (id.includes('node_modules/@tanstack')) {
+            return 'query';
+          }
+          // Core React runtime + router — shared by every screen.
           if (id.includes('node_modules/react-dom') || id.includes('node_modules/react-router')) {
             return 'vendor';
           }
