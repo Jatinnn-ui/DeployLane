@@ -99,13 +99,14 @@ function useDeploymentLoop(enabled: boolean) {
       setActiveIndex(0);
       setElapsed(0);
 
-      // Elapsed-time ticker (100ms resolution) for the active run.
+      // Elapsed-time ticker for the active run. 250ms (4/sec) instead of 100ms (10/sec)
+      // keeps the timer readable while cutting re-renders of this heavy scene subtree by 60%.
       const start = performance.now();
       const ticker = window.setInterval(() => {
         const ms = performance.now() - start;
         setElapsed(Math.min(ms, TOTAL_MS));
         if (ms >= TOTAL_MS) window.clearInterval(ticker);
-      }, 100);
+      }, 250);
       timers.current.push(ticker);
 
       // Advance through stages.

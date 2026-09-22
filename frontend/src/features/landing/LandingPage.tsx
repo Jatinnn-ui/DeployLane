@@ -36,10 +36,18 @@ export function LandingPage() {
 
       <main id="main">
         <Hero />
-        <TrustedBy />
-        <HowItWorks />
-        <DashboardShowcase />
-        <BuiltForDevelopers />
+        <div className="landing-defer">
+          <TrustedBy />
+        </div>
+        <div className="landing-defer">
+          <HowItWorks />
+        </div>
+        <div className="landing-defer">
+          <DashboardShowcase />
+        </div>
+        <div className="landing-defer">
+          <BuiltForDevelopers />
+        </div>
       </main>
 
       <LandingFooter />

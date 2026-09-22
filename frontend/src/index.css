@@ -618,6 +618,15 @@
   display: none;
 }
 
+/* Below-the-fold marketing sections skip layout, paint and — crucially — their
+   continuous CSS animations while scrolled out of view. content-visibility:auto lets
+   the browser drop all rendering work for offscreen sections; contain-intrinsic-size
+   reserves an approximate height so the scrollbar stays stable before first render. */
+.landing-defer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
 @utility panel {
   border: 1px solid var(--dl-border-subtle);
   border-radius: var(--radius-card);
@@ -961,17 +970,18 @@
   }
 }
 
+/* No per-logo infinite animation: 39 always-live composited layers were a real
+   scroll-jank source. The marquee alone carries the motion; each logo just gets a
+   cheap hover transition. */
 .trusted-logo-float {
-  animation: trusted-logo-float 4.8s ease-in-out var(--logo-delay, 0s) infinite;
+  opacity: 0.5;
   transition:
     color 220ms var(--ease-default),
     filter 220ms var(--ease-default),
     opacity 220ms var(--ease-default);
-  will-change: transform, opacity;
 }
 
 .trusted-logo-float:hover {
-  animation-play-state: paused;
   filter: grayscale(0);
   opacity: 1;
 }
