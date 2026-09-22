@@ -837,8 +837,9 @@
   );
   background-size: 11px 100%;
   background-repeat: repeat-x;
+  /* Static glow (no filter animation). The dash flow alone reads as a live wire. */
   filter: drop-shadow(0 0 2px rgba(168, 240, 0, 0.6));
-  animation: step-wire-flow 0.9s linear infinite;
+  animation: step-wire-flow 1.1s linear infinite;
 }
 
 @keyframes step-wire-flow {
@@ -932,7 +933,6 @@
 
 .workflow-stage-icon {
   animation: workflow-icon-float 4.6s ease-in-out infinite;
-  filter: drop-shadow(0 0 5px rgba(168, 240, 0, 0.14));
 }
 
 @keyframes trusted-logo-marquee {
@@ -1055,24 +1055,24 @@
 
 /* One shared timeline drives cards, wires, nodes, and server response. Each element's
    positive delay makes its short active window land in the same 15.6s deployment loop. */
+/* Opacity + border-color + scale only — no filter/drop-shadow, which forced a full
+   repaint of the blurred card every frame. The lit look is carried by border-color and
+   a static box-shadow on the card itself. */
 @keyframes pipeline-card-sequence {
   0%,
   4%,
   100% {
     border-color: rgba(180, 200, 190, 0.26);
-    filter: brightness(0.96) drop-shadow(0 0 0 rgba(168, 240, 0, 0));
     scale: 1;
   }
   6%,
   20% {
     border-color: rgba(168, 240, 0, 0.7);
-    filter: brightness(1.17) drop-shadow(0 0 13px rgba(168, 240, 0, 0.26));
     scale: 1.015;
   }
   27%,
   38% {
     border-color: rgba(168, 240, 0, 0.38);
-    filter: brightness(1.04) drop-shadow(0 0 5px rgba(168, 240, 0, 0.1));
     scale: 1;
   }
 }
@@ -1088,17 +1088,14 @@
   0%,
   4%,
   100% {
-    filter: brightness(0.78) drop-shadow(0 0 0 rgba(168, 240, 0, 0));
     opacity: 0.72;
   }
   7%,
   22% {
-    filter: brightness(1.35) drop-shadow(0 0 8px rgba(168, 240, 0, 0.55));
     opacity: 1;
   }
   30%,
   42% {
-    filter: brightness(1.05) drop-shadow(0 0 3px rgba(168, 240, 0, 0.16));
     opacity: 0.86;
   }
 }
@@ -1231,12 +1228,13 @@
   animation: none;
 }
 
+/* Opacity-only: the drop-shadow pulse on the server's SVG sub-elements was one of the
+   most expensive per-frame repaints on the page (and the server renders twice). */
 @keyframes server-processing-sequence {
   0%,
   8%,
   100% {
     opacity: 0.78;
-    filter: drop-shadow(0 0 0 rgba(168, 240, 0, 0));
   }
   12%,
   16%,
@@ -1247,12 +1245,10 @@
   66%,
   70% {
     opacity: 1;
-    filter: drop-shadow(0 0 5px rgba(168, 240, 0, 0.34));
   }
   84%,
   94% {
     opacity: 0.94;
-    filter: drop-shadow(0 0 4px rgba(168, 240, 0, 0.22));
   }
 }
 
@@ -1304,14 +1300,15 @@
 }
 
 /* The generated triptych is clipped per card; only its emissive light breathes. */
+/* Opacity-only breathe. The brightness/saturate filter version repainted a large
+   background PNG every frame on three elements; opacity gives the same "breathing"
+   feel on the compositor without repaints. */
 @keyframes pillar-visual-breathe {
   0%,
   100% {
-    filter: brightness(0.72) saturate(0.86);
-    opacity: 0.8;
+    opacity: 0.78;
   }
   50% {
-    filter: brightness(1.04) saturate(1.05);
     opacity: 1;
   }
 }
@@ -1322,7 +1319,7 @@
 
 .developer-pillar-art {
   animation: pillar-visual-breathe 5.8s ease-in-out var(--pillar-delay, 0s) infinite;
-  will-change: filter, opacity, transform;
+  will-change: opacity;
 }
 
 /* Terminal output advances line by line and leaves the success line visually dominant. */
